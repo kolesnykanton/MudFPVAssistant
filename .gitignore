@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+riderModule.iml
+/_ReSharper.Caches/
+/.idea/.idea.MudFPVAssistant/.idea
