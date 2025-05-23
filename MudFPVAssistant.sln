@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MudFPVAssistant", "MudFPVAssistant.csproj", "{F5F90A26-CA7D-0AD8-56C6-27E131467827}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F5F90A26-CA7D-0AD8-56C6-27E131467827}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5F90A26-CA7D-0AD8-56C6-27E131467827}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5F90A26-CA7D-0AD8-56C6-27E131467827}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5F90A26-CA7D-0AD8-56C6-27E131467827}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {15EC8981-D0AD-476B-8457-8C6D2879391E}
+	EndGlobalSection
+EndGlobal
