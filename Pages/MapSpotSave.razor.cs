@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using LeafletForBlazor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
@@ -10,112 +9,71 @@ namespace MudFPVAssistant.Pages;
 
 public partial class MapSpotSave : ComponentBase
 {
-    private RealTimeMap rtm;
     private ElementReference mapContainerRef;
     private bool menuMapOpen;
     private bool menuPointOpen;
     private double menuX, menuY;
     private double clickLat, clickLng;
+    private DotNetObjectReference<MapSpotSave> dotnetRef;
 
-    private RealTimeMap.LoadParameters parameters = new()
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        location = new RealTimeMap.Location { latitude = 40.4168, longitude = -3.7038 },
-        zoomLevel = 13,
-        basemap = new RealTimeMap.Basemap
+        if (firstRender)
         {
-            basemapLayers = new List<RealTimeMap.BasemapLayer>
-            {
-                new RealTimeMap.BasemapLayer
-                {
-                    url = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                    attribution = "© OpenStreetMap contributors",
-                    title = "OSM",
-                    detectRetina = true
-                }
-            }
-        }
-    };
-
-    // Викликається, коли карта завантажилася
-    private async Task OnMapLoaded(RealTimeMap.MapEventArgs args)
-    {
-        rtm = args.sender;
-
-        await JS.InvokeVoidAsync("registerContextMenu",
-            mapContainerRef,
-            DotNetObjectReference.Create(this));
-        await AutoLocate();
-    }
-
-    private async Task AutoLocate()
-    {
-        try
-        {
-            var pos = await JS.InvokeAsync<GeolocationPosition>("getCurrentPosition");
-            var lat = pos.coords.latitude;
-            var lng = pos.coords.longitude;
-
-            parameters.location = new RealTimeMap.Location { latitude = lat, longitude = lng };
-            parameters.zoomLevel = 13;
-
-            rtm.Geometric.Points.add(new RealTimeMap.StreamPoint
-            {
-                guid = Guid.NewGuid(),
-                timestamp = DateTime.UtcNow,
-                latitude = lat,
-                longitude = lng,
-                type = "Я тут",
-                value = "Ви тут"
-            });
-
-            StateHasChanged();
-        }
-        catch
-        {
+            dotnetRef = DotNetObjectReference.Create(this);
+            await JS.InvokeVoidAsync("fpvinitializeMap", "fpvMap", dotnetRef);
         }
     }
 
-    private async Task HandleClick(RealTimeMap.ClicksMapArgs args)
+    [JSInvokable]
+    public async Task HandleClick(double lat, double lng)
     {
-        var lat = args.location.latitude;
-        var lng = args.location.longitude;
-        var name = await JS.InvokeAsync<string>("prompt", "Назва споту:");
-
-        if (!string.IsNullOrWhiteSpace(name))
-        {
-            rtm.Geometric.Points.add(new RealTimeMap.StreamPoint
-            {
-                guid = Guid.NewGuid(),
-                timestamp = DateTime.UtcNow,
-                latitude = lat,
-                longitude = lng,
-                type = "FPV spot",
-                value = name
-            });
-            StateHasChanged();
-        }
+        clickLat = lat;
+        clickLng = lng;
+        await AddGlobalSpot();
+        StateHasChanged();
+        //return Task.CompletedTask;
     }
 
     [JSInvokable]
     public Task OnContextMenu(JsonElement args)
     {
-        menuX = args.GetProperty("x").GetDouble();
-        menuY = args.GetProperty("y").GetDouble();
-        // clickLat = args.GetProperty("lat").GetDouble();
-        // clickLng = args.GetProperty("lng").GetDouble();
+        menuX = args.GetProperty("x").GetInt32();
+        menuY = args.GetProperty("y").GetInt32();
+        clickLat = args.GetProperty("lat").GetDouble();
+        clickLng = args.GetProperty("lng").GetDouble();
         var isPoint = args.GetProperty("isPoint").GetBoolean();
+        menuMapOpen = !isPoint; // якщо фон — відкриваємо меню для додавання
+        menuPointOpen = isPoint; // якщо маркер — меню редагування
 
-        menuMapOpen = !isPoint;
-        menuPointOpen = isPoint;
         StateHasChanged();
         return Task.CompletedTask;
     }
 
-    private void AddGlobalSpot()
+
+    [JSInvokable]
+    public Task AutoLocated(double lat, double lng)
+    {
+        // централізуєте карту чи додаєте маркер “Я тут”
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private async Task AddGlobalSpot()
     {
         menuMapOpen = false;
-        // тут відкрити MudDialog для введення details зі змінними clickLat/clickLng
+
+        // Назва споту — тимчасово через prompt
+        var name = await JS.InvokeAsync<string>("prompt", "Назва споту:");
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            await JS.InvokeVoidAsync("fpvAddMarker", clickLat, clickLng, $"<b>{name}</b>");
+        }
+
+        StateHasChanged();
     }
+
 
     private void EditSpot()
     {

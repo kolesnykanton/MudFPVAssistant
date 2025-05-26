@@ -1,6 +1,5 @@
 ﻿@page "/MapSpotSave"
 @using MudBlazor
-@using LeafletForBlazor
 @inject HttpClient httpClient
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject IJSRuntime JS
@@ -8,27 +7,21 @@
 <MudContainer>
     <h3>MapSpotSave</h3>
     <MudPaper Class="position-relative p-0">
-        <div @ref="mapContainerRef" @oncontextmenu:preventDefault="true" style="height:400px; position:relative">
-            <RealTimeMap @ref="rtm"
-                         Height="400px" Width="100%"
-                         Parameters="parameters"
-                         OnAfterMapLoaded="OnMapLoaded"
-                         OnClickMap="HandleClick"/>
-        </div>
+        <div id="fpvMap" style="width:100%;height:400px;"></div>
 
-        <!-- Меню для кліку по карті -->
         <MudMenu @bind-IsOpen="menuMapOpen"
+                 AnchorReference="AnchorReference.Manual"
                  Style=@($"position:absolute; left:{menuX}px; top:{menuY}px;")>
             <MudMenuItem OnClick="AddGlobalSpot">Додати спот тут</MudMenuItem>
         </MudMenu>
 
-
-        <!-- Меню для кліку по точці -->
         <MudMenu @bind-IsOpen="menuPointOpen"
+                 AnchorReference="AnchorReference.Manual"
                  Style=@($"position:absolute; left:{menuX}px; top:{menuY}px;")>
             <MudMenuItem OnClick="EditSpot">Редагувати спот</MudMenuItem>
             <MudMenuItem OnClick="DeleteSpot">Видалити спот</MudMenuItem>
         </MudMenu>
+
     </MudPaper>
 </MudContainer>
 
