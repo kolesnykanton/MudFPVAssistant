@@ -1,0 +1,37 @@
+name: Deploy to GitHub Pages
+
+permissions:
+  contents: write
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # Перше — отримати код
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Встановлюємо .NET SDK 8
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      # Будуємо й публікуємо в папку publish/wwwroot
+      - name: Publish Blazor WASM
+        run: dotnet publish MudFPVAssistant.csproj -c Release -o publish
+
+      - name: Prepare SPA fallback
+        run: |
+          cp publish/wwwroot/index.html publish/wwwroot/404.html
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./publish/wwwroot      
