@@ -14,26 +14,31 @@ window.fpvinitializeMap = (elementId, dotnetHelper) => {
     // 2) Автолокейт + маркер "Ви тут"
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(pos => {
-            const lat = pos.coords.latitude;
-            const lng = pos.coords.longitude;
+            const {latitude: lat, longitude: lng} = pos.coords;
             map.setView([lat, lng], 13);
-            const youMarker = L.marker([lat, lng]).addTo(map)
+
+            const you = L.marker([lat, lng]).addTo(map)
                 .bindPopup('<b>Ви тут</b>')
                 .openPopup();
 
-            // контекст‐меню для "Ви тут"
-            youMarker.on('contextmenu', e => {
+            you.on('contextmenu', e => {
                 dotnetHelper.invokeMethodAsync('OnContextMenu', {
                     x: e.originalEvent.clientX,
                     y: e.originalEvent.clientY,
                     lat: e.latlng.lat,
                     lng: e.latlng.lng,
-                    isPoint: true
+                    isPoint: false
                 });
                 e.originalEvent.preventDefault();
             });
 
             dotnetHelper.invokeMethodAsync('AutoLocated', lat, lng);
+        }, err => {
+            console.warn("Geo error:", err);
+        }, {
+            enableHighAccuracy: true, // 🔹 включити GPS, якщо доступний
+            timeout: 10000,           // 🔹 максимум 10 секунд на відповідь
+            maximumAge: 0             // 🔹 не використовувати кешовані координати
         });
     }
 
@@ -59,23 +64,25 @@ window.fpvinitializeMap = (elementId, dotnetHelper) => {
 };
 
 // 5) Додавання маркера зі своїм контекст‐меню
-window.fpvAddMarker = (lat, lng, popupHtml) => {
+window.fpvAddMarker = (spot) => {
     const map = window._fpvMap;
     const dotnet = window._fpvDotnet;
-    if (!map || !dotnet) return;
+    if (!map || !spot) return;
 
-    const marker = L.marker([lat, lng]).addTo(map);
-    if (popupHtml) {
-        marker.bindPopup(popupHtml);
-    }
+    const m = L.marker([spot.latitude, spot.longitude]).addTo(map);
+    if (spot.name)
+        m.bindPopup(`<b>${spot.name}</b>`);
 
-    // контекст‐меню для кожного маркера
-    marker.on('contextmenu', e => {
+    // 🔽 зберігаємо ID в маркері
+    m.spotId = spot.id;
+    console.log("Adding spot to map:", m.spotId);
+    m.on('contextmenu', e => {
         dotnet.invokeMethodAsync('OnContextMenu', {
             x: e.originalEvent.clientX,
             y: e.originalEvent.clientY,
             lat: e.latlng.lat,
             lng: e.latlng.lng,
+            id: m.spotId,
             isPoint: true
         });
         e.originalEvent.preventDefault();
@@ -87,8 +94,7 @@ window.fpvClearMarkers = () => {
     const map = window._fpvMap;
     if (!map) return;
     map.eachLayer(layer => {
-        if (layer instanceof L.Marker &&
-            !layer.getPopup()?.getContent().includes('Ви тут')) {
+        if (layer instanceof L.Marker && !layer.getPopup()?.getContent().includes('Ви тут')) {
             map.removeLayer(layer);
         }
     });

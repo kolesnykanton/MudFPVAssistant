@@ -1,0 +1,73 @@
+﻿@using MudFPVAssistant.Converters
+@using MudFPVAssistant.Models
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3 mb-n1"/>
+            Редагувати спот
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTextField @bind-Value="Spot.Name" Label="Назва" Required="true"/>
+        <MudTextField T="GeolocationCoords"
+                      Label="Координати"
+                      ReadOnly="true"
+                      Value="Spot.Coords"
+                      Converter="@(new CoordinateConverter())" />
+        <MudTextField @bind-Value="Spot.Comments" Label="Коментарі"/>
+        <MudText>Тип:</MudText>
+        <MudChipSet T="string"
+                    @bind-SelectedValue="Spot.Category"
+                    SelectionMode="SelectionMode"
+                    Checkmark="true">
+
+            @foreach (var cat in new (string Name, Color Color, string Icon)[]
+                      {
+                          ("Mountain", Color.Primary, Icons.Material.Filled.Terrain),
+                          ("Beach",    Color.Info,    Icons.Material.Filled.BeachAccess),
+                          ("Building",     Color.Secondary,Icons.Material.Filled.LocationCity),
+                          ("Forest",   Color.Success, Icons.Material.Filled.Forest)
+                      })
+            {
+                <MudChip Text="@cat.Name"
+                         Value="@cat.Name"
+                         Color="@cat.Color"
+                         Icon="@cat.Icon"
+                         Variant="Variant.Filled"
+                         Class="ma-1">
+                    @cat.Name
+                </MudChip>
+            }
+        </MudChipSet>
+        <MudFileUpload Class="mt-2" T="IBrowserFile" FilesChanged="UploadFiles">
+            <ActivatorContent>
+                <MudFab Size="Size.Small" Color="Color.Info"
+                        StartIcon="@Icons.Material.Filled.Image"
+                        Label="Upload picture" />
+            </ActivatorContent>
+        </MudFileUpload>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Color="Color.Secondary">Скасувати</MudButton>
+        <MudButton OnClick="Save" Color="Color.Primary">Зберегти</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; }
+    [Parameter] public FlightSpot Spot { get; set; } = default!;
+    public SelectionMode SelectionMode = SelectionMode.SingleSelection;
+    private void Save() => MudDialog.Close(DialogResult.Ok(Spot));
+    private void Cancel() => MudDialog.Cancel();
+    
+    IList<IBrowserFile> _files = new List<IBrowserFile>();
+    private void UploadFiles(IBrowserFile file)
+    {
+        _files.Add(file);
+        //TODO upload the files to the server
+    }
+}
+
