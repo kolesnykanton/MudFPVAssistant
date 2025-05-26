@@ -59,6 +59,13 @@
                             <MudSelectItem Value="type">@type</MudSelectItem>
                         }
                     </MudSelect>
+                    <MudTextField @bind-Value="_duration"
+                                  Label="Тривалість (мм:сс)"
+                                  Placeholder="05:12"
+                                  Immediate="true"
+                                  Class="mb-4"
+                                  Adornment="Adornment.End"
+                                  AdornmentIcon="@Icons.Material.Filled.Timer" />
                     <MudTextField Label="Коментар" @bind-Value="_newFlight.Comment"/>
                     <MudDatePicker Label="Дата польоту" @bind-Date="_newFlight.Date"/>
                     <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@AddFlight">
@@ -90,9 +97,10 @@
                              @ref="grid">
 
                     <Columns>
-                        <PropertyColumn Editable="true" Property="p => p.Date" Title="Дата"/>
+                        <PropertyColumn Editable="false" Format="dd-MM-yyyy" Property="p => p.Date" Title="Дата"/>
                         <PropertyColumn Editable="true" Property="p => p.Name" Title="Батарея"/>
                         <PropertyColumn Editable="true" Property="p => p.UsedMah" Title="mAh"/>
+                        <PropertyColumn Editable="true" Property="p => p.BatType.ToString()" Title="Type"/>
                         <MudSelect T="FlightInfo.BatteryType"
                                    Label="Тип батареї"
                                    @bind-Value="_selectedType"
@@ -134,7 +142,7 @@
 @code {
     private DateTime? _filterDate = DateTime.Today;
     private const string StorageKey = "flight-entries";
-
+    private string _duration;
     private MudDataGrid<FlightInfo> grid;
 
     private List<FlightInfo> _flights = [];

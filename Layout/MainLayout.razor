@@ -1,6 +1,6 @@
 ﻿@inherits LayoutComponentBase
 
-<MudThemeProvider/>
+<MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme"/>
 <MudPopoverProvider/>
 <MudDialogProvider/>
 <MudSnackbarProvider/>
@@ -10,6 +10,12 @@
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
                        OnClick="@((e) => DrawerToggle())"/>
         FPV Companion
+        <MudToggleIconButton Icon="@Icons.Material.Filled.DarkMode"
+                             @bind-Toggled="_isDarkMode"
+                             Color="Color.Default"
+                             ToggledIcon="@Icons.Material.Filled.WbSunny"
+                             ToggledColor="Color.Warning"
+                             Class="ms-auto"/>
     </MudAppBar>
     <MudDrawer @bind-Open="@_drawerOpen">
         <NavMenu/>
@@ -23,6 +29,9 @@
 
 @code {
     bool _drawerOpen = true;
+    bool _switchTheme;
+    bool _isDarkMode = true;
+    private MudTheme _theme = new();
 
     void DrawerToggle()
     {

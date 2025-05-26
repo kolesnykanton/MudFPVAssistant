@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+    <script src="js/ctx.js"></script>
     <link rel="stylesheet" href="css/app.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
     <link href="MudFPVAssistant.styles.css" rel="stylesheet" />
@@ -31,6 +32,24 @@
         <a href="." class="reload">Reload</a>
         <span class="dismiss">🗙</span>
     </div>
+
+    <script>
+        // Тепер із опціями для високої точності
+        window.getCurrentPosition = () =>
+            new Promise((res, rej) =>
+                navigator.geolocation.getCurrentPosition(
+                    res,
+                    rej,
+                    {
+                        enableHighAccuracy: true, // запитати GPS, якщо є
+                        timeout: 10000,           // чекати до 10 секунд
+                        maximumAge: 0             // не використовувати застарілі дані
+                    }
+                )
+            );
+    </script>
+
+
     <script src="_framework/blazor.webassembly.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
     <script>navigator.serviceWorker.register('service-worker.js');</script>
