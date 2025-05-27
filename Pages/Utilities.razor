@@ -1,12 +1,21 @@
-﻿@page "/weather"
+﻿@page "/utils"
 @inject HttpClient Http
 
-<PageTitle>Weather</PageTitle>
-
-<h1>Weather</h1>
-
-<p>This component demonstrates fetching data from the server.</p>
-
+<PageTitle>Useful Utilities</PageTitle>
+<MudExpansionPanels Class="m-5" MultiExpansion="true">
+    <MudExpansionPanel Text="Stick Commands">
+        Panel One Content
+    </MudExpansionPanel>
+    <MudExpansionPanel Text="ESC Configurator">
+        Panel Two Content
+    </MudExpansionPanel>
+    <MudExpansionPanel Text="Betaflight Configurator">
+        Panel Three Content
+    </MudExpansionPanel>
+    <MudExpansionPanel Text="Panel Four">
+        Panel Four Content
+    </MudExpansionPanel>
+</MudExpansionPanels>
 @if (forecasts == null)
 {
     <p>
