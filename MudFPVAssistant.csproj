@@ -6,10 +6,6 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-        <StaticWebAssetBasePath>MudFPVAssistant</StaticWebAssetBasePath>
-    </PropertyGroup>
-
     <ItemGroup>
         <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.4" />
