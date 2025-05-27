@@ -28,10 +28,10 @@ jobs:
 
       - name: Prepare SPA fallback
         run: |
-          cp publish/wwwroot/index.html publish/wwwroot/404.html
+          cp publish/wwwroot/MudFPVAssistant/index.html publish/wwwroot/MudFPVAssistant/404.html
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./publish/wwwroot      
+          publish_dir: ./publish/wwwroot/MudFPVAssistant      
