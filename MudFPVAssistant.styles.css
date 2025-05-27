@@ -1,4 +1,4 @@
-/* MudFPVAssistant/Layout/MainLayout.razor.rz.scp.css */
+/* /Layout/MainLayout.razor.rz.scp.css */
 .page[b-9su4f6rciu] {
     position: relative;
     display: flex;
@@ -76,7 +76,7 @@ main[b-9su4f6rciu] {
         padding-right: 1.5rem !important;
     }
 }
-/* MudFPVAssistant/Layout/NavMenu.razor.rz.scp.css */
+/* /Layout/NavMenu.razor.rz.scp.css */
 .navbar-toggler[b-7yv2nve4o9] {
     background-color: rgba(255, 255, 255, 0.1);
 }
@@ -160,10 +160,10 @@ main[b-9su4f6rciu] {
         overflow-y: auto;
     }
 }
-/* MudFPVAssistant/Pages/BatteryHelper.razor.rz.scp.css */
+/* /Pages/BatteryHelper.razor.rz.scp.css */
 :global(.flight-day)[b-dolz0gls9d]{
     background:#1976d2 !important;
     color:#fff !important;
     border-radius:50% !important;
 }
-/* MudFPVAssistant/Pages/MapSpotSave.razor.rz.scp.css */
+/* /Pages/MapSpotSave.razor.rz.scp.css */
