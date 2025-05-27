@@ -1,1 +1,11 @@
-﻿
+﻿/* Блокуємо нативне меню довгого натискання */
+.leaflet-container {
+    -webkit-touch-callout: none;  /* Safari/Chrome на iOS */
+    -webkit-user-select: none;    /* взагалі заборонити виділення тексту */
+    user-select: none;
+}
+
+/* Якщо маркери — це <img>, теж блокуємо для них */
+.leaflet-container img {
+    -webkit-touch-callout: none;
+}
