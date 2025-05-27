@@ -167,3 +167,14 @@ main[b-9su4f6rciu] {
     border-radius:50% !important;
 }
 /* /Pages/MapSpotSave.razor.rz.scp.css */
+/* Блокуємо нативне меню довгого натискання */
+.leaflet-container[b-3yotjjgmtf] {
+    -webkit-touch-callout: none;  /* Safari/Chrome на iOS */
+    -webkit-user-select: none;    /* взагалі заборонити виділення тексту */
+    user-select: none;
+}
+
+/* Якщо маркери — це <img>, теж блокуємо для них */
+.leaflet-container img[b-3yotjjgmtf] {
+    -webkit-touch-callout: none;
+}

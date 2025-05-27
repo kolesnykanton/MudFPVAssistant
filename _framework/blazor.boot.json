@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "MudFPVAssistant",
   "resources": {
-    "hash": "sha256-9YWGGotfYtLPyPxAnlk9S6TP1QfBsWH5hVl38VkZKQI=",
+    "hash": "sha256-lCK2BeO26FqnH0moF/9oXSIjr8Lo8Hu0gx/SocntdE4=",
     "fingerprinting": {
       "Blazored.LocalStorage.12n6dz54qr.wasm": "Blazored.LocalStorage.wasm",
       "Microsoft.AspNetCore.Components.twtolml1bd.wasm": "Microsoft.AspNetCore.Components.wasm",
@@ -49,7 +49,7 @@
       "System.Threading.1zdcxdxxda.wasm": "System.Threading.wasm",
       "System.ezrw3d5kw2.wasm": "System.wasm",
       "System.Private.CoreLib.wc46kfu790.wasm": "System.Private.CoreLib.wasm",
-      "MudFPVAssistant.evgemi9kz4.wasm": "MudFPVAssistant.wasm",
+      "MudFPVAssistant.gpqzm90eu7.wasm": "MudFPVAssistant.wasm",
       "dotnet.js": "dotnet.js",
       "dotnet.native.uhsveqo9bs.js": "dotnet.native.js",
       "dotnet.native.swgexbmoy7.wasm": "dotnet.native.wasm",
@@ -121,7 +121,7 @@
       "System.Text.RegularExpressions.u01yokwpqw.wasm": "sha256-Up6rmaR3JAacWTEbaqJDVMlEQdXKLCO4IU8nzw1qXDQ=",
       "System.Threading.1zdcxdxxda.wasm": "sha256-vTZNFSZOWDwpEr2E67SJDUQKO29mWQqVcR0XWYnj3ZQ=",
       "System.ezrw3d5kw2.wasm": "sha256-ViNRvhyxlTugIlqJHamw/HwbXlg/YWcrANmxuTM0tfg=",
-      "MudFPVAssistant.evgemi9kz4.wasm": "sha256-FsV6sm7qs/u2FECVXYuHy4tshDIiacwvk/kLjlfrETQ="
+      "MudFPVAssistant.gpqzm90eu7.wasm": "sha256-DHSxZz26VxjXWb7aYCuZxAmqfzn0ygDRVowXyw6paEQ="
     }
   },
   "cacheBootResources": true,
