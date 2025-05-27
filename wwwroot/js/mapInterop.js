@@ -3,7 +3,7 @@
     const map = L.map(elementId, {
         center: [40.4168, -3.7038], zoom: 13,
     });
-    const apiKey = "cb9057bc695e65c32bd8ad9081faba9b"; 
+    const apiKey = "cb9057bc695e65c32bd8ad9081faba9b";
     // 2) Оголошуємо шари
     const layers = {
         "OSM Standard": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '&copy; OSM'}),
@@ -12,32 +12,32 @@
         "CartoDB Dark Matter": L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {attribution: '&copy; CartoDB'}),
     };
     // 1) Шар вітру
-    const windLayer = L.tileLayer(
-        `https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=${apiKey}`,
-        {attribution: '&copy; OpenWeatherMap', opacity: 0.8}
-    );
+    const windLayer = L.tileLayer(`https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=${apiKey}`, {
+        attribution: '&copy; OpenWeatherMap',
+        opacity: 1
+    });
 
     // 2) Шар хмарності
-    const cloudsLayer = L.tileLayer(
-        `https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${apiKey}`,
-        {attribution: '&copy; OpenWeatherMap', opacity: 0.8}
-    );
+    const cloudsLayer = L.tileLayer(`https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${apiKey}`, {
+        attribution: '&copy; OpenWeatherMap',
+        opacity: 1
+    });
 
     // 3) Шар опадів
-    const rainLayer = L.tileLayer(
-        `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${apiKey}`,
-        {attribution: '&copy; OpenWeatherMap', opacity: 0.8}
-    );
+    const rainLayer = L.tileLayer(`https://tile.openweathermap.org/map/precipitation/{z}/{x}/{y}.png?appid=${apiKey}`, {
+        attribution: '&copy; OpenWeatherMap',
+        opacity: 1
+    });
 
     // 4) Додаємо їх в контрол overlay
     const overlayLayers = {
-        "Вітер": windLayer,
-        "Хмари": cloudsLayer,
-        "Опади": rainLayer
+        "Вітер": windLayer, "Хмари": cloudsLayer, "Опади": rainLayer
     };
-    // 3) Додаємо за замовчуванням перший
+    // 5) Додаємо за замовчуванням перший
     layers["OSM Standard"].addTo(map);
-    L.control.layers(layers, overlayLayers).addTo(map);
+    const layerControl = L.control.layers(layers, overlayLayers).addTo(map);
+    
+    // 6) PLUGINS
     L.control.locate({
         position: 'topleft', strings: {
             title: "Показати моє місцезнаходження"
@@ -45,18 +45,16 @@
     }).addTo(map);
     // Додаємо контрол повноекранного режиму
     map.addControl(L.control.fullscreen({
-        position: 'topright',
-        title: '↔️ Fullscreen',
-        titleCancel: '✕ Exit fullscreen'
+        position: 'topright', title: '↔️ Fullscreen', titleCancel: '✕ Exit fullscreen'
     }));
 
-    // 3) Шкала в метрах
+    // Шкала в метрах
     L.control.scale({
         imperial: false,   // вимкнути мілі, залишити тільки метри
         position: 'bottomleft'
     }).addTo(map);
 
-    // 4) Пошук по адресі / місцям
+    // Пошук по адресі / місцям
     L.Control.geocoder({
         defaultMarkGeocode: false, placeholder: "🔍 Знайти адресу…"
     })
@@ -71,16 +69,43 @@
         })
         .addTo(map);
 
-    // 5) Вимірювання відстані/площі
+    // Вимірювання відстані/площі
     L.control.measure({
         position: 'topleft', primaryLengthUnit: 'meters', primaryAreaUnit: 'sqmeters', activeColor: '#db4a29',      // колір активного креслення
         completedColor: '#9b2d14'    // колір завершених фігур
+    }).addTo(map);
+
+    L.control.rainviewer({
+        position: 'bottomleft',
+        nextButtonText: '>',
+        playStopButtonText: 'PlayStop',
+        prevButtonText: '<',
+        positionSliderLabelText: "Hour:",
+        opacitySliderLabelText: "Opacity:",
+        animationInterval: 500,
+        opacity: 0.5
     }).addTo(map);
 
     // Зберігаємо для подальших викликів
     window._fpvMap = map;
     window._fpvDotnet = dotnetHelper;
 
+    fetch('https://api.rainviewer.com/public/weather-maps.json')
+        .then(r => r.json())
+        .then(data => {
+            const last = data.radar.past.slice(-1)[0];
+            const urlTpl = `https://tilecache.rainviewer.com${last.path}/256/{z}/{x}/{y}/2/1_1.png`;
+            const rainLayer = L.tileLayer(urlTpl, {
+                attribution: '&copy; RainViewer',
+                opacity: 0.6
+            });
+
+            overlayLayers["RainViewer (дощ/радаp)"] = rainLayer;
+
+            layerControl.addOverlay(rainLayer, "RainViewer (дощ/радар)");
+        })
+        .catch(console.error);
+    
     // 2) Автолокейт + маркер "Ви тут"
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(pos => {

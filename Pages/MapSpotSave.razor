@@ -6,7 +6,7 @@
 @inject IDialogService DialogService
 
 <MudContainer>
-    <h3>MapSpotSave</h3>
+    <h3>Flight Spot Saver</h3>
     <MudToolBar>
         <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Class="mr-5" />
         <MudIconButton Icon="@Icons.Material.Outlined.Add" />
@@ -17,7 +17,7 @@
     </MudToolBar>
     <MudPaper Class="position-relative p-0">
         <div id="fpvMap"
-             style="width:100%;height:400px;"
+             style="width:100%;height:800px;"
              @oncontextmenu:preventDefault="true">
         </div>
 
@@ -31,6 +31,7 @@
                  @ref="_markerMenu">
             <MudMenuItem OnClick="OpenEditDialog">Редагувати спот</MudMenuItem>
             <MudMenuItem OnClick="DeleteSpot">Видалити спот</MudMenuItem>
+            <MudMenuItem>Прокласти маршрут</MudMenuItem>
         </MudMenu>
     </MudPaper>
 </MudContainer>
