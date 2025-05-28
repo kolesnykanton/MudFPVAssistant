@@ -1,24 +1,24 @@
 ﻿@page "/utils"
+@using MudFPVAssistant.Components
 @inject HttpClient Http
 @inject IJSRuntime JS
 <PageTitle>Useful Utilities</PageTitle>
 <MudExpansionPanels Class="m-5" MultiExpansion="true">
     <MudExpansionPanel Text="Stick Commands">
-        <MudPaper Class="pa-4 d-flex justify-center">
-            <div class="d-flex">
-                <div id="leftStick" style="width:200px;height:200px;"></div>
-                <div id="rightStick" style="width:200px;height:200px;"></div>
-            </div>
-
-            <MudButton OnClick="@(() => PlayStick("leftStick", "down_right"))">Change left</MudButton>
-            <MudButton OnClick="@(() => PlayStick("rightStick", "up_left"))">Change right</MudButton>
-            
-
-        </MudPaper>
-        <MudButton Color="Color.Primary" OnClick="TriggerOSDAnimation">Відкрити OSD</MudButton>
+        <MudGrid>
+            @foreach (var cmd in OSDs)
+            {
+                <MudItem xs="12" sm="6" md="4" lg="3">
+                    <OsdCommandPanel
+                        Id="@($"osd_{cmd.Key}")"
+                        Command="@cmd.Label"
+                        LeftSegment="@cmd.Left"
+                        RightSegment="@cmd.Right" />
+                </MudItem>
+            }
+        </MudGrid>
     </MudExpansionPanel>
     <MudExpansionPanel Text="ESC Configurator">
-        Panel Two Content
     </MudExpansionPanel>
     <MudExpansionPanel Text="Betaflight Configurator">
         Panel Three Content
@@ -27,67 +27,21 @@
         Panel Four Content
     </MudExpansionPanel>
 </MudExpansionPanels>
-@if (forecasts == null)
-{
-    <p>
-        <em>Loading...</em>
-    </p>
-}
-else
-{
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Date</th>
-            <th aria-label="Temperature in Celsius">Temp. (C)</th>
-            <th aria-label="Temperature in Farenheit">Temp. (F)</th>
-            <th>Summary</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var forecast in forecasts)
-        {
-            <tr>
-                <td>@forecast.Date.ToShortDateString()</td>
-                <td>@forecast.TemperatureC</td>
-                <td>@forecast.TemperatureF</td>
-                <td>@forecast.Summary</td>
-            </tr>
-        }
-        </tbody>
-    </table>
-}
 
 @code {
-    private WeatherForecast[]? forecasts;
-    private async Task TriggerOSDAnimation()
-    {
-        await JS.InvokeVoidAsync("animateOSDSticks");
-    }
-    async Task MoveStick(string id, int dx, int dy)
-        => await JS.InvokeVoidAsync("moveStick", id, dx, dy);
+    private record OsdInfo(string Key, string Label, string Left, string Right);
 
-    async Task ResetSticks()
-        => await JS.InvokeVoidAsync("resetSticks");
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
-        await JS.InvokeVoidAsync("lottieInterop.load", "leftStick", "animations/RC_Sticks_Animation.json", "left_center");
+        await JS.InvokeVoidAsync("lottieInterop.load", "leftStick", "animations/RC_Sticks_Animation.json", "center_left");
         await JS.InvokeVoidAsync("lottieInterop.load", "rightStick", "animations/RC_Sticks_Animation.json", "down_right");
     }
-    async Task PlayStick(string stickId, string direction)
-    {
-        await JS.InvokeVoidAsync("lottieInterop.changeSegment", stickId, direction);
-    }
-    public class WeatherForecast
-    {
-        public DateOnly Date { get; set; }
-
-        public int TemperatureC { get; set; }
-
-        public string? Summary { get; set; }
-
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-    }
+    private List<OsdInfo> OSDs =
+    [
+        new("enter", "Enter OSD", "center_left", "up_center"),
+        new("cal_acc", "Calibrate ACC", "up_left", "down_center"),
+        new("set_1", "Profile 1", "down_left", "center_right"),
+        new("save", "Save", "down_left", "down_right")
+    ];
 
 }

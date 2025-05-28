@@ -1,23 +1,22 @@
 ﻿// wwwroot/js/lottieInterop.js
 
 window.lottieInterop = {
-    // Сховище для кількох анімацій
     instances: {},
 
-    load: function (containerId, jsonPath, segmentName) {
+    load(containerId, jsonPath, segmentName) {
         const segments = {
-            up_left: [0, 20],
-            up_center: [30, 50],
-            up_right: [60, 80],
-            down_left: [90, 110],
-            down_center: [120, 140],
-            down_right: [150, 170],
-            left_center: [180, 200],
-            right_center: [210, 230]
+            up_left:     [0,  20],
+            up_center:   [30, 50],
+            up_right:    [60, 80],
+            down_left:   [90, 110],
+            down_center: [120,140],
+            down_right:  [150,170],
+            center_left: [180,200],
+            center_right:[210,230]
         };
 
-        const segment = segments[segmentName];
-        if (!segment) {
+        const seg = segments[segmentName];
+        if (!seg) {
             console.warn(`Unknown segment: ${segmentName}`);
             return;
         }
@@ -26,58 +25,71 @@ window.lottieInterop = {
         if (!container) return;
 
         let direction = 1;
-
-        const animation = lottie.loadAnimation({
-            container: container,
+        const anim = lottie.loadAnimation({
+            container,
             renderer: 'svg',
             loop: false,
             autoplay: true,
             path: jsonPath
         });
 
-        // Зберігаємо стан анімації та сегмент
-        lottieInterop.instances[containerId] = {
-            animation: animation,
-            currentSegment: segment,
-            direction: direction
-        };
+        this.instances[containerId] = { anim, seg, direction };
 
-        animation.addEventListener('DOMLoaded', () => {
-            animation.playSegments(segment, true);
+        anim.addEventListener('DOMLoaded', () => {
+            anim.playSegments(seg, true);
+
+            const svg = container.querySelector('svg');
+            if (!svg) return;
+
+            // Замінюємо білий fill на сірий
+            svg.querySelectorAll('[fill]').forEach(el => {
+                const f = (el.getAttribute('fill') || '').trim().toLowerCase();
+                if (f === '#ffffff' || f === 'white' || (f.startsWith('rgb') && f.includes('255,255,255'))) {
+                    el.setAttribute('fill', '#5c5c5c');
+                }
+            });
+
+            // Замінюємо білий stroke на сірий
+            svg.querySelectorAll('[stroke]').forEach(el => {
+                const s = (el.getAttribute('stroke') || '').trim().toLowerCase();
+                if (s === '#ffffff' || s === 'white' || (s.startsWith('rgb') && s.includes('255,255,255'))) {
+                    el.setAttribute('stroke', '#5c5c5c');
+                }
+            });
         });
 
-        animation.addEventListener('complete', () => {
-            const instance = lottieInterop.instances[containerId];
-            instance.direction *= -1;
-            animation.setDirection(instance.direction);
-            const seg = instance.currentSegment;
-            animation.playSegments(
-                instance.direction > 0 ? seg : seg.slice().reverse(),
-                true
-            );
+        anim.addEventListener('complete', () => {
+            const inst = this.instances[containerId];
+            inst.direction *= -1;
+            anim.setDirection(inst.direction);
+
+            const nextSeg = inst.direction > 0
+                ? inst.seg
+                : inst.seg.slice().reverse();
+
+            anim.playSegments(nextSeg, true);
         });
     },
 
-    changeSegment: function (containerId, segmentName) {
+    changeSegment(containerId, segmentName) {
         const segments = {
-            up_left: [0, 20],
-            up_center: [30, 50],
-            up_right: [60, 80],
-            down_left: [90, 110],
-            down_center: [120, 140],
-            down_right: [150, 170],
-            left_center: [180, 200],
-            right_center: [210, 230]
+            up_left:     [0,  20],
+            up_center:   [30, 50],
+            up_right:    [60, 80],
+            down_left:   [90, 110],
+            down_center: [120,140],
+            down_right:  [150,170],
+            center_left: [180,200],
+            center_right:[210,230]
         };
 
-        const instance = lottieInterop.instances[containerId];
-        const segment = segments[segmentName];
-        if (!segment || !instance) return;
+        const inst = this.instances[containerId];
+        const seg = segments[segmentName];
+        if (!inst || !seg) return;
 
-        instance.currentSegment = segment;
-        instance.direction = 1;
-        const animation = instance.animation;
-        animation.setDirection(1);
-        animation.playSegments(segment, true);
+        inst.seg = seg;
+        inst.direction = 1;
+        inst.anim.setDirection(1);
+        inst.anim.playSegments(seg, true);
     }
 };

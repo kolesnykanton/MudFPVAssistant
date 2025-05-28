@@ -1,0 +1,22 @@
+﻿@using Microsoft.JSInterop
+
+<div id="@Id" style="width:@Width; height:@Height;"></div>
+
+@code {
+    [Parameter] public string Id { get; set; } = Guid.NewGuid().ToString();
+    [Parameter] public string JsonPath { get; set; } = "animations/RC_Sticks_Animation.json";
+    [Parameter] public string Segment { get; set; } = "up_center";
+    [Parameter] public string Width { get; set; } = "50";
+    [Parameter] public string Height { get; set; } = "50";
+
+    [Inject] IJSRuntime JS { get; set; } = default!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await JS.InvokeVoidAsync("lottieInterop.load", Id, JsonPath, Segment);
+    }
+
+    public async Task ChangeSegment(string newSegment)
+        => await JS.InvokeVoidAsync("lottieInterop.changeSegment", Id, newSegment);
+}
