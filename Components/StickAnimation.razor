@@ -1,13 +1,13 @@
 ﻿@using Microsoft.JSInterop
 
-<div id="@Id" style="width:@Width; height:@Height;"></div>
+<div id="@Id"
+     style="width:100%; max-width:120px; aspect-ratio:1/1;">
+</div>
 
 @code {
-    [Parameter] public string Id { get; set; } = Guid.NewGuid().ToString();
+    [Parameter] public string Id       { get; set; } = Guid.NewGuid().ToString();
     [Parameter] public string JsonPath { get; set; } = "animations/RC_Sticks_Animation.json";
-    [Parameter] public string Segment { get; set; } = "up_center";
-    [Parameter] public string Width { get; set; } = "50";
-    [Parameter] public string Height { get; set; } = "50";
+    [Parameter] public string Segment  { get; set; } = "up_center";
 
     [Inject] IJSRuntime JS { get; set; } = default!;
 
