@@ -11,8 +11,8 @@ window.lottieInterop = {
             down_left:   [90, 110],
             down_center: [120,140],
             down_right:  [150,170],
-            center_left: [180,200],
-            center_right:[210,230]
+            center_right: [180,200],
+            center_left:[210,230]
         };
 
         const seg = segments[segmentName];
@@ -79,8 +79,8 @@ window.lottieInterop = {
             down_left:   [90, 110],
             down_center: [120,140],
             down_right:  [150,170],
-            center_left: [180,200],
-            center_right:[210,230]
+            center_right: [180,200],
+            center_left:[210,230]
         };
 
         const inst = this.instances[containerId];
