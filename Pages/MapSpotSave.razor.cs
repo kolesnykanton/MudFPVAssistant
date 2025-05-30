@@ -9,10 +9,8 @@ namespace MudFPVAssistant.Pages;
 
 public partial class MapSpotSave : ComponentBase
 {
-    private ElementReference mapContainerRef;
     private MudMenu? _mapMenu;
     private MudMenu? _markerMenu;
-    private double menuX, menuY;
     private double clickLat, clickLng;
     private DotNetObjectReference<MapSpotSave> dotnetRef;
     private List<FlightSpot> spots = new();
@@ -27,9 +25,10 @@ public partial class MapSpotSave : ComponentBase
         {
             dotnetRef = DotNetObjectReference.Create(this);
             await JS.InvokeVoidAsync("fpvinitializeMap", "fpvMap", dotnetRef);
-            spots = await localStorage.GetItemAsync<List<FlightSpot>>(StorageKey) ?? [];
+            spots = await LocalStorage.GetItemAsync<List<FlightSpot>>(StorageKey) ?? [];
             foreach (var s in spots)
                 await JS.InvokeVoidAsync("fpvAddMarker", s);
+            
         }
     }
 
@@ -75,8 +74,7 @@ public partial class MapSpotSave : ComponentBase
 
         StateHasChanged();
     }
-
-
+    
     [JSInvokable]
     public Task AutoLocated(double lat, double lng)
     {
@@ -113,8 +111,7 @@ public partial class MapSpotSave : ComponentBase
             await SaveAndRender();
         }
     }
-
-
+    
     private async Task DeleteSpot()
     {
         if (selectedSpot is null) return;
@@ -143,17 +140,9 @@ public partial class MapSpotSave : ComponentBase
             }
         }
     }
-
-
-    private async Task SaveEdit()
-    {
-        editDialogOpen = false;
-        await SaveAndRender();
-    }
-
     private async Task SaveAndRender()
     {
-        await localStorage.SetItemAsync(StorageKey, spots);
+        await LocalStorage.SetItemAsync(StorageKey, spots);
         await JS.InvokeVoidAsync("fpvClearMarkers");
         foreach (var s in spots)
             await JS.InvokeVoidAsync("fpvAddMarker", s);

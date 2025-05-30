@@ -1,38 +1,13 @@
 ﻿@page "/batteryhelper"
-@using Microsoft.AspNetCore.Components.Rendering
-@using MudBlazor
-@using MudFPVAssistant.Models
+@using System.Text.Json
+@using MudFPVAssistant.Services
 @inject HttpClient httpClient
+@inject FlightInfoService flightService
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject IJSRuntime JS
 
 
 <MudContainer MaxWidth="MaxWidth.Medium">
-    <MudGrid Class="mt-4 mb-4">
-        <MudItem xs="12" sm="6" md="4">
-            <MudCard>
-                <MudCardContent Class="text-center">
-                    <MudText Typo="Typo.h6">Всього польотів</MudText>
-                    <MudText Typo="Typo.h4">@_flights.Count</MudText>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4">
-            <MudCard>
-                <MudCardContent Class="text-center">
-                    <MudText Typo="Typo.h6">Всього mAh</MudText>
-                    <MudText Typo="Typo.h4">@_flights.Sum(x => x.UsedMah ?? 0)</MudText>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4">
-            <MudCard>
-                <MudCardContent Class="text-center">
-                    <MudText Typo="Typo.h6">Унікальних батарей</MudText>
-                    <MudText Typo="Typo.h4">@_flights.Select(x => x.Name).Distinct().Count()</MudText>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-    </MudGrid>
     <MudGrid>
         <!-- 🔹 Додавання нового польоту -->
         <MudItem xs="12" md="6">
@@ -211,6 +186,8 @@
     protected override async Task OnInitializedAsync()
     {
         _flights = await localStorage.GetItemAsync<List<FlightInfo>>(StorageKey) ?? new();
+
+
     }
 
     private async Task SaveToLocalStorage()

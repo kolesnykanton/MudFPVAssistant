@@ -1,20 +1,24 @@
 ﻿@page "/MapSpotSave"
-@using MudBlazor
-@inject HttpClient httpClient
-@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@using System.Text.Json
+@using GoogleMapsComponents
+@using GoogleMapsComponents.Maps
+@using MouseEvent = MudBlazor.MouseEvent
+@using MudFPVAssistant.Services
+@using MudFPVAssistant.Components
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject IJSRuntime JS
 @inject IDialogService DialogService
 
-<MudContainer>
+<MudContainer Class="mt-2">
     <h3>Flight Spot Saver</h3>
     <MudPaper Class="position-relative p-0">
         <MudToolBar>
-            <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Class="mr-5" />
-            <MudIconButton Icon="@Icons.Material.Outlined.Add" />
-            <MudIconButton Icon="@Icons.Material.Outlined.Edit" />
-            <MudIconButton Icon="@Icons.Material.Outlined.Remove" />
-            <MudIconButton Icon="@Icons.Material.Outlined.PeopleAlt" />
-            <MudIconButton Icon="@Icons.Material.Outlined.MoreVert" Color="Color.Inherit" />
+            <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Class="mr-5"/>
+            <MudIconButton Icon="@Icons.Material.Outlined.Add"/>
+            <MudIconButton Icon="@Icons.Material.Outlined.Edit"/>
+            <MudIconButton Icon="@Icons.Material.Outlined.Remove"/>
+            <MudIconButton Icon="@Icons.Material.Outlined.PeopleAlt"/>
+            <MudIconButton Icon="@Icons.Material.Outlined.MoreVert" Color="Color.Inherit"/>
         </MudToolBar>
         <div id="fpvMap"
              style="width:100%;height:800px;"
@@ -34,8 +38,56 @@
             <MudMenuItem>Прокласти маршрут</MudMenuItem>
         </MudMenu>
     </MudPaper>
+    <MudExpansionPanel Text="Google Map">
+        <MudPaper>
+            <GoogleMapComp>
+                
+            </GoogleMapComp>
+            @*<div style="height: 600px">
+                <GoogleMap @ref="@_map1" Id="map1" Options="@mapOptions" Height="100%"
+                           OnAfterInit="AfterMapRender">
+                </GoogleMap>
+                @foreach (var spot in spots)
+                {
+                    <MyMarker Spot="spot"
+                              OnContext="OpenMarkerMenu"/>
+                }
+            </div>*@
+        </MudPaper>
+    </MudExpansionPanel>
+
 </MudContainer>
 
 @code {
+    private GoogleMap _map1;
+    private async Task AfterMapRender()
+    {
+        // --- 1. Отримуємо позицію через Promise ---
+        var pos = await JS.InvokeAsync<JsonElement>(
+            "eval",
+            @"new Promise((res, rej) => 
+                navigator.geolocation.getCurrentPosition(res, rej)
+              )"
+        );
+        var coords = pos.GetProperty("coords");
+        var lat = coords.GetProperty("latitude").GetDouble();
+        var lng = coords.GetProperty("longitude").GetDouble();
+        var location = new LatLngLiteral { Lat = lat, Lng = lng };
 
+        // --- 2. Панимо та зумимо карту (InteropObject!) ---
+        await _map1.InteropObject.SetCenter(location);
+        await _map1.InteropObject.SetZoom(13);
+
+        // --- 3. Додаємо маркер “Ви тут” ---
+        await Marker.CreateAsync(_map1.JsRuntime, new MarkerOptions
+        {
+            Position = location,
+            Map = _map1.InteropObject,
+            Title = "Ви тут",
+            Icon = new Icon()
+            {
+                Url = "img/cda1_drone-green-grey.svg",
+            }
+        });
+    }
 }

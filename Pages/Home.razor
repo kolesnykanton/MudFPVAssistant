@@ -1,7 +1,85 @@
 ﻿@page "/"
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@using MudFPVAssistant.Services
+@inject ISnackbar Snackbar
+@inject AuthState authState
+@inject FirebaseAuthService authService
+@inject FlightInfoService flightService
+
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<MudGrid Class="mt-4 mb-4">
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard>
+            <MudCardContent Class="text-center">
+                <MudText Typo="Typo.h6">Всього польотів</MudText>
+                <MudText Typo="Typo.h4">@_flights.Count</MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard>
+            <MudCardContent Class="text-center">
+                <MudText Typo="Typo.h6">Всього mAh</MudText>
+                <MudText Typo="Typo.h4">@_flights.Sum(x => x.UsedMah ?? 0)</MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard>
+            <MudCardContent Class="text-center">
+                <MudText Typo="Typo.h6">Унікальних батарей</MudText>
+                <MudText Typo="Typo.h4">@_flights.Select(x => x.Name).Distinct().Count()</MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+<InputFile OnChange="OnFileChange" />
+<MudButton OnClick="ImportFlights">Імпортувати</MudButton>
 
-Welcome to your new app.
+@code
+{
+    private List<FlightInfo> _flights = [];
+    IBrowserFile uploadedFile;
+    List<FlightInfo> loadedFlights = new();
+
+    private async Task OnFileChange(InputFileChangeEventArgs e)
+    {
+        uploadedFile = e.File;
+        using var stream = uploadedFile.OpenReadStream();
+        using var reader = new StreamReader(stream);
+        var json = await reader.ReadToEndAsync();
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            Converters = { new JsonStringEnumConverter() }
+        };
+
+        loadedFlights = JsonSerializer.Deserialize<List<FlightInfo>>(json, options);
+        
+    }
+
+    private async Task ImportFlights()
+    {
+        Snackbar.Add("Start", Severity.Info);
+        foreach (var flight in loadedFlights)
+        {
+            await flightService.AddAsync(flight);
+        }
+
+        Snackbar.Add("Done", Severity.Success);
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        //_flights = await localStorage.GetItemAsync<List<FlightInfo>>("flight-entries") ?? new();
+        _flights = await flightService.GetAsync();
+        /*var user = await authService.GetCurrentAsync();
+        authState.Initialize(user?.Uid);
+        await authService.SubscribeAsync(DotNetObjectReference.Create(authState));
+        authState.PropertyChanged += (_,__) => InvokeAsync(StateHasChanged);*/
+    }
+    
+}

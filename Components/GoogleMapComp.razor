@@ -1,0 +1,110 @@
+﻿@using System.Text.Json
+@using GoogleMapsComponents
+@using GoogleMapsComponents.Maps
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@using MudFPVAssistant.Services
+@inject IJSRuntime JS
+
+<MudPaper>
+    <div style="height: 600px">
+        <GoogleMap @ref="@_map" Id="map1" Options="@mapOptions" Height="100%"
+                   OnAfterInit="OnAfterMapInit">
+        </GoogleMap>
+        @foreach (var spot in spots)
+        {
+            <MyMarker Spot="spot"
+                      OnContext="OpenMarkerMenu"/>
+        }
+    </div>
+</MudPaper>
+
+@code {
+    private GoogleMap _map = default!;
+    private MudMenu _markerMenu = default!;
+    private List<FlightSpot> spots = new();
+    private FlightSpot? selectedSpot;
+    private List<MyMarker> _markers = new();
+
+    private MapOptions mapOptions = new()
+    {
+        Center = new LatLngLiteral { Lat = 50.45, Lng = 30.52 },
+        Zoom = 13,
+        MapTypeId = MapTypeId.Roadmap,
+        ZoomControl = true,
+        FullscreenControl = true,
+        ScaleControl = true,
+        MapTypeControl = true
+    };
+
+    private bool _markersInitialized = false;
+
+    private async Task OnAfterMapInit()
+    {
+        spots = await LocalStorage.GetItemAsync<List<FlightSpot>>("fpvSpots") ?? [];
+        _markers.Clear();
+
+        foreach (var spot in spots)
+        {
+            var marker = await MyMarker.CreateAsync(JS, _map.InteropObject, spot, OnMarkerRightClick);
+            _markers.Add(marker);
+        }
+        // --- 1. Отримуємо позицію через Promise ---
+        var pos = await JS.InvokeAsync<JsonElement>(
+            "eval",
+            @"new Promise((res, rej) => 
+                navigator.geolocation.getCurrentPosition(res, rej)
+              )"
+        );
+        var coords = pos.GetProperty("coords");
+        var lat = coords.GetProperty("latitude").GetDouble();
+        var lng = coords.GetProperty("longitude").GetDouble();
+        var location = new LatLngLiteral { Lat = lat, Lng = lng };
+
+        FlightSpot youarehere = new FlightSpot()
+        {
+            Name = "You",
+            Latitude = lat,
+            Longitude = lng
+        };
+        // --- 2. Панимо та зумимо карту (InteropObject!) ---
+        await _map.InteropObject.SetCenter(location);
+        await _map.InteropObject.SetZoom(13);
+
+        // --- 3. Додаємо маркер “Ви тут” ---
+        await MyMarker.CreateAsync(JS,_map.InteropObject, youarehere);
+        
+        _markersInitialized = true;
+        StateHasChanged();
+    }
+    private Task OnMarkerRightClick(FlightSpot spot)
+    {
+        throw new NotImplementedException();
+    }
+
+    // Обробник для відкриття меню по правому кліку (з JS, із координатами)
+    /*
+    private Task OnMarkerRightClickWithPosition(FlightSpot spot, int clientX, int clientY)
+    {
+        selectedSpot = spot;
+        var e = new MouseEventArgs { ClientX = clientX, ClientY = clientY };
+        return _markerMenu.OpenMenuAsync(e);
+    }
+    */
+
+    private Task EditSpot()
+    {
+        // відкриваєш діалог редагування selectedSpot
+        return Task.CompletedTask;
+    }
+
+    private Task DeleteSpot()
+    {
+        if (selectedSpot is not null)
+        {
+            spots.RemoveAll(s => s.Id == selectedSpot.Id);
+            // тут видалення маркера з карти (можна додати метод у MyMarker)
+            StateHasChanged();
+        }
+        return Task.CompletedTask;
+    }
+}

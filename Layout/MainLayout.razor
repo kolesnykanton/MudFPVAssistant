@@ -1,23 +1,45 @@
-﻿@inherits LayoutComponentBase
+﻿@inject FirebaseAuthService AuthService
+@inject AuthState AuthState
+@inject ISnackbar Snackbar
+@using MudFPVAssistant.Services
+@inherits LayoutComponentBase
 
 <MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme"/>
 <MudPopoverProvider/>
 <MudDialogProvider/>
-<MudSnackbarProvider/>
+<MudSnackbarProvider PositionClass="@MudBlazor.Defaults.Classes.Position.BottomLeft"/>
 
 <MudLayout>
     <MudAppBar>
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
                        OnClick="@((e) => DrawerToggle())"/>
         FPV Companion
+
+        <MudSpacer/>
+        <MudText Class="mx-2" Typo="Typo.caption">
+            Debug: Uid = @AuthState.Uid
+        </MudText>
+        @if (!AuthState.IsAuthChecked)
+        {
+            <MudProgressCircular Indeterminate="true"/>
+        }
+        else if (AuthState.Uid is null)
+        {
+            <MudIconButton Icon="@Icons.Material.Filled.Login"
+                           OnClick="SignIn"/>
+        }
+        else
+        {
+            <MudIconButton Icon="@Icons.Material.Filled.Logout" OnClick="SignOut"/>
+        }
         <MudToggleIconButton Icon="@Icons.Material.Filled.DarkMode"
                              @bind-Toggled="_isDarkMode"
                              Color="Color.Default"
                              ToggledIcon="@Icons.Material.Filled.WbSunny"
                              ToggledColor="Color.Warning"
-                             Class="ms-auto"/>
+        />
     </MudAppBar>
-    <MudDrawer SwipeAreaWidth="30" @bind-Open="@_drawerOpen">
+    <MudDrawer SwipeAreaWidth="60" @bind-Open="@_drawerOpen">
         <NavMenu/>
     </MudDrawer>
     <MudMainContent>
@@ -37,5 +59,26 @@
     {
         _drawerOpen = !_drawerOpen;
     }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await AuthService.GetCurrentAsync();
+        AuthState.Initialize(user?.Uid);
+        await AuthService.SubscribeAsync(DotNetObjectReference.Create(AuthState));
+        AuthState.PropertyChanged += (_, __) => InvokeAsync(StateHasChanged);
+    }
+
+    private async Task SignIn()
+    {
+        var userinfo = await AuthService.SignInAsync();
+
+        Snackbar.Add($"Hello {userinfo.DisplayName}!", Severity.Success, config =>
+        {
+            config.VisibleStateDuration = 2000;
+        });
+    }
+
+    private async Task SignOut() => await AuthService.SignOutAsync();
+}
 
 }

@@ -2,6 +2,7 @@
 
 public class FlightInfo
 {
+    public string Id { get; set; }
     public string? Name { get; set; }
     public int? UsedMah { get; set; }
     public DateTime? Date { get; set; } = DateTime.Today;
