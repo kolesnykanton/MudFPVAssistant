@@ -15,6 +15,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped<FirebaseService>();
 builder.Services.AddScoped<FlightInfoService>();
 builder.Services.AddScoped<FirebaseAuthService>();
+builder.Services.AddScoped<IUserDocumentService, UserDocumentService>();
 builder.Services.AddScoped<AuthState>();
 
 builder.Services.AddMudServices(cfg =>

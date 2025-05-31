@@ -75,11 +75,12 @@
     protected override async Task OnInitializedAsync()
     {
         //_flights = await localStorage.GetItemAsync<List<FlightInfo>>("flight-entries") ?? new();
-        _flights = await flightService.GetAsync();
-        /*var user = await authService.GetCurrentAsync();
+        var user = await authService.GetCurrentAsync();
         authState.Initialize(user?.Uid);
-        await authService.SubscribeAsync(DotNetObjectReference.Create(authState));
-        authState.PropertyChanged += (_,__) => InvokeAsync(StateHasChanged);*/
+        if (user is not null)
+        {
+            _flights = await flightService.GetAsync();
+        }
     }
     
 }

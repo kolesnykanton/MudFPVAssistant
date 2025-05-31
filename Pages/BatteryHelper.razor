@@ -3,6 +3,8 @@
 @using MudFPVAssistant.Services
 @inject HttpClient httpClient
 @inject FlightInfoService flightService
+@inject AuthState authState
+@inject FirebaseAuthService authService
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject IJSRuntime JS
 
@@ -106,9 +108,13 @@
         <MudPaper Class="p-4 mt-10 mb-4">
             <MudText Typo="Typo.h6">Статистика споживання (mAh за датою)</MudText>
             <MudChart ChartType="ChartType.Line"
-                      InputLabels="chartLabels"
-                      InputData="@chartData"
+                      XAxisLabels="chartLabels"
                       Height="250" />
+            <MudChart ChartType="ChartType.Line"
+                      XAxisLabels="@_labels"
+                      ChartSeries="@_datasets"
+                      Width="100%"
+                      Height="350px" />
         </MudPaper>
 
     </MudGrid>
@@ -119,12 +125,13 @@
     private const string StorageKey = "flight-entries";
     private string _duration;
     private MudDataGrid<FlightInfo> grid;
-
     private List<FlightInfo> _flights = [];
 
     private FlightInfo _newFlight = new();
     private FlightInfo.BatteryType _selectedType = FlightInfo.BatteryType.Unknown;
 
+    private string[] _labels;
+    private List<ChartSeries> _datasets;
 
     private IEnumerable<FlightInfo> FilteredFlights =>
         _filterDate == null
@@ -173,22 +180,41 @@
 
         return null; // нічого не додавати
     }
-    private string[] chartLabels => _flights
+    
+    
+    private string?[] chartLabels => _flights
         .OrderBy(b => b.Date)
         .Select(b => b.Date.ToString())
         .ToArray();
 
-    private double[] chartData => _flights
-        .OrderBy(b => b.Date)
-        .Select(b => (double)(b.UsedMah ?? 0))
-        .ToArray();
-
-
+     
     protected override async Task OnInitializedAsync()
     {
-        _flights = await localStorage.GetItemAsync<List<FlightInfo>>(StorageKey) ?? new();
+        var user = await authService.GetCurrentAsync();
+        authState.Initialize(user?.Uid);
+        if (user is not null)
+        {
+            _flights = await flightService.GetAsync();
+        }
+        _labels = _flights
+            .Select(f => $"{f.Date:M/d/yy}").Take(10)
+            .ToArray();
 
+        // --- КРОК 3: Готуємо масив значень UsedMah (double[])
+        // Для кожного елемента _flights беремо f.UsedMah (як int?), перетворюємо на double.
+        var usedMahArray = _flights
+            .Select(f => (double)(f.UsedMah ?? 0)).Take(10)
+            .ToArray();
 
+        // --- КРОК 4: Створюємо одну серію (ChartSeries) з іменем "UsedMah"
+        var series = new ChartSeries
+        {
+            Name = "UsedMah (mAh)",
+            Data = usedMahArray
+        };
+
+        // --- КРОК 5: Поміщаємо цю серію в список datasets
+        _datasets = new List<ChartSeries> { series };
     }
 
     private async Task SaveToLocalStorage()
