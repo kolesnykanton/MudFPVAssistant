@@ -2,6 +2,7 @@
 @inject AuthState AuthState
 @inject ISnackbar Snackbar
 @using MudFPVAssistant.Services
+@using Microsoft.AspNetCore.Components.Authorization
 @inherits LayoutComponentBase
 
 <MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme"/>
@@ -19,7 +20,15 @@
         <MudText Class="mx-2" Typo="Typo.caption">
             Debug: Uid = @AuthState.Uid
         </MudText>
-        @if (!AuthState.IsAuthChecked)
+        <AuthorizeView>
+            <Authorized>
+                <MudIconButton Icon="@Icons.Material.Filled.Logout" OnClick="SignOut" />
+            </Authorized>
+            <NotAuthorized>
+                <MudIconButton Icon="@Icons.Material.Filled.Login" OnClick="SignIn" />
+            </NotAuthorized>
+        </AuthorizeView>
+        @*@if (!AuthState.IsAuthChecked)
         {
             <MudProgressCircular Indeterminate="true"/>
         }
@@ -31,7 +40,7 @@
         else
         {
             <MudIconButton Icon="@Icons.Material.Filled.Logout" OnClick="SignOut"/>
-        }
+        }*@
         <MudToggleIconButton Icon="@Icons.Material.Filled.DarkMode"
                              @bind-Toggled="_isDarkMode"
                              Color="Color.Default"
