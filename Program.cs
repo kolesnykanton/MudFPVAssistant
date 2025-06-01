@@ -1,5 +1,6 @@
 using Blazored.LocalStorage;
 using GoogleMapsComponents;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor;
@@ -16,6 +17,8 @@ builder.Services.AddScoped<FirebaseService>();
 builder.Services.AddScoped<FlightInfoService>();
 builder.Services.AddScoped<FirebaseAuthService>();
 builder.Services.AddScoped<IUserDocumentService, UserDocumentService>();
+builder.Services.AddScoped<AuthenticationStateProvider, FirebaseAuthenticationStateProvider>();
+builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthState>();
 
 builder.Services.AddMudServices(cfg =>

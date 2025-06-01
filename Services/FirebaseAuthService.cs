@@ -35,7 +35,6 @@ public class AuthState : INotifyPropertyChanged
     [JSInvokable] public Task OnAuthStateChanged(string? uid)
     {
         Uid = uid;
-        IsAuthChecked = true;
         PropertyChanged?.Invoke(this, new(nameof(Uid)));
         return Task.CompletedTask;
     }
