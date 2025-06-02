@@ -44,7 +44,7 @@
     <script type="module">
         import {initializeApp} from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
         import {
-            getFirestore,
+            getFirestore, enableIndexedDbPersistence,
             collection, addDoc, getDocs,
             deleteDoc, doc, setDoc
         } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
@@ -66,10 +66,26 @@
         };
 
         const app = initializeApp(firebaseConfig);
+
+        /* === 2. Enable Firestore offline persistence === */
         const db = getFirestore(app);
+        enableIndexedDbPersistence(db)
+            .catch((err) => {
+                // If multiple tabs are open, persistence can only be enabled
+                // in one tab at a a time. If another tab has persistence enabled,
+                // you will get a failed-precondition error.
+                if (err.code === 'failed-precondition') {
+                    console.warn("Persistence failed: another tab already has persistence enabled.");
+                } else if (err.code === 'unimplemented') {
+                    // The browser does not support all features required to enable persistence
+                    console.warn("Persistence is not available in this browser.");
+                }
+            });
+        // If successful, Firestore will now cache data locally in IndexedDB
+        // and serve reads from cache when offline.
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
-        
+
         /* === 2.  AUTH helpers (JS-interop) === */
         window.signInWithGoogle = async () => {
             const {user} = await signInWithPopup(auth, provider);
