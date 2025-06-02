@@ -1,5 +1,5 @@
 ﻿window.fpvinitializeMap = (elementId, dotnetHelper) => {
-    // 1) Створюємо карту
+    // 1) Create map
     const map = L.map(elementId, {
         center: [40.4168, -3.7038],
         zoom: 13,
@@ -7,7 +7,7 @@
 
     const apiKey = "cb9057bc695e65c32bd8ad9081faba9b";
 
-    // 2) Шари базових мап
+    // 2) Map layers
     const layers = {
         "OSM Standard": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OSM' }),
         "Esri Satellite": L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: '&copy; Esri' }),
@@ -15,7 +15,7 @@
         "CartoDB Dark Matter": L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; CartoDB' }),
     };
 
-    // 3) Шари погоди
+    // 3) Weather layers
     const windLayer = L.tileLayer(`https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=${apiKey}`, { attribution: '&copy; OpenWeatherMap', opacity: 1 });
     const cloudsLayer = L.tileLayer(`https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${apiKey}`, { attribution: '&copy; OpenWeatherMap', opacity: 1 });
     const rainLayer = L.tileLayer(`https://tile.openweathermap.org/map/precipitation/{z}/{x}/{y}.png?appid=${apiKey}`, { attribution: '&copy; OpenWeatherMap', opacity: 1 });
@@ -26,25 +26,42 @@
         "Опади": rainLayer
     };
 
-    // Додаємо базовий шар і контрол шарів
+    // Basic layer and controls
     layers["OSM Standard"].addTo(map);
     const layerControl = L.control.layers(layers, overlayLayers).addTo(map);
 
-    // Додаємо плагіни
-    L.control.locate({ position: 'topleft', strings: { title: "Показати моє місцезнаходження" }, flyTo: true }).addTo(map);
-    map.addControl(L.control.fullscreen({ position: 'topright', title: '↔️ Fullscreen', titleCancel: '✕ Exit fullscreen' }));
+    // 4. Plugins
+    L.control.locate({ position: 'topleft', strings: { title: "Show me" }, flyTo: true }).addTo(map);
+    
+    map.addControl(L.control.fullscreen({ position: 'topright', title: 'Fullscreen', titleCancel: 'Exit fullscreen' }));
+    
     L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(map);
-    L.Control.geocoder({ defaultMarkGeocode: false, placeholder: "🔍 Знайти адресу…" })
+    
+    L.Control.geocoder({ defaultMarkGeocode: false, placeholder: "🔍 Find…" })
         .on('markgeocode', e => map.flyTo(e.geocode.center, 15))
         .addTo(map);
+    
     L.control.measure({ position: 'topleft', primaryLengthUnit: 'meters', primaryAreaUnit: 'sqmeters', activeColor: '#db4a29', completedColor: '#9b2d14' }).addTo(map);
+    
     L.control.rainviewer({ position: 'bottomleft', nextButtonText: '>', playStopButtonText: 'PlayStop', prevButtonText: '<', positionSliderLabelText: "Hour:", opacitySliderLabelText: "Opacity:", animationInterval: 500, opacity: 0.5 }).addTo(map);
-
-    // Зберігаємо для прямого доступу
+    setTimeout(function() {
+        // Replace href'#' with void to avoid 'home' linking (клас .leaflet-control-rainviewer)
+        var link = document.querySelector('.leaflet-control-rainviewer a');
+        if (link) {
+            link.setAttribute('href', 'javascript:void(0)');
+        }
+        var controlContainer = document.querySelector('.leaflet-control-rainviewer');
+        if (controlContainer) {
+            // Block context menu
+            L.DomEvent.disableClickPropagation(controlContainer);
+            L.DomEvent.disableScrollPropagation(controlContainer);
+        }
+    }, 100);
+    // Save for reuse
     window._fpvMap = map;
     window._fpvDotnet = dotnetHelper;
 
-    // Додаємо додатковий RainViewer радар
+    // RainViewer radar layer
     fetch('https://api.rainviewer.com/public/weather-maps.json')
         .then(r => r.json())
         .then(data => {
@@ -157,7 +174,7 @@ window.fpvAddMarker = (spot) => {
         dotnet.invokeMethodAsync('OnContextMenu', { x, y, lat: e.latlng.lat, lng: e.latlng.lng, id: spotId, isPoint });
     }
 
-    // десктоп-fallback
+    // desktop-fallback
     m.on('contextmenu', e => {
         e.originalEvent.preventDefault();
         dotnet.invokeMethodAsync('OnContextMenu', { x: e.originalEvent.clientX, y: e.originalEvent.clientY, lat: e.latlng.lat, lng: e.latlng.lng, id: m.spotId, isPoint: true });

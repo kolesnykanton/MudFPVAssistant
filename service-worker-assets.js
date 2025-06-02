@@ -1,5 +1,5 @@
 self.assetsManifest = {
-  "version": "UlBELHXk",
+  "version": "uctRCvy0",
   "assets": [
     {
       "hash": "sha256-OfJz7ce1Bte/mKCJSavkSNw3L9qm2CK2VhUfOMDpQ68=",
@@ -142,8 +142,8 @@ self.assetsManifest = {
       "url": "_framework/MudBlazor.d4vpmw2lo9.wasm"
     },
     {
-      "hash": "sha256-AV4qnuJmeZA7agqrIt9w6UqNG/3i3Lrcu2b/qVwPXWQ=",
-      "url": "_framework/MudFPVAssistant.tpqr2vwmad.wasm"
+      "hash": "sha256-ff/aW6nusbyapbJ7CRs7m2hGPyvMcK9g5BubQvShniU=",
+      "url": "_framework/MudFPVAssistant.r224tkd9au.wasm"
     },
     {
       "hash": "sha256-akqbZuRazMph7GZNcPHLIOp1mgnkjdaWZMM9Up4LPfE=",
@@ -246,8 +246,8 @@ self.assetsManifest = {
       "url": "_framework/System.Text.Encodings.Web.n7nth9auq4.wasm"
     },
     {
-      "hash": "sha256-WLe0TPZ4rdSTafRuMuMWvzTRNqvm1W6kPbo0DxsToFc=",
-      "url": "_framework/System.Text.Json.sfvqbz9lnw.wasm"
+      "hash": "sha256-wTrnqzgSUJFdTEQIrmDJ31OG3cg7z5Xog6jDrzQZuOA=",
+      "url": "_framework/System.Text.Json.dxdl1c3685.wasm"
     },
     {
       "hash": "sha256-Up6rmaR3JAacWTEbaqJDVMlEQdXKLCO4IU8nzw1qXDQ=",
@@ -262,7 +262,7 @@ self.assetsManifest = {
       "url": "_framework/System.ezrw3d5kw2.wasm"
     },
     {
-      "hash": "sha256-ZU8Zz8Pvw7b63TI+bkRNxQi2Xs+WspS8m9m6CEtbWuQ=",
+      "hash": "sha256-0B7RxTXZippbvcriPPLAv7HtAIH4VFAeIMAO7qa8Q2o=",
       "url": "_framework/blazor.boot.json"
     },
     {
@@ -334,19 +334,19 @@ self.assetsManifest = {
       "url": "img/drone_controller_with_stick_ids.svg"
     },
     {
-      "hash": "sha256-iGHLSjQ3XnOQJ4+D0ZVmKzPqayJqy4RyhDiP63cDtg8=",
+      "hash": "sha256-w5eRhCGFTTwSPUrtC/hgfJR+IbT6t46snTOCVJMGvHQ=",
       "url": "index.html"
     },
     {
-      "hash": "sha256-AQ76kXzsRdTHaWR1B+UnbbjPBqMRmUMptbocssAe9w8=",
-      "url": "js/ctx.js"
-    },
-    {
-      "hash": "sha256-tn9OuZTr5DHitygIpkRb7BukSSaZ7OPwot+1TrdUNX0=",
+      "hash": "sha256-gjPP/MMcdGHZ4tX2uYNtyEF/V0UYippY52vqt9MoZJM=",
       "url": "js/firebaseInterop.js"
     },
     {
-      "hash": "sha256-x7LC1eCPSQN44xDjIJsb3LUiXXRToToRsQhz+n+vCtc=",
+      "hash": "sha256-86yiBnlDHdVeeV9WCPQ12QWx8uBE1Ix6UgxCyEe4904=",
+      "url": "js/firebaseSpots.js"
+    },
+    {
+      "hash": "sha256-UOMRWshZ95bF3B0d949tWOFGlgUeqQbNC9bKe8Rn8W4=",
       "url": "js/mapInterop.js"
     },
     {
@@ -528,10 +528,6 @@ self.assetsManifest = {
     {
       "hash": "sha256-t2rbtD3wKDiUWYhWgxSLT8gnoZ/1HWFE+XwQ6C6xWeU=",
       "url": "manifest.webmanifest"
-    },
-    {
-      "hash": "sha256-paIeuWnSzjeLGITWkk4p3rcejUsZWCJGPeOK9UhWXtg=",
-      "url": "sample-data/weather.json"
     }
   ]
 };
