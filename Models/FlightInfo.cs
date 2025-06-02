@@ -6,7 +6,7 @@ public class FlightInfo
 {
     [JsonPropertyName("id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string Id { get; set; }
+    public string? Id { get; set; }
     public string? Name { get; set; }
     public int? UsedMah { get; set; }
     public DateTime? Date { get; set; } = DateTime.Today;
@@ -14,7 +14,8 @@ public class FlightInfo
     public string Location { get; set; }
     public TimeSpan? FlightTime { get; set; }
     public BatteryType BatType { get; set; }
-    public BatteryCellCount CellCount { get; set; }
+    [JsonPropertyName("cellCount")]
+    public int CellCount { get; set; } = 1;
 
     public FlightInfo()
     {
@@ -33,16 +34,6 @@ public class FlightInfo
     {
         Unknown,
         LiPo,
-        LiIom
-    }
-
-    public enum BatteryCellCount
-    {
-        _1S = 1,
-        _2S = 2,
-        _3S = 3,
-        _4S = 4,
-        _5S = 5,
-        _6S = 6,
+        LiIon
     }
 }

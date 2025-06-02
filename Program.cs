@@ -25,6 +25,11 @@ builder.Services.AddScoped<ReactiveUserCollectionService<FlightInfo>>(sp =>
         sp.GetRequiredService<IUserDocumentService>(),
         sp.GetRequiredService<AuthenticationStateProvider>(),
         "FlightInfos"));
+builder.Services.AddScoped<ReactiveUserCollectionService<FlightSpot>>(sp =>
+    new ReactiveUserCollectionService<FlightSpot>(
+        sp.GetRequiredService<IUserDocumentService>(),
+        sp.GetRequiredService<AuthenticationStateProvider>(),
+        "FlightSpots"));
 
 builder.Services.AddScoped<CloudFlightDataSource>();
 builder.Services.AddScoped<FlightDataFactory>();

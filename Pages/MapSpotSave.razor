@@ -5,9 +5,11 @@
 @using MouseEvent = MudBlazor.MouseEvent
 @using MudFPVAssistant.Services
 @using MudFPVAssistant.Components
+@inject ReactiveUserCollectionService<FlightSpot> SpotsService
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject IJSRuntime JS
 @inject IDialogService DialogService
+@implements IDisposable
 
 <MudContainer Class="mt-2">
     <h3>Flight Spot Saver</h3>
@@ -24,7 +26,7 @@
              style="width:100%;height:800px;"
              @oncontextmenu:preventDefault="true">
         </div>
-
+        <div id="timestamp"></div>
         <MudMenu PositionAtCursor="true"
                  ActivationEvent="MouseEvent.RightClick"
                  @ref="_mapMenu">
@@ -43,16 +45,7 @@
             <GoogleMapComp>
                 
             </GoogleMapComp>
-            @*<div style="height: 600px">
-                <GoogleMap @ref="@_map1" Id="map1" Options="@mapOptions" Height="100%"
-                           OnAfterInit="AfterMapRender">
-                </GoogleMap>
-                @foreach (var spot in spots)
-                {
-                    <MyMarker Spot="spot"
-                              OnContext="OpenMarkerMenu"/>
-                }
-            </div>*@
+
         </MudPaper>
     </MudExpansionPanel>
 
@@ -60,34 +53,4 @@
 
 @code {
     private GoogleMap _map1;
-    private async Task AfterMapRender()
-    {
-        // --- 1. Отримуємо позицію через Promise ---
-        var pos = await JS.InvokeAsync<JsonElement>(
-            "eval",
-            @"new Promise((res, rej) => 
-                navigator.geolocation.getCurrentPosition(res, rej)
-              )"
-        );
-        var coords = pos.GetProperty("coords");
-        var lat = coords.GetProperty("latitude").GetDouble();
-        var lng = coords.GetProperty("longitude").GetDouble();
-        var location = new LatLngLiteral { Lat = lat, Lng = lng };
-
-        // --- 2. Панимо та зумимо карту (InteropObject!) ---
-        await _map1.InteropObject.SetCenter(location);
-        await _map1.InteropObject.SetZoom(13);
-
-        // --- 3. Додаємо маркер “Ви тут” ---
-        await Marker.CreateAsync(_map1.JsRuntime, new MarkerOptions
-        {
-            Position = location,
-            Map = _map1.InteropObject,
-            Title = "Ви тут",
-            Icon = new Icon()
-            {
-                Url = "img/cda1_drone-green-grey.svg",
-            }
-        });
-    }
 }

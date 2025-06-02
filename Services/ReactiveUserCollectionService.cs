@@ -3,6 +3,7 @@ using MudFPVAssistant.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace MudFPVAssistant.Services
@@ -119,15 +120,23 @@ namespace MudFPVAssistant.Services
         }
 
         /// <summary>
-        /// Adds a new item to Firestore and to the local cache.
+        /// Додає новий документ у Firestore, одразу отримує generated Id, присвоює item.Id і додає в кеш.
         /// </summary>
-        /// <param name="item">Item to add. Must include an Id property if you want to reference it later.</param>
         public async Task AddAsync(T item)
         {
-            // Push to Firestore
-            await _userDocs.AddAsync(_collectionName, item);
+            // Зліваємо поле Id = null перед відправкою (щоби JSON не містив "id": null)
+            var idProp = typeof(T).GetProperty("Id", BindingFlags.Public | BindingFlags.Instance);
+            if (idProp != null && idProp.CanWrite)
+                idProp.SetValue(item, null);
 
-            // Update local cache
+            // Викликаємо AddAsync, що поверне рядок newId
+            var newId = await _userDocs.AddAsync(_collectionName, item);
+
+            // Присвоюємо newId самому item
+            if (idProp != null && idProp.CanWrite)
+                idProp.SetValue(item, newId);
+
+            // Додаємо в локальний список і сповіщаємо компонент
             _items.Add(item);
             OnUpdated?.Invoke();
         }

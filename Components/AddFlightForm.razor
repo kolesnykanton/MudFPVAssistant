@@ -2,14 +2,13 @@
 @using MudFPVAssistant.Components
 
 <MudPaper Class="p-4">
-    <MudText Typo="Typo.h6">Новий політ</MudText>
+    <MudText Typo="Typo.h6">New Flight</MudText>
 
     <MudStack Spacing="2">
-        <MudTextField Label="Назва батареї" @bind-Value="_draft.Name" />
-        <MudNumericField Label="Використано (mAh)" @bind-Value="_draft.UsedMah" />
-
+        <MudTextField Label="Name (Drone, Battery, etc)" @bind-Value="_draft.Name" />
+        <MudNumericField Label="Battery Used (mAh)" @bind-Value="_draft.UsedMah" />
         <MudSelect T="FlightInfo.BatteryType"
-                   Label="Тип батареї"
+                   Label="Battery Type"
                    @bind-Value="_draft.BatType"
                    Required="true">
             @foreach (var t in Enum.GetValues<FlightInfo.BatteryType>())
@@ -17,23 +16,23 @@
                 <MudSelectItem Value="@t">@t</MudSelectItem>
             }
         </MudSelect>
-
-        <MudSelect T="FlightInfo.BatteryCellCount"
-                   Label="Кількість ячейок"
+        <MudSelect T="int"
+                   Label="Cell count"
                    @bind-Value="_draft.CellCount"
                    Required="true">
-            @foreach (var c in Enum.GetValues<FlightInfo.BatteryCellCount>())
+            @for (var i = 1; i <= 6; i++)
             {
-                <MudSelectItem Value="@c">@c</MudSelectItem>
+                var i1 = i;
+                <MudSelectItem Value="i">@($"{i1}S")</MudSelectItem>
             }
         </MudSelect>
 
-        <MudTextField Label="Тривалість (мм:сс)"
+        <MudTextField Label="Duration (mm:ss)"
                       @bind-Value="_duration"
                       Placeholder="05:12"
                       Immediate="true" />
 
-        <MudTextField Label="Коментар" @bind-Value="_draft.Comment" />
+        <MudTextField Label="Comment" @bind-Value="_draft.Comment" />
 
         <MudDatePicker @bind-Date="_draft.Date" Label="Дата польоту" />
 
@@ -41,7 +40,7 @@
                    Disabled="!IsValid"
                    OnClick="Submit">
             <MudIcon Icon="@Icons.Material.Filled.AddCircle" Class="me-1" />
-            Додати
+            Add
         </MudButton>
     </MudStack>
 </MudPaper>
@@ -61,11 +60,11 @@
 
         _draft.Date ??= DateTime.Today;
 
-        // Піднімаємо подію нагору
+        // Invoke Event
         await OnAdd.InvokeAsync(_draft);
 
-        // Очищаємо форму
-        _draft = new() { Date = DateTime.Today, BatType = FlightInfo.BatteryType.Unknown };
+        // Clean Form
+        _draft = new() { Date = DateTime.Today, BatType = FlightInfo.BatteryType.LiPo };
         _duration = string.Empty;
     }
 }

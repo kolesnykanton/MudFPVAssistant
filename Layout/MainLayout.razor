@@ -28,19 +28,6 @@
                 <MudIconButton Icon="@Icons.Material.Filled.Login" OnClick="SignIn" />
             </NotAuthorized>
         </AuthorizeView>
-        @*@if (!AuthState.IsAuthChecked)
-        {
-            <MudProgressCircular Indeterminate="true"/>
-        }
-        else if (AuthState.Uid is null)
-        {
-            <MudIconButton Icon="@Icons.Material.Filled.Login"
-                           OnClick="SignIn"/>
-        }
-        else
-        {
-            <MudIconButton Icon="@Icons.Material.Filled.Logout" OnClick="SignOut"/>
-        }*@
         <MudToggleIconButton Icon="@Icons.Material.Filled.DarkMode"
                              @bind-Toggled="_isDarkMode"
                              Color="Color.Default"

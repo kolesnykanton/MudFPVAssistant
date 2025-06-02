@@ -9,15 +9,22 @@ namespace MudFPVAssistant.Pages;
 
 public partial class MapSpotSave : ComponentBase
 {
-    private MudMenu? _mapMenu;
+       private MudMenu? _mapMenu;
     private MudMenu? _markerMenu;
-    private double clickLat, clickLng;
-    private DotNetObjectReference<MapSpotSave> dotnetRef;
-    private List<FlightSpot> spots = new();
+    private DotNetObjectReference<MapSpotSave>? dotnetRef;
     private FlightSpot? selectedSpot;
-    private bool editDialogOpen = false;
+    private double clickLat, clickLng;
 
-    private const string StorageKey = "fpvSpots";
+    protected override async Task OnInitializedAsync()
+    {
+        // Підписка на оновлення кешу, щоб одразу перемалювати маркери
+        SpotsService.OnUpdated += async () =>
+        {
+            await RenderMarkersAsync();
+            StateHasChanged();
+        };
+        await SpotsService.InitializeAsync();
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -25,10 +32,16 @@ public partial class MapSpotSave : ComponentBase
         {
             dotnetRef = DotNetObjectReference.Create(this);
             await JS.InvokeVoidAsync("fpvinitializeMap", "fpvMap", dotnetRef);
-            spots = await LocalStorage.GetItemAsync<List<FlightSpot>>(StorageKey) ?? [];
-            foreach (var s in spots)
-                await JS.InvokeVoidAsync("fpvAddMarker", s);
-            
+            await RenderMarkersAsync();
+        }
+    }
+
+    private async Task RenderMarkersAsync()
+    {
+        await JS.InvokeVoidAsync("fpvClearMarkers");
+        foreach (var spot in SpotsService.Items)
+        {
+            await JS.InvokeVoidAsync("fpvAddMarker", spot);
         }
     }
 
@@ -38,59 +51,55 @@ public partial class MapSpotSave : ComponentBase
         clickLat = lat;
         clickLng = lng;
         await AddGlobalSpot();
-        StateHasChanged();
-        //return Task.CompletedTask;
     }
 
     [JSInvokable]
     public async Task OnContextMenu(JsonElement args)
     {
-        var x = args.GetProperty("x").GetInt32();
-        var y = args.GetProperty("y").GetInt32();
+        int x = args.GetProperty("x").GetInt32();
+        int y = args.GetProperty("y").GetInt32();
         clickLat = args.GetProperty("lat").GetDouble();
         clickLng = args.GetProperty("lng").GetDouble();
-        var isPoint = args.GetProperty("isPoint").GetBoolean();
+        bool isPoint = args.GetProperty("isPoint").GetBoolean();
+
         var evt = new MouseEventArgs
         {
-            ClientX = args.GetProperty("x").GetInt32(),
-            ClientY = args.GetProperty("y").GetInt32(),
-            PageX = args.GetProperty("x").GetInt32(),
-            PageY = args.GetProperty("y").GetInt32()
+            ClientX = x,
+            ClientY = y,
+            PageX   = x,
+            PageY   = y
         };
 
-
-        if (isPoint)
+        if (isPoint && args.TryGetProperty("id", out var idEl))
         {
-            var anb = args.GetProperty("id").ToString();
-            var id = args.GetProperty("id").GetGuid();
-            selectedSpot = spots.FirstOrDefault(s => s.Id == id);
-            if (selectedSpot is not null)
-                await _markerMenu.OpenMenuAsync(evt);
-        }
-        else
-        {
-            await _mapMenu.OpenMenuAsync(evt);
+            var id = idEl.GetString();
+            if (!string.IsNullOrEmpty(id))
+            {
+                selectedSpot = SpotsService.Items.FirstOrDefault(s => s.Id == id);
+                if (selectedSpot is not null)
+                {
+                    await _markerMenu!.OpenMenuAsync(evt);
+                    return;
+                }
+            }
         }
 
-        StateHasChanged();
-    }
-    
-    [JSInvokable]
-    public Task AutoLocated(double lat, double lng)
-    {
-        // централізуєте карту чи додаєте маркер “Я тут”
-        StateHasChanged();
-        return Task.CompletedTask;
+        await _mapMenu!.OpenMenuAsync(evt);
     }
 
     private async Task AddGlobalSpot()
     {
-        await _mapMenu.CloseMenuAsync();
+        await _mapMenu!.CloseMenuAsync();
 
+        // Створюємо новий FlightSpot з Id = null (JsonIgnore викине це поле)
         var newSpot = new FlightSpot
         {
             Latitude = clickLat,
-            Longitude = clickLng
+            Longitude = clickLng,
+            Name = "",
+            Comments = null,
+            Category = null,
+            Tags = new List<string>()
         };
 
         var parameters = new DialogParameters<FlightSpotEditDialog>
@@ -99,52 +108,60 @@ public partial class MapSpotSave : ComponentBase
         };
         var options = new DialogOptions
         {
-            MaxWidth = MaxWidth.Large, // Встановлює максимальну ширину
-            FullWidth = true // Діалог розтягується на всю доступну ширину до MaxWidth
+            MaxWidth = MaxWidth.Large,
+            FullWidth = true
         };
         var dialog = await DialogService.ShowAsync<FlightSpotEditDialog>("Новий спот", parameters, options);
         var result = await dialog.Result;
 
         if (!result.Canceled && result.Data is FlightSpot confirmed)
         {
-            spots.Add(confirmed);
-            await SaveAndRender();
+            // Викликаємо сервіс додавання: AddAsync поверне та присвоїть Id
+            await SpotsService.AddAsync(confirmed);
+            // Після цього SpotsService.OnUpdated спрацює → RenderMarkersAsync намалює маркер
         }
     }
-    
+
     private async Task DeleteSpot()
     {
-        if (selectedSpot is null) return;
-        spots.RemoveAll(s => s.Id == selectedSpot.Id);
-        await SaveAndRender();
+        if (selectedSpot is null || string.IsNullOrEmpty(selectedSpot.Id))
+            return;
+
+        await _markerMenu!.CloseMenuAsync();
+        await SpotsService.DeleteAsync(selectedSpot.Id);
         selectedSpot = null;
-        await _markerMenu.CloseMenuAsync();
     }
 
     private async Task OpenEditDialog()
     {
-        if (selectedSpot is null) return;
+        if (selectedSpot is null)
+            return;
 
-        var parameters = new DialogParameters<FlightSpotEditDialog> { { x => x.Spot, selectedSpot } };
+        var parameters = new DialogParameters<FlightSpotEditDialog>
+        {
+            { x => x.Spot, selectedSpot }
+        };
         var dialog = await DialogService.ShowAsync<FlightSpotEditDialog>("Редагування спота", parameters);
         var result = await dialog.Result;
 
         if (!result.Canceled && result.Data is FlightSpot updated)
         {
-            var existing = spots.FirstOrDefault(s => s.Id == updated.Id);
-            if (existing != null)
-            {
-                existing.Name = updated.Name;
-                existing.Comments = updated.Comments;
-                await SaveAndRender();
-            }
+            await SpotsService.UpdateAsync(updated.Id!, updated);
         }
     }
-    private async Task SaveAndRender()
+    [JSInvokable]
+    public Task AutoLocated(double lat, double lng)
     {
-        await LocalStorage.SetItemAsync(StorageKey, spots);
-        await JS.InvokeVoidAsync("fpvClearMarkers");
-        foreach (var s in spots)
-            await JS.InvokeVoidAsync("fpvAddMarker", s);
+        // централізуєте карту чи додаєте маркер “Я тут”
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+    public void Dispose()
+    {
+        SpotsService.OnUpdated -= async () =>
+        {
+            await RenderMarkersAsync();
+            StateHasChanged();
+        };
     }
 }

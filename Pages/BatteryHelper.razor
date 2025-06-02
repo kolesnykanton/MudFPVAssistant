@@ -1,38 +1,30 @@
 ﻿@page "/batteryhelper"
 @using System.Text.Json
-@using MudFPVAssistant.Services
 @using Microsoft.AspNetCore.Components.Authorization
 @using MudFPVAssistant.Components
 @using MudFPVAssistant.Models.DataSources
-@inject HttpClient httpClient
-@inject IUserDocumentService userFlightService
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
-@inject IJSRuntime JS
 @implements IDisposable
 @inject FlightDataFactory factory
 
 <MudContainer MaxWidth="MaxWidth.Medium">
     <MudGrid>
-      <!-- Форма додавання нового польоту -->
-        <MudItem xs="12" md="6">
+      <!-- New Flight Form -->
+        <MudItem xs="12" md="6" Class="mt-2">
             <AddFlightForm OnAdd="AddAsync" />
         </MudItem>
 
-        <!-- Вибір дати та підсвітка днів, коли є польоти -->
-        <MudItem xs="12">
-            <MudPaper Class="p-4 mb-4">
-                <MudText Typo="Typo.h6">Фільтр за датою</MudText>
-                <MudDatePicker 
-                    Label="Оберіть дату" 
-                    @bind-Date="_filterDate"
-                    AdditionalDateClassesFunc="GetDayClass" />
-            </MudPaper>
-        </MudItem>
-
         <!-- Таблиця історії -->
-        <MudItem xs="12">
-            <FlightTable Flights="FilteredFlights" OnDelete="DeleteAsync" />
+        <MudItem>
+            @*<MudText Typo="Typo.h6">Date Filter</MudText>*@
+            <MudDatePicker
+                Class="w-25"
+                Label="Date Picker"
+                @bind-Date="_filterDate"
+                AdditionalDateClassesFunc="GetDayClass" />
+            <FlightTable Flights="FilteredFlights" OnDelete="DeleteAsync"/>
         </MudItem>
+        
         <!-- Статистика та графік -->
         <MudItem xs="12">
             <FlightStats Flights="_ds.Items" />
@@ -58,7 +50,7 @@
     protected override async Task OnInitializedAsync()
     {
 
-        // Завантажуємо cloud-джерело (сьогодні — єдина реалізація)
+        // Завантажуємо cloud-джерело
         _ds = factory.Get();
         await _ds.InitializeAsync();
         _ds.OnUpdated += Refresh;
