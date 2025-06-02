@@ -1,173 +1,99 @@
 ﻿@page "/batteryhelper"
 @using System.Text.Json
 @using MudFPVAssistant.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@using MudFPVAssistant.Components
+@using MudFPVAssistant.Models.DataSources
 @inject HttpClient httpClient
-@inject FlightInfoService flightService
-@inject AuthState authState
-@inject FirebaseAuthService authService
+@inject IUserDocumentService userFlightService
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject IJSRuntime JS
-
+@implements IDisposable
+@inject FlightDataFactory factory
 
 <MudContainer MaxWidth="MaxWidth.Medium">
     <MudGrid>
-        <!-- 🔹 Додавання нового польоту -->
+      <!-- Форма додавання нового польоту -->
         <MudItem xs="12" md="6">
-            <MudPaper Class="p-4 mb-4">
-                <MudText Typo="Typo.h6">Новий політ</MudText>
-                <MudStack Spacing="2">
-                    <MudTextField Label="Назва батареї" @bind-Value="_newFlight.Name"/>
-                    <MudNumericField Label="Використано (mAh)" @bind-Value="_newFlight.UsedMah"/>
-                    <MudSelect T="FlightInfo.BatteryType"
-                               Label="Тип Батки"
-                               @bind-Value="_newFlight.BatType"
-                               Required="true">
-                        @foreach (var type in Enum.GetValues<FlightInfo.BatteryType>())
-                        {
-                            <MudSelectItem Value="type">@type</MudSelectItem>
-                        }
-                    </MudSelect>
-                    <MudSelect T="FlightInfo.BatteryCellCount"
-                               Label="К-ть ячейок"
-                               @bind-Value="_newFlight.CellCount"
-                               Required="true">
-                        @foreach (var type in Enum.GetValues<FlightInfo.BatteryCellCount>())
-                        {
-                            <MudSelectItem Value="type">@type</MudSelectItem>
-                        }
-                    </MudSelect>
-                    <MudTextField @bind-Value="_duration"
-                                  Label="Тривалість (мм:сс)"
-                                  Placeholder="05:12"
-                                  Immediate="true"
-                                  Class="mb-4"
-                                  Adornment="Adornment.End"
-                                  AdornmentIcon="@Icons.Material.Filled.Timer" />
-                    <MudTextField Label="Коментар" @bind-Value="_newFlight.Comment"/>
-                    <MudDatePicker Label="Дата польоту" @bind-Date="_newFlight.Date"/>
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@AddFlight">
-                        <MudIcon Icon="@Icons.Material.Filled.AddCircle" Class="me-2"/>
-                        Додати політ
-                    </MudButton>
-                </MudStack>
-            </MudPaper>
+            <AddFlightForm OnAdd="AddAsync" />
         </MudItem>
 
-        <!-- 🔹 Вибір дати та історія -->
+        <!-- Вибір дати та підсвітка днів, коли є польоти -->
         <MudItem xs="12">
-            <MudPaper Width="40%">
-                <MudText Typo="Typo.h6">Історія польотів</MudText>
-
-                <MudDatePicker Label="Дата для перегляду" AdditionalDateClassesFunc="GetDayClass"
-                               AdditionalDateAttributesFunc="GetDayAttrs" @bind-Date="_filterDate" Class="mb-4"/>
-            </MudPaper>
-            <MudPaper Class="p-4">
-                @*<MudText Typo="Typo.h6">Історія польотів</MudText>
-                <MudDatePicker Label="Дата для перегляду" AdditionalDateClassesFunc="GetDayClass"  AdditionalDateAttributesFunc="GetDayAttrs" @bind-Date="_filterDate" Class="mb-4" />*@
-
-                <MudDataGrid T="FlightInfo"
-                             Items="@FilteredFlights"
-                             ReadOnly="false"
-                             EditMode="DataGridEditMode.Cell"
-                             Dense="true"
-                             Hover="true"
-                             @ref="grid">
-
-                    <Columns>
-                        <PropertyColumn Editable="false" Format="dd-MM-yyyy" Property="p => p.Date" Title="Дата"/>
-                        <PropertyColumn Editable="true" Property="p => p.Name" Title="Батарея"/>
-                        <PropertyColumn Editable="true" Property="p => p.UsedMah" Title="mAh"/>
-                        <PropertyColumn Editable="true" Property="p => p.BatType.ToString()" Title="Type"/>
-                        <MudSelect T="FlightInfo.BatteryType"
-                                   Label="Тип батареї"
-                                   @bind-Value="_selectedType"
-                                   Dense="true"
-                                   Class="mb-4"
-                                   Clearable="true">
-                            <MudSelectItem Value="FlightInfo.BatteryType.Unknown">Всі</MudSelectItem>
-                            @foreach (var type in Enum.GetValues<FlightInfo.BatteryType>())
-                            {
-                                if (type is FlightInfo.BatteryType.Unknown) continue; // Щоб не дублювати "Всі"
-                                <MudSelectItem Value="type">@type</MudSelectItem>
-                            }
-                        </MudSelect>
-
-                        <PropertyColumn Editable="true" Property="p => p.Comment" Title="Коментар"/>
-
-                        @*                         <MudDataGridColumn T="FlightInfo">
-                            <CellTemplate Context="flight">
-                                <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                                               Color="Color.Error"
-                                               OnClick="@(() => RemoveRow(flight))" />
-                            </CellTemplate>
-                        </MudDataGridColumn> *@
-                    </Columns>
-                </MudDataGrid>
+            <MudPaper Class="p-4 mb-4">
+                <MudText Typo="Typo.h6">Фільтр за датою</MudText>
+                <MudDatePicker 
+                    Label="Оберіть дату" 
+                    @bind-Date="_filterDate"
+                    AdditionalDateClassesFunc="GetDayClass" />
             </MudPaper>
         </MudItem>
-        <MudPaper Class="p-4 mt-10 mb-4">
-            <MudText Typo="Typo.h6">Статистика споживання (mAh за датою)</MudText>
-            <MudChart ChartType="ChartType.Line"
-                      XAxisLabels="chartLabels"
-                      Height="250" />
-            <MudChart ChartType="ChartType.Line"
-                      XAxisLabels="@_labels"
-                      ChartSeries="@_datasets"
-                      Width="100%"
-                      Height="350px" />
-        </MudPaper>
+
+        <!-- Таблиця історії -->
+        <MudItem xs="12">
+            <FlightTable Flights="FilteredFlights" OnDelete="DeleteAsync" />
+        </MudItem>
+        <!-- Статистика та графік -->
+        <MudItem xs="12">
+            <FlightStats Flights="_ds.Items" />
+        </MudItem>
 
     </MudGrid>
 </MudContainer>
 
 @code {
+    [CascadingParameter]
+    Task<AuthenticationState> AuthStateTask { get; set; }
+
     private DateTime? _filterDate = DateTime.Today;
     private const string StorageKey = "flight-entries";
     private string _duration;
     private MudDataGrid<FlightInfo> grid;
     private List<FlightInfo> _flights = [];
 
-    private FlightInfo _newFlight = new();
     private FlightInfo.BatteryType _selectedType = FlightInfo.BatteryType.Unknown;
+  
+    private IFlightDataSource _ds;
 
-    private string[] _labels;
-    private List<ChartSeries> _datasets;
+    protected override async Task OnInitializedAsync()
+    {
+
+        // Завантажуємо cloud-джерело (сьогодні — єдина реалізація)
+        _ds = factory.Get();
+        await _ds.InitializeAsync();
+        _ds.OnUpdated += Refresh;
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        /*var authState = await AuthStateTask;
+        if (authState.User.Identity?.IsAuthenticated == true)
+        {
+            _flights = await userFlightService.GetAsync<FlightInfo>("FlightInfos");
+        }*/
+        //_isLoading = false;
+    }
+    private void Refresh() 
+        => InvokeAsync(StateHasChanged);
+
+    private Task AddAsync(FlightInfo flight) 
+        => _ds.AddAsync(flight);
+
+    private Task DeleteAsync(string id) 
+        => _ds.DeleteAsync(id);
 
     private IEnumerable<FlightInfo> FilteredFlights =>
         _filterDate == null
-            ? _flights
-            : _flights.Where(f => f.Date?.Date == _filterDate.Value.Date);
-    /*private IEnumerable<FlightInfo> FilteredFlights =>
-        _selectedType == FlightInfo.BatteryType.Unknown
-            ? _flights
-            : _flights.Where(b => b.BatType == _selectedType);*/
+            ? _ds.Items
+            : _ds.Items.Where(f => f.Date?.Date == _filterDate.Value.Date);
 
+    private string? GetDayClass(DateTime day) 
+        => _ds.Items.Any(f => f.Date?.Date == day.Date)
+            ? "flight-day"
+            : null;
 
-    private async Task AddFlight()
-    {
-        if (!string.IsNullOrWhiteSpace(_newFlight.Name))
-        {
-            _newFlight.Date ??= DateTime.Today;
-            _flights.Add(_newFlight);
-            _newFlight = new();
-            /*await SaveToLocalStorage();*/
-            await flightService.AddAsync(_newFlight);
-            StateHasChanged();
-        }
-    }
-
-
-    private async Task RemoveRow(FlightInfo flightInfo)
-    {
-        _flights.Remove(flightInfo);
-        await SaveToLocalStorage();
-        StateHasChanged();
-    }
-
-    private string? GetDayClass(DateTime day)
-        => _flights.Any(f => f.Date?.Date == day.Date)
-            ? "flight-day" // підсвічувати
-            : null; // залишити стандартний вигляд
+    public void Dispose() 
+        => _ds.OnUpdated -= Refresh;
 
     IDictionary<string, object>? GetDayAttrs(DateTime day)
     {
@@ -188,35 +114,6 @@
         .ToArray();
 
      
-    protected override async Task OnInitializedAsync()
-    {
-        var user = await authService.GetCurrentAsync();
-        authState.Initialize(user?.Uid);
-        if (user is not null)
-        {
-            _flights = await flightService.GetAsync();
-        }
-        _labels = _flights
-            .Select(f => $"{f.Date:M/d/yy}").Take(10)
-            .ToArray();
-
-        // --- КРОК 3: Готуємо масив значень UsedMah (double[])
-        // Для кожного елемента _flights беремо f.UsedMah (як int?), перетворюємо на double.
-        var usedMahArray = _flights
-            .Select(f => (double)(f.UsedMah ?? 0)).Take(10)
-            .ToArray();
-
-        // --- КРОК 4: Створюємо одну серію (ChartSeries) з іменем "UsedMah"
-        var series = new ChartSeries
-        {
-            Name = "UsedMah (mAh)",
-            Data = usedMahArray
-        };
-
-        // --- КРОК 5: Поміщаємо цю серію в список datasets
-        _datasets = new List<ChartSeries> { series };
-    }
-
     private async Task SaveToLocalStorage()
     {
         await localStorage.SetItemAsync(StorageKey, _flights);

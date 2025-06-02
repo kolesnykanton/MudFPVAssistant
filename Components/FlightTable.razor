@@ -1,0 +1,53 @@
+﻿@using MudBlazor
+@using MudFPVAssistant.Components
+
+<MudPaper Class="p-4">
+    <MudText Typo="Typo.h6">Історія польотів</MudText>
+
+    <MudDataGrid T="FlightInfo"
+                 Items="Flights"
+                 Hover="true"
+                 Dense="true">
+        <Columns>
+            <!-- Колонка "Дата" -->
+            <PropertyColumn Property="x => x.Date"
+                            Title="Дата"
+                            Format="dd-MM-yyyy" />
+
+            <!-- Колонка "Батарея" -->
+            <PropertyColumn Property="x => x.Name"
+                            Title="Батарея" />
+
+            <!-- Колонка "mAh" -->
+            <PropertyColumn Property="x => x.UsedMah"
+                            Title="mAh" />
+
+            <!-- Колонка "Тип" -->
+            <PropertyColumn Property="x => x.BatType"
+                            Title="Тип" />
+
+            <!-- Колонка "Коментар" -->
+            <PropertyColumn Property="x => x.Comment"
+                            Title="Коментар" />
+
+            <!-- Колонка з кнопкою "Видалити" -->
+            @*
+            <MudDataGridColumn T="FlightInfo" Title="Дія">
+                <CellTemplate Context="flight">
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                   Color="Color.Error"
+                                   OnClick="@(async () => await OnDelete.InvokeAsync(flight.Id))" />
+                </CellTemplate>
+            </MudDataGridColumn>
+        *@
+        </Columns>
+    </MudDataGrid>
+</MudPaper>
+
+@code {
+    [Parameter]
+    public IEnumerable<FlightInfo> Flights { get; set; } = [];
+
+    [Parameter]
+    public EventCallback<string> OnDelete { get; set; }
+}

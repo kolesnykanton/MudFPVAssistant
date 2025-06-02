@@ -5,8 +5,8 @@
 @inject ISnackbar Snackbar
 @inject AuthState authState
 @inject FirebaseAuthService authService
-@inject FlightInfoService flightService
-
+@inject ReactiveUserCollectionService<FlightInfo> flightData
+@implements IDisposable
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 <PageTitle>Home</PageTitle>
@@ -67,20 +67,25 @@
         Snackbar.Add("Start", Severity.Info);
         foreach (var flight in loadedFlights)
         {
-            await flightService.AddAsync(flight);
+            await flightData.AddAsync(flight);
         }
 
         Snackbar.Add("Done", Severity.Success);
     }
     protected override async Task OnInitializedAsync()
     {
-        //_flights = await localStorage.GetItemAsync<List<FlightInfo>>("flight-entries") ?? new();
-        var user = await authService.GetCurrentAsync();
-        authState.Initialize(user?.Uid);
-        if (user is not null)
-        {
-            _flights = await flightService.GetAsync();
-        }
+        await flightData.InitializeAsync();
+        _flights = flightData.Items.ToList();
+        flightData.OnUpdated += OnFlightsChanged;
     }
-    
+    private void OnFlightsChanged()
+    {
+        //UpdateFlightChart();
+        _flights = flightData.Items.ToList();
+        InvokeAsync(StateHasChanged);
+    }
+    public void Dispose()
+    {
+        flightData.OnUpdated -= OnFlightsChanged;
+    }
 }

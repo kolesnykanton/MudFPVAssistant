@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor;
 using MudFPVAssistant;
 using MudBlazor.Services;
+using MudFPVAssistant.Models;
+using MudFPVAssistant.Models.DataSources;
 using MudFPVAssistant.Services;
 
 
@@ -13,11 +15,20 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddScoped<FirebaseService>();
 builder.Services.AddScoped<FlightInfoService>();
 builder.Services.AddScoped<FirebaseAuthService>();
-builder.Services.AddScoped<IUserDocumentService, UserDocumentService>();
 builder.Services.AddScoped<AuthenticationStateProvider, FirebaseAuthenticationStateProvider>();
+
+builder.Services.AddScoped<IUserDocumentService, UserDocumentService>();
+builder.Services.AddScoped<ReactiveUserCollectionService<FlightInfo>>(sp =>
+    new ReactiveUserCollectionService<FlightInfo>(
+        sp.GetRequiredService<IUserDocumentService>(),
+        sp.GetRequiredService<AuthenticationStateProvider>(),
+        "FlightInfos"));
+
+builder.Services.AddScoped<CloudFlightDataSource>();
+builder.Services.AddScoped<FlightDataFactory>();
+
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthState>();
 
