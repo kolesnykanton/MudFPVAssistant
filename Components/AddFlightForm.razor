@@ -61,10 +61,6 @@
 
         _draft.Date ??= DateTime.Today;
 
-        // Додамо унікальний Id, якщо його ще немає
-        if (string.IsNullOrEmpty(_draft.Id))
-            _draft.Id = Guid.NewGuid().ToString();
-
         // Піднімаємо подію нагору
         await OnAdd.InvokeAsync(_draft);
 

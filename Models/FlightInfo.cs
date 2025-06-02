@@ -1,7 +1,11 @@
-﻿namespace MudFPVAssistant.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace MudFPVAssistant.Models;
 
 public class FlightInfo
 {
+    [JsonPropertyName("id")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string Id { get; set; }
     public string? Name { get; set; }
     public int? UsedMah { get; set; }
