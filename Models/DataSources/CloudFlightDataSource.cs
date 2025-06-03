@@ -2,7 +2,7 @@
 
 namespace MudFPVAssistant.Models.DataSources;
 
-public class CloudFlightDataSource : IFlightDataSource, IDisposable
+public class CloudFlightDataSource : IDataSource<FlightInfo>, IDisposable
 {
     private readonly ReactiveUserCollectionService<FlightInfo> _svc;
 

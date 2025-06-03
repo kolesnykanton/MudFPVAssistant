@@ -1,0 +1,122 @@
+﻿@using MudFPVAssistant.Converters
+@using MudFPVAssistant.Models
+@using MudFPVAssistant.Models.DataSources
+@using MudFPVAssistant.Services
+@inject IFirebaseStorageService StorageService
+@inject AuthState AuthState
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3 mb-n1"/>
+            Редагувати спот
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTextField @bind-Value="Spot.Name" Label="Назва" Required="true" Class="mb-2"/>
+        <MudTextField T="GeolocationCoords"
+                      Label="Координати"
+                      ReadOnly="true"
+                      Value="Spot.Coords"
+                      Converter="@(new CoordinateConverter())"
+                      Class="mb-2" />
+        <MudTextField @bind-Value="Spot.Comments" Label="Коментарі" Class="mb-2"/>
+
+        <MudText>Тип:</MudText>
+        <MudChipSet T="string"
+                    @bind-SelectedValue="Spot.Category"
+                    SelectionMode="SelectionMode"
+                    Checkmark="true"
+                    Class="mb-2">
+            @foreach (var cat in new (string Name, Color Color, string Icon)[] {
+                              ("Mountain", Color.Primary, Icons.Material.Filled.Terrain),
+                              ("Beach",    Color.Info,    Icons.Material.Filled.BeachAccess),
+                              ("Building", Color.Secondary, Icons.Material.Filled.LocationCity),
+                              ("Forest",   Color.Success, Icons.Material.Filled.Forest)
+                          })
+            {
+                <MudChip Text="@cat.Name"
+                         Value="@cat.Name"
+                         Color="@cat.Color"
+                         Icon="@cat.Icon"
+                         Variant="Variant.Filled"
+                         Class="ma-1">
+                    @cat.Name
+                </MudChip>
+            }
+        </MudChipSet>
+
+        <MudFileUpload T="IReadOnlyList<IBrowserFile>"
+                       Class="mt-2"
+                       FilesChanged="UploadFiles">
+            <ActivatorContent>
+                <MudFab Size="Size.Small"
+                        Color="Color.Info"
+                        StartIcon="@Icons.Material.Filled.Image"
+                        Label="Завантажити фото" />
+            </ActivatorContent>
+        </MudFileUpload>
+
+        @if (!string.IsNullOrEmpty(Spot.PhotoUrl))
+        {
+            <img src="@Spot.PhotoUrl"
+                 style="max-width:150px; margin-top:10px;" />
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Color="Color.Secondary">Скасувати</MudButton>
+        <MudButton OnClick="Save" Color="Color.Primary">Зберегти</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public FlightSpot Spot { get; set; } = default!;
+
+    public SelectionMode SelectionMode = SelectionMode.SingleSelection;
+
+    // Якщо ви хочете зберігати storage path у Spot:
+    // [JsonIgnore] public string? StoragePath { get; set; } — уже є в моделі
+
+    private async Task UploadFiles(IReadOnlyList<IBrowserFile> files)
+    {
+        if (files?.Count > 0)
+        {
+            var file = files[0];
+
+            // Якщо Spot.Id ще не заповнено, згенеруємо тут (одноетапний підхід)
+            if (string.IsNullOrWhiteSpace(Spot.Id))
+            {
+                Spot.Id = Guid.NewGuid().ToString();
+            }
+
+            var uid = AuthState.Uid
+                      ?? throw new InvalidOperationException("User not authenticated");
+
+            var fileName = file.Name;
+            // Формуємо storagePath: users/{uid}/FlightSpots/{spotId}/{fileName}
+            var storagePath = $"users/{uid}/FlightSpots/{Spot.Id}/{fileName}";
+
+            try
+            {
+                // Завантажуємо у Storage через JS-interop
+                var downloadUrl = await StorageService.UploadAsync(storagePath, file);
+
+                // Записуємо обидва поля в Spot
+                Spot.StoragePath = storagePath;
+                Spot.PhotoUrl   = downloadUrl;
+            }
+            catch (Exception ex)
+            {
+                // Якщо upload не вдався, виведемо компонент Snackbar чи Console
+                Console.Error.WriteLine($"Upload error: {ex.Message}");
+                // Можна повідомити користувачу через Snackbar, якщо він інжектований
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    private void Save() => MudDialog.Close(DialogResult.Ok(Spot));
+    private void Cancel() => MudDialog.Cancel();
+}

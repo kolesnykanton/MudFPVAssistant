@@ -5,7 +5,7 @@
 @using MudFPVAssistant.Models.DataSources
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @implements IDisposable
-@inject FlightDataFactory factory
+@inject DataSourceFactory factory
 
 <MudContainer MaxWidth="MaxWidth.Medium">
     <MudGrid>
@@ -14,7 +14,7 @@
             <AddFlightForm OnAdd="AddAsync" />
         </MudItem>
 
-        <!-- Таблиця історії -->
+        <!-- DataGrid for selected flights -->
         <MudItem>
             @*<MudText Typo="Typo.h6">Date Filter</MudText>*@
             <MudDatePicker
@@ -25,7 +25,7 @@
             <FlightTable Flights="FilteredFlights" OnDelete="DeleteAsync"/>
         </MudItem>
         
-        <!-- Статистика та графік -->
+        <!-- Stats & Charts -->
         <MudItem xs="12">
             <FlightStats Flights="_ds.Items" />
         </MudItem>
@@ -45,13 +45,12 @@
 
     private FlightInfo.BatteryType _selectedType = FlightInfo.BatteryType.Unknown;
   
-    private IFlightDataSource _ds;
+    private IDataSource<FlightInfo> _ds;
 
     protected override async Task OnInitializedAsync()
     {
-
         // Завантажуємо cloud-джерело
-        _ds = factory.Get();
+        _ds = factory.Get<FlightInfo>();
         await _ds.InitializeAsync();
         _ds.OnUpdated += Refresh;
     }
@@ -97,18 +96,6 @@
             };
 
         return null; // нічого не додавати
-    }
-    
-    
-    private string?[] chartLabels => _flights
-        .OrderBy(b => b.Date)
-        .Select(b => b.Date.ToString())
-        .ToArray();
-
-     
-    private async Task SaveToLocalStorage()
-    {
-        await localStorage.SetItemAsync(StorageKey, _flights);
     }
 
 }

@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace MudFPVAssistant.Models;
 
@@ -15,4 +16,8 @@ public class FlightSpot
     public string? Comments { get; set; }
     public string? Category { get; set; } 
     public List<string> Tags { get; set; } = [];
+    public string? PhotoUrl { get; set; }
+    public string? StoragePath { get; set; }
+    [JsonIgnore]
+    public IBrowserFile? PhotoFile { get; set; }
 }

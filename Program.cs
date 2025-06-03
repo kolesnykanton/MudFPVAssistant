@@ -15,11 +15,16 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddScoped<FlightInfoService>();
-builder.Services.AddScoped<FirebaseAuthService>();
+// 1. Авторизація
+builder.Services.AddScoped<AuthState>();
 builder.Services.AddScoped<AuthenticationStateProvider, FirebaseAuthenticationStateProvider>();
+builder.Services.AddScoped<FirebaseAuthService>();
+builder.Services.AddAuthorizationCore();
 
+// 2. Базовий Firestore-сервіс
 builder.Services.AddScoped<IUserDocumentService, UserDocumentService>();
+
+// 3. ReactiveUserCollectionService з collectionName
 builder.Services.AddScoped<ReactiveUserCollectionService<FlightInfo>>(sp =>
     new ReactiveUserCollectionService<FlightInfo>(
         sp.GetRequiredService<IUserDocumentService>(),
@@ -31,8 +36,18 @@ builder.Services.AddScoped<ReactiveUserCollectionService<FlightSpot>>(sp =>
         sp.GetRequiredService<AuthenticationStateProvider>(),
         "FlightSpots"));
 
+// 4. Firebase Storage для фото
+builder.Services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
+
+// 5. CloudDataSource як реалізації IDataSource<T>
+builder.Services.AddScoped<IDataSource<FlightInfo>, CloudFlightDataSource>();
+builder.Services.AddScoped<IDataSource<FlightSpot>, CloudSpotDataSource>();
+
+// 6. Фабрика для отримання IDataSource<T>
+builder.Services.AddScoped<DataSourceFactory>();
+
 builder.Services.AddScoped<CloudFlightDataSource>();
-builder.Services.AddScoped<FlightDataFactory>();
+builder.Services.AddScoped<DataSourceFactory>();
 
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthState>();

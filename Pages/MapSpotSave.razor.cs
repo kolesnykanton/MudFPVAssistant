@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using MudBlazor;
+using MudFPVAssistant.Components;
 using MudFPVAssistant.Models;
 
 namespace MudFPVAssistant.Pages;

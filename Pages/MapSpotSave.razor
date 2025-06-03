@@ -5,7 +5,8 @@
 @using MouseEvent = MudBlazor.MouseEvent
 @using MudFPVAssistant.Services
 @using MudFPVAssistant.Components
-@inject ReactiveUserCollectionService<FlightSpot> SpotsService
+@using MudFPVAssistant.Models.DataSources
+@inject IDataSource<FlightSpot> SpotsService 
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject IJSRuntime JS
 @inject IDialogService DialogService
