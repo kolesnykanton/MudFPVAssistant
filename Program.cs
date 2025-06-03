@@ -3,6 +3,7 @@ using GoogleMapsComponents;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.JSInterop;
 using MudBlazor;
 using MudFPVAssistant;
 using MudBlazor.Services;
@@ -61,4 +62,25 @@ builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazorGoogleMaps("AIzaSyA_Lhy8SbBeA7zyuveu2ocNKQCzfUlslaI");
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-await builder.Build().RunAsync();
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
+var host = builder.Build();
+
+var js = host.Services.GetRequiredService<IJSRuntime>();
+var module = await js.InvokeAsync<IJSObjectReference>("import", "./js/firebaseInterop.js");
+
+if (builder.HostEnvironment.IsDevelopment())
+{
+    // 1. Підключаємо емулятори
+    await module.InvokeVoidAsync("connectEmulators");
+    // 2. Потім вмикаємо кеш
+    await module.InvokeVoidAsync("enableOfflinePersistence");
+}
+else
+{
+    // Production: одразу вмикаємо кеш, без емуляторів
+    await module.InvokeVoidAsync("enableOfflinePersistence");
+}
+
+
+await host.RunAsync();
