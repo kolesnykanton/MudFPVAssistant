@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 
-namespace MudFPVAssistant.Models.DataSources;
+namespace MudFPVAssistant.Services.Firebase;
 
 public class FirebaseStorageService : IFirebaseStorageService
 {
@@ -9,7 +9,12 @@ public class FirebaseStorageService : IFirebaseStorageService
 
     public FirebaseStorageService(IJSRuntime js) => _js = js;
 
-
+/// <summary>
+/// Uploads IBrowserFile to storage
+/// </summary>
+/// <param name="path"></param>
+/// <param name="file"></param>
+/// <returns></returns>
     public async Task<string> UploadAsync(string path, IBrowserFile file)
     {
         using var stream = file.OpenReadStream(10 * 1024 * 1024);

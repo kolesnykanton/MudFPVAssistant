@@ -10,6 +10,7 @@ using MudBlazor.Services;
 using MudFPVAssistant.Models;
 using MudFPVAssistant.Models.DataSources;
 using MudFPVAssistant.Services;
+using MudFPVAssistant.Services.Firebase;
 
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -71,14 +72,11 @@ var module = await js.InvokeAsync<IJSObjectReference>("import", "./js/firebaseIn
 
 if (builder.HostEnvironment.IsDevelopment())
 {
-    // 1. Підключаємо емулятори
     await module.InvokeVoidAsync("connectEmulators");
-    // 2. Потім вмикаємо кеш
     await module.InvokeVoidAsync("enableOfflinePersistence");
 }
 else
 {
-    // Production: одразу вмикаємо кеш, без емуляторів
     await module.InvokeVoidAsync("enableOfflinePersistence");
 }
 

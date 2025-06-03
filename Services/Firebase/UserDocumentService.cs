@@ -1,9 +1,6 @@
 ﻿using Microsoft.JSInterop;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace MudFPVAssistant.Services
+namespace MudFPVAssistant.Services.Firebase
 {
     public interface IUserDocumentService
     {

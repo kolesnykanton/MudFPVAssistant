@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using Microsoft.JSInterop;
 
-namespace MudFPVAssistant.Services;
+namespace MudFPVAssistant.Services.Firebase;
 
 public record UserInfo(string Uid, string Email, string DisplayName);
 

@@ -1,7 +1,7 @@
 ﻿using Microsoft.JSInterop;
 using MudFPVAssistant.Models;
 
-namespace MudFPVAssistant.Services;
+namespace MudFPVAssistant.Services.Firebase;
 
 public sealed class FlightInfoService
 {

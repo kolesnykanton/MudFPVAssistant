@@ -1,4 +1,5 @@
 ﻿using MudFPVAssistant.Services;
+using MudFPVAssistant.Services.Firebase;
 
 namespace MudFPVAssistant.Models.DataSources;
 
@@ -68,6 +69,7 @@ public class CloudSpotDataSource : IDataSource<FlightSpot>, IDisposable
 
     public async Task UpdateAsync(string id, FlightSpot spot)
     {
+        /*
         var uid = _auth.Uid 
                   ?? throw new InvalidOperationException("User not authenticated");
 
@@ -87,6 +89,7 @@ public class CloudSpotDataSource : IDataSource<FlightSpot>, IDisposable
             spot.StoragePath = storagePath;
             spot.PhotoUrl   = downloadUrl;
         }
+        */
 
         await _svc.UpdateAsync(id, spot);
     }

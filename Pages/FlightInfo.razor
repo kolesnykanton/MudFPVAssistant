@@ -1,4 +1,4 @@
-﻿@page "/batteryhelper"
+﻿@page "/flightinfo"
 @using System.Text.Json
 @using Microsoft.AspNetCore.Components.Authorization
 @using MudFPVAssistant.Components
@@ -40,17 +40,17 @@
     private DateTime? _filterDate = DateTime.Today;
     private const string StorageKey = "flight-entries";
     private string _duration;
-    private MudDataGrid<FlightInfo> grid;
-    private List<FlightInfo> _flights = [];
+    private MudDataGrid<Models.FlightInfo> grid;
+    private List<Models.FlightInfo> _flights = [];
 
-    private FlightInfo.BatteryType _selectedType = FlightInfo.BatteryType.Unknown;
+    private Models.FlightInfo.BatteryType _selectedType = Models.FlightInfo.BatteryType.Unknown;
   
-    private IDataSource<FlightInfo> _ds;
+    private IDataSource<Models.FlightInfo> _ds;
 
     protected override async Task OnInitializedAsync()
     {
         // Завантажуємо cloud-джерело
-        _ds = factory.Get<FlightInfo>();
+        _ds = factory.Get<Models.FlightInfo>();
         await _ds.InitializeAsync();
         _ds.OnUpdated += Refresh;
     }
@@ -67,13 +67,13 @@
     private void Refresh() 
         => InvokeAsync(StateHasChanged);
 
-    private Task AddAsync(FlightInfo flight) 
+    private Task AddAsync(Models.FlightInfo flight) 
         => _ds.AddAsync(flight);
 
     private Task DeleteAsync(string id) 
         => _ds.DeleteAsync(id);
 
-    private IEnumerable<FlightInfo> FilteredFlights =>
+    private IEnumerable<Models.FlightInfo> FilteredFlights =>
         _filterDate == null
             ? _ds.Items
             : _ds.Items.Where(f => f.Date?.Date == _filterDate.Value.Date);

@@ -2,10 +2,11 @@
 @using System.Text.Json
 @using System.Text.Json.Serialization
 @using MudFPVAssistant.Services
+@using MudFPVAssistant.Services.Firebase
 @inject ISnackbar Snackbar
 @inject AuthState authState
 @inject FirebaseAuthService authService
-@inject ReactiveUserCollectionService<FlightInfo> flightData
+@inject ReactiveUserCollectionService<Models.FlightInfo> flightData
 @implements IDisposable
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
@@ -42,9 +43,9 @@
 
 @code
 {
-    private List<FlightInfo> _flights = [];
+    private List<Models.FlightInfo> _flights = [];
     IBrowserFile uploadedFile;
-    List<FlightInfo> loadedFlights = new();
+    List<Models.FlightInfo> loadedFlights = new();
 
     private async Task OnFileChange(InputFileChangeEventArgs e)
     {
@@ -58,7 +59,7 @@
             Converters = { new JsonStringEnumConverter() }
         };
 
-        loadedFlights = JsonSerializer.Deserialize<List<FlightInfo>>(json, options);
+        loadedFlights = JsonSerializer.Deserialize<List<Models.FlightInfo>>(json, options);
         
     }
 

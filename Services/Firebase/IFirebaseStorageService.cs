@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
 
-namespace MudFPVAssistant.Models.DataSources;
+namespace MudFPVAssistant.Services.Firebase;
 
 public interface IFirebaseStorageService
 {

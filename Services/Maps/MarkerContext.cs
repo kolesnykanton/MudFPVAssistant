@@ -1,6 +1,6 @@
 ﻿using MudFPVAssistant.Models;
 
-namespace MudFPVAssistant.Services;
+namespace MudFPVAssistant.Services.Maps;
 
 public class MarkerContext
 {

@@ -1,10 +1,8 @@
 ﻿using GoogleMapsComponents.Maps;
 using Microsoft.JSInterop;
-using System;
-using System.Threading.Tasks;
 using MudFPVAssistant.Models;
 
-namespace MudFPVAssistant.Services;
+namespace MudFPVAssistant.Services.Maps;
 
 public class MyMarker
 {

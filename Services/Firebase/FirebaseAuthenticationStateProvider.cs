@@ -2,7 +2,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace MudFPVAssistant.Services;
+namespace MudFPVAssistant.Services.Firebase;
 
 public class FirebaseAuthenticationStateProvider : AuthenticationStateProvider
 {
