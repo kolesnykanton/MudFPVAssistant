@@ -4,6 +4,7 @@
 @using MudFPVAssistant.Services
 @inject IFirebaseStorageService StorageService
 @inject AuthState AuthState
+@inject ISnackbar Snackbar
 
 <MudDialog>
     <TitleContent>
@@ -48,7 +49,7 @@
 
         <MudFileUpload T="IReadOnlyList<IBrowserFile>"
                        Class="mt-2"
-                       FilesChanged="UploadFiles">
+                       FilesChanged="OnFileSelected">
             <ActivatorContent>
                 <MudFab Size="Size.Small"
                         Color="Color.Info"
@@ -56,11 +57,19 @@
                         Label="Завантажити фото" />
             </ActivatorContent>
         </MudFileUpload>
-
-        @if (!string.IsNullOrEmpty(Spot.PhotoUrl))
+        @if (!string.IsNullOrEmpty(_tempPhotoUrl))
         {
-            <img src="@Spot.PhotoUrl"
-                 style="max-width:150px; margin-top:10px;" />
+            <div style="margin-top:10px;">
+                <img src="@_tempPhotoUrl"
+                     style="max-width:150px; margin-top:4px; border:1px solid #ccc;" />
+            </div>
+        }
+        else if (!string.IsNullOrEmpty(Spot.PhotoUrl))
+        {
+            <div style="margin-top:10px;">
+                <img src="@Spot.PhotoUrl"
+                     style="max-width:150px; margin-top:4px; border:1px solid #ccc;" />
+            </div>
         }
     </DialogContent>
     <DialogActions>
@@ -117,6 +126,70 @@
         }
     }
 
-    private void Save() => MudDialog.Close(DialogResult.Ok(Spot));
+      // тимчасово зберігаємо вибраний IBrowserFile
+  private IBrowserFile? _pendingFile;
+
+  // DataURL (base64) для прев’ю у <img>
+  private string? _tempPhotoUrl;
+
+  private async Task OnFileSelected(IReadOnlyList<IBrowserFile> files)
+  {
+    if (files?.Count > 0)
+    {
+      _pendingFile = files[0];
+
+      // Зчитуємо байти, щоб сформувати base64 DataURL для прев’ю
+      try
+      {
+        using var stream = _pendingFile.OpenReadStream(maxAllowedSize: 5 * 1024 * 1024);
+        using var ms     = new MemoryStream();
+        await stream.CopyToAsync(ms);
+        var bytes = ms.ToArray();
+
+        // Створюємо DataURL, щоб показати прев’ю без завантаження на сервер
+        _tempPhotoUrl = $"data:{_pendingFile.ContentType};base64,{Convert.ToBase64String(bytes)}";
+      }
+      catch
+      {
+        Snackbar.Add("Помилка при читанні файлу для прев’ю.", Severity.Error);
+      }
+    }
+  }
+
+  private async Task Save()
+  {
+    // Генеруємо Id, якщо Spot.Id ще не призначено (залежно від того, чи новий це об’єкт)
+    if (string.IsNullOrWhiteSpace(Spot.Id))
+    {
+      Spot.Id = Guid.NewGuid().ToString();
+    }
+
+    // Якщо є вибраний файл — виконуємо upload у Firebase Storage
+    if (_pendingFile is not null)
+    {
+      var uid = AuthState.Uid 
+                ?? throw new InvalidOperationException("User not authenticated");
+
+      var fileName    = _pendingFile.Name;
+      var storagePath = $"users/{uid}/FlightSpots/{Spot.Id}/{fileName}";
+
+      try
+      {
+        // Завантажуємо у Storage (JS-interop)
+        var downloadUrl = await StorageService.UploadAsync(storagePath, _pendingFile);
+
+        Spot.StoragePath = storagePath;
+        Spot.PhotoUrl   = downloadUrl;
+      }
+      catch
+      {
+        Snackbar.Add("Не вдалося завантажити фото на сервер.", Severity.Error);
+        return;
+      }
+    }
+    
+    // Закриваємо діалог і повертаємо оновлений об’єкт
+    MudDialog.Close(DialogResult.Ok(Spot));
+  }
     private void Cancel() => MudDialog.Cancel();
 }
