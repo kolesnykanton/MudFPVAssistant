@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "MudFPVAssistant",
   "resources": {
-    "hash": "sha256-utfNsDrU4vKe7FkVWGy8FYIUGPaZUfeKHusa5b42ukU=",
+    "hash": "sha256-jLHyM768kVsQHn5ScFSE7kX7ACjFKqYt1F2NPnWF4Rk=",
     "fingerprinting": {
       "Blazored.LocalStorage.12n6dz54qr.wasm": "Blazored.LocalStorage.wasm",
       "GoogleMapsComponents.btpg0n5utj.wasm": "GoogleMapsComponents.wasm",
@@ -56,7 +56,7 @@
       "System.ezrw3d5kw2.wasm": "System.wasm",
       "netstandard.kcqgofh1fx.wasm": "netstandard.wasm",
       "System.Private.CoreLib.4a81bydqv3.wasm": "System.Private.CoreLib.wasm",
-      "MudFPVAssistant.po93qrhlge.wasm": "MudFPVAssistant.wasm",
+      "MudFPVAssistant.gpcpnvi0ix.wasm": "MudFPVAssistant.wasm",
       "dotnet.js": "dotnet.js",
       "dotnet.native.uhsveqo9bs.js": "dotnet.native.js",
       "dotnet.native.swgexbmoy7.wasm": "dotnet.native.wasm",
@@ -135,7 +135,7 @@
       "System.Threading.1zdcxdxxda.wasm": "sha256-vTZNFSZOWDwpEr2E67SJDUQKO29mWQqVcR0XWYnj3ZQ=",
       "System.ezrw3d5kw2.wasm": "sha256-ViNRvhyxlTugIlqJHamw/HwbXlg/YWcrANmxuTM0tfg=",
       "netstandard.kcqgofh1fx.wasm": "sha256-ZO2jl8sBdVxU455imnn7SNXtZ8cI+0gMpua7O45Pr50=",
-      "MudFPVAssistant.po93qrhlge.wasm": "sha256-N7aAFdZ36+/NrSU+2aHt4rC3AtA3qKdxwZ+ssiP40Js="
+      "MudFPVAssistant.gpcpnvi0ix.wasm": "sha256-lH9u9kmbiSw+06VZ3M2NhiZ6pbt9VXDB9KFNQod77yc="
     }
   },
   "cacheBootResources": true,
