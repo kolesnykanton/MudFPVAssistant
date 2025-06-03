@@ -29,7 +29,7 @@ namespace MudFPVAssistant.Services
             ?? throw new InvalidOperationException("User is not authenticated");
 
         public ValueTask<string> AddAsync<T>(string collection, T data) =>
-            _js.InvokeAsync<string>("addUserSpot", _auth.Uid, data);
+            _js.InvokeAsync<string>("addUserDoc", _auth.Uid, collection, data);
 
         public ValueTask<List<T>> GetAsync<T>(string collection) =>
             _js.InvokeAsync<List<T>>("getUserDocs", Uid, collection);

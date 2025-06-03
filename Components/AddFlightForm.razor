@@ -30,11 +30,15 @@
         <MudTextField Label="Duration (mm:ss)"
                       @bind-Value="_duration"
                       Placeholder="05:12"
-                      Immediate="true" />
+                      Immediate="true"
+                      Mask="@mask1"
+                      Pattern="^\d{2}:\d{2}$"
+                      ErrorText="Please use format mm:ss" />
 
+        <MudTextField Label="Location" @bind-Value="_draft.Location" />
         <MudTextField Label="Comment" @bind-Value="_draft.Comment" />
 
-        <MudDatePicker @bind-Date="_draft.Date" Label="Дата польоту" />
+        <MudDatePicker @bind-Date="_draft.Date" Label="Flight Date" />
 
         <MudButton Color="Color.Primary"
                    Disabled="!IsValid"
@@ -50,14 +54,23 @@
 
     private FlightInfo _draft = new() { Date = DateTime.Today };
     private string _duration;
-
+    private bool _hasError = false;
+    public PatternMask mask1 = new PatternMask("##:##") { 
+        MaskChars = new[] { new MaskChar('#', @"[0-9]") } 
+    };
     private bool IsValid => !string.IsNullOrWhiteSpace(_draft.Name);
 
     private async Task Submit()
     {
         if (!IsValid) 
             return;
-
+        if (TimeSpan.TryParseExact(_duration, @"mm\:ss", null, out var parsed))
+            _draft.FlightTime = parsed;
+        else
+        {
+            _hasError = true;
+            return;
+        }
         _draft.Date ??= DateTime.Today;
 
         // Invoke Event

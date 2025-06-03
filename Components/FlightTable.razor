@@ -7,33 +7,25 @@
     <MudDataGrid T="FlightInfo"
                  Items="Flights"
                  Hover="true"
-                 Dense="true">
+                 Dense="false">
         <Columns>
-            <!-- Колонка "Дата" -->
             <PropertyColumn Property="x => x.Date"
                             Title="Дата"
                             Format="dd-MM-yyyy" />
-
-            <!-- Колонка "Батарея" -->
             <PropertyColumn Property="x => x.Name"
                             Title="Name" />
-            <!-- Колонка "Батарея" -->
             <PropertyColumn Property="x => x.Location"
                             Title="Location" />
-
-            <!-- Колонка "mAh" -->
+            <PropertyColumn Property="x => x.FlightTime"
+                            Title="Time" />
             <PropertyColumn Property="x => x.UsedMah"
                             Title="mAh" />
-            
             <PropertyColumn Property="x => x.CellCount"
                             Title="Cells" />
-            <!-- Колонка "Тип" -->
             <PropertyColumn Property="x => x.BatType"
-                            Title="Тип" />
-
-            <!-- Колонка "Коментар" -->
+                            Title="Type" />
             <PropertyColumn Property="x => x.Comment"
-                            Title="Коментар" />
+                            Title="Comments" />
 
             <!-- Колонка з кнопкою "Видалити" -->
             @*
