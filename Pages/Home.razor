@@ -1,14 +1,11 @@
 ﻿@page "/"
 @using System.Text.Json
 @using System.Text.Json.Serialization
-@using MudFPVAssistant.Services
-@using MudFPVAssistant.Services.Firebase
 @inject ISnackbar Snackbar
-@inject AuthState authState
-@inject FirebaseAuthService authService
 @inject ReactiveUserCollectionService<Models.FlightInfo> flightData
+@inject IDataSource<FlightSpot> flightSpotDataSource
+@inject NavigationManager Navigation
 @implements IDisposable
-@inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 <PageTitle>Home</PageTitle>
 
@@ -34,6 +31,14 @@
             <MudCardContent Class="text-center">
                 <MudText Typo="Typo.h6">Унікальних батарей</MudText>
                 <MudText Typo="Typo.h4">@_flights.Select(x => x.Name).Distinct().Count()</MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard>
+            <MudCardContent Class="text-center">
+                <MudText Typo="Typo.h6">Flight Spots</MudText>
+                <MudButton Variant="Variant.Text" Size="Size.Large" OnClick="@(() => Navigation.NavigateTo("/mapspotsave"))" Typo="Typo.h1">@flightSpotDataSource.Items.Count()</MudButton >
             </MudCardContent>
         </MudCard>
     </MudItem>
@@ -75,8 +80,12 @@
     }
     protected override async Task OnInitializedAsync()
     {
+        
         await flightData.InitializeAsync();
+        await flightSpotDataSource.InitializeAsync();
         _flights = flightData.Items.ToList();
+        
+        flightSpotDataSource.OnUpdated += Refresh;
         flightData.OnUpdated += OnFlightsChanged;
     }
     private void OnFlightsChanged()
@@ -85,6 +94,8 @@
         _flights = flightData.Items.ToList();
         InvokeAsync(StateHasChanged);
     }
+    private void Refresh() 
+        => InvokeAsync(StateHasChanged);
     public void Dispose()
     {
         flightData.OnUpdated -= OnFlightsChanged;

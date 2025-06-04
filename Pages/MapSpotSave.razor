@@ -1,13 +1,8 @@
 ﻿@page "/MapSpotSave"
-@using System.Text.Json
 @using GoogleMapsComponents
-@using GoogleMapsComponents.Maps
 @using MouseEvent = MudBlazor.MouseEvent
-@using MudFPVAssistant.Services
 @using MudFPVAssistant.Components
-@using MudFPVAssistant.Models.DataSources
 @inject IDataSource<FlightSpot> SpotsService 
-@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject IJSRuntime JS
 @inject IDialogService DialogService
 @implements IDisposable
@@ -31,13 +26,13 @@
         <MudMenu PositionAtCursor="true"
                  ActivationEvent="MouseEvent.RightClick"
                  @ref="_mapMenu">
-            <MudMenuItem OnClick="AddGlobalSpot">Додати спот тут</MudMenuItem>
+            <MudMenuItem OnClick="AddGlobalSpot">Add spot</MudMenuItem>
         </MudMenu>
         <MudMenu PositionAtCursor="true"
                  ActivationEvent="MouseEvent.RightClick"
                  @ref="_markerMenu">
-            <MudMenuItem OnClick="OpenEditDialog">Редагувати спот</MudMenuItem>
-            <MudMenuItem OnClick="DeleteSpot">Видалити спот</MudMenuItem>
+            <MudMenuItem OnClick="OpenEditDialog">Edit spot</MudMenuItem>
+            <MudMenuItem OnClick="DeleteSpot">Delete spot</MudMenuItem>
             <MudMenuItem>Прокласти маршрут</MudMenuItem>
         </MudMenu>
     </MudPaper>

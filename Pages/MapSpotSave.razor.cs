@@ -10,7 +10,7 @@ namespace MudFPVAssistant.Pages;
 
 public partial class MapSpotSave : ComponentBase
 {
-       private MudMenu? _mapMenu;
+    private MudMenu? _mapMenu;
     private MudMenu? _markerMenu;
     private DotNetObjectReference<MapSpotSave>? dotnetRef;
     private FlightSpot? selectedSpot;
@@ -67,8 +67,8 @@ public partial class MapSpotSave : ComponentBase
         {
             ClientX = x,
             ClientY = y,
-            PageX   = x,
-            PageY   = y
+            PageX = x,
+            PageY = y
         };
 
         if (isPoint && args.TryGetProperty("id", out var idEl))
@@ -150,6 +150,7 @@ public partial class MapSpotSave : ComponentBase
             await SpotsService.UpdateAsync(updated.Id!, updated);
         }
     }
+
     [JSInvokable]
     public Task AutoLocated(double lat, double lng)
     {
@@ -157,6 +158,7 @@ public partial class MapSpotSave : ComponentBase
         StateHasChanged();
         return Task.CompletedTask;
     }
+
     public void Dispose()
     {
         SpotsService.OnUpdated -= async () =>

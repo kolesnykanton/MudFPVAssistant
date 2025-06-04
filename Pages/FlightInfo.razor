@@ -2,8 +2,6 @@
 @using System.Text.Json
 @using Microsoft.AspNetCore.Components.Authorization
 @using MudFPVAssistant.Components
-@using MudFPVAssistant.Models.DataSources
-@inject Blazored.LocalStorage.ILocalStorageService localStorage
 @implements IDisposable
 @inject DataSourceFactory factory
 
@@ -78,10 +76,7 @@
             ? _ds.Items
             : _ds.Items.Where(f => f.Date?.Date == _filterDate.Value.Date);
 
-    private string? GetDayClass(DateTime day) 
-        => _ds.Items.Any(f => f.Date?.Date == day.Date)
-            ? "flight-day"
-            : null;
+
 
     public void Dispose() 
         => _ds.OnUpdated -= Refresh;
@@ -92,12 +87,15 @@
         if (count > 0)
             return new Dictionary<string, object>
             {
-                ["title"] = $"Польотів: {count}" // браузерний tooltip
+                ["title"] = $"Польотів: {count}" // briwser tooltip
             };
 
-        return null; // нічого не додавати
+        return null;
     }
-
+    private string? GetDayClass(DateTime day) 
+        => _ds.Items.Any(f => f.Date?.Date == day.Date)
+            ? "flight-day"
+            : null;
 }
 
 <style>
