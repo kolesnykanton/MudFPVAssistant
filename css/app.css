@@ -112,8 +112,3 @@ code {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
-.flight-day button{
-     background:#1976d2!important;   /* синє коло */
-     color:#ffffff!important;
-     border-radius:50%!important;
- }

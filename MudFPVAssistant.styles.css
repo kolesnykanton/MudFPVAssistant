@@ -161,11 +161,6 @@ main[b-9su4f6rciu] {
     }
 }
 /* /Pages/FlightInfo.razor.rz.scp.css */
-:global(.flight-day)[b-jb2yl8svnz]{
-    background:#1976d2 !important;
-    color:#fff !important;
-    border-radius:50% !important;
-}
 /* /Pages/MapSpotSave.razor.rz.scp.css */
 /* Блокуємо нативне меню довгого натискання */
 .leaflet-container[b-3yotjjgmtf] {

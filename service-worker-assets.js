@@ -1,8 +1,8 @@
 self.assetsManifest = {
-  "version": "9dJrwvb3",
+  "version": "Y8OAkq/1",
   "assets": [
     {
-      "hash": "sha256-cH9zROZa6NOJshr/5wpDiOWmSTrN07Ck9xTzDX9l6yg=",
+      "hash": "sha256-tf6vlkw9fHfFjL23sb1VV62Ne5PSuozx/qe+n2bSeL8=",
       "url": "MudFPVAssistant.styles.css"
     },
     {
@@ -142,8 +142,8 @@ self.assetsManifest = {
       "url": "_framework/MudBlazor.wk23t3grtc.wasm"
     },
     {
-      "hash": "sha256-KgeRbQiCjnrwvaZA0PMPExTW0zABeMtVgMgRrMyKuDM=",
-      "url": "_framework/MudFPVAssistant.ar4fvt20jt.wasm"
+      "hash": "sha256-s3A57wN5JxpdjbDU5ia+swsi+mqmFh1bU/G6JsWIZjg=",
+      "url": "_framework/MudFPVAssistant.biqie71j9p.wasm"
     },
     {
       "hash": "sha256-akqbZuRazMph7GZNcPHLIOp1mgnkjdaWZMM9Up4LPfE=",
@@ -262,7 +262,7 @@ self.assetsManifest = {
       "url": "_framework/System.ezrw3d5kw2.wasm"
     },
     {
-      "hash": "sha256-IJLgLeoD66aamX9fTDFLtM6z9Ql2dQStbAYHGmgi9Z8=",
+      "hash": "sha256-epAxcTOpLfIKElPqeSHh7af7QpUkwFsdRxMLkT0GHrM=",
       "url": "_framework/blazor.boot.json"
     },
     {
@@ -310,7 +310,7 @@ self.assetsManifest = {
       "url": "animations/lottieInterop.js"
     },
     {
-      "hash": "sha256-3YfLYcRrLdRTxvIYNAjUjgfNvd1b3BD+8y9gY2DjbeA=",
+      "hash": "sha256-NdR6BBtG0A492/UR/PUoJ0g3Y19lJ4fdogIrJWMC6TE=",
       "url": "css/app.css"
     },
     {
@@ -342,24 +342,36 @@ self.assetsManifest = {
       "url": "img/iconfpvAss-512.png"
     },
     {
-      "hash": "sha256-aMPp0NQE/ZzmVO/qfJ1aBtpXXwDPTmW3j4O0DTJZt0g=",
+      "hash": "sha256-JPSKUQupwkiKmtKIvMCET17DyxvRu55J8BAiuX3voTY=",
       "url": "index.html"
     },
     {
       "hash": "sha256-4Y56EO7iBcKNw69FRHZgmRz2M8OAS1sUY4ETY/aBvfI=",
-      "url": "js/firebase.storage.js"
+      "url": "js/firebase/firebase.storage.js"
     },
     {
-      "hash": "sha256-biOi3StpmEXeeiU7eB8Og6Xj6P3W7BN1sRu+g0sL03k=",
-      "url": "js/firebaseInterop.js"
+      "hash": "sha256-SaoxgceVHSu7nFW4rVI1xQ/BcRzdhP/1TKEFsu5aOIU=",
+      "url": "js/firebase/firebaseCore.js"
     },
     {
-      "hash": "sha256-86yiBnlDHdVeeV9WCPQ12QWx8uBE1Ix6UgxCyEe4904=",
-      "url": "js/firebaseSpots.js"
+      "hash": "sha256-461If1WIE6XNcywblxQGZFwtU9TFUAtLUF2kNSusulk=",
+      "url": "js/firebase/firebaseInterop.js"
     },
     {
-      "hash": "sha256-UOMRWshZ95bF3B0d949tWOFGlgUeqQbNC9bKe8Rn8W4=",
-      "url": "js/mapInterop.js"
+      "hash": "sha256-1tJ4HzA3itIwSGMdoVKj7LfFXBfvTnwNhJdezNGxcbo=",
+      "url": "js/map/mapCore.js"
+    },
+    {
+      "hash": "sha256-oLPMPFmSSPP7zpvEY67LiOZQmoo8eN85t18h8bbsMio=",
+      "url": "js/map/mapInterop.js"
+    },
+    {
+      "hash": "sha256-Xt9sB60qUYdmBoEgqujLz7YNfbDJgjSbHpX2oAyFsBs=",
+      "url": "js/map/mapMarkers.js"
+    },
+    {
+      "hash": "sha256-F2XssQJKGclDi/g/TWUSinVB5R1Z1gzzpmh3GIbptyo=",
+      "url": "js/map/mapPlugins.js"
     },
     {
       "hash": "sha256-Yy5/hBqRmmU2MJ1TKwP2aXoTO6+OjzrLmJIsC2Wy4H8=",
