@@ -151,13 +151,13 @@ public partial class MapSpotSave : ComponentBase
         }
     }
 
-    [JSInvokable]
+    /*[JSInvokable]
     public Task AutoLocated(double lat, double lng)
     {
         // централізуєте карту чи додаєте маркер “Я тут”
         StateHasChanged();
         return Task.CompletedTask;
-    }
+    }*/
 
     public void Dispose()
     {

@@ -47,12 +47,9 @@ builder.Services.AddScoped<IDataSource<FlightSpot>, CloudSpotDataSource>();
 
 // 6. Фабрика для отримання IDataSource<T>
 builder.Services.AddScoped<DataSourceFactory>();
-
 builder.Services.AddScoped<CloudFlightDataSource>();
-builder.Services.AddScoped<DataSourceFactory>();
 
-builder.Services.AddAuthorizationCore();
-builder.Services.AddScoped<AuthState>();
+
 
 builder.Services.AddMudServices(cfg =>
 {
@@ -68,7 +65,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 var host = builder.Build();
 
 var js = host.Services.GetRequiredService<IJSRuntime>();
-var module = await js.InvokeAsync<IJSObjectReference>("import", "./js/firebaseInterop.js");
+var module = await js.InvokeAsync<IJSObjectReference>("import", "./js/firebase/firebaseInterop.js");
 
 if (builder.HostEnvironment.IsDevelopment())
 {
