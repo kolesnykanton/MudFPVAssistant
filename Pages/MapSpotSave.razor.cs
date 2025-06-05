@@ -18,13 +18,13 @@ public partial class MapSpotSave : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        // Підписка на оновлення кешу, щоб одразу перемалювати маркери
-        SpotsService.OnUpdated += async () =>
-        {
-            await RenderMarkersAsync();
-            StateHasChanged();
-        };
+        SpotsService.OnUpdated += OnSpotsUpdated;
         await SpotsService.InitializeAsync();
+    }
+    private async void OnSpotsUpdated()
+    {
+        await RenderMarkersAsync();
+        StateHasChanged();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -161,10 +161,6 @@ public partial class MapSpotSave : ComponentBase
 
     public void Dispose()
     {
-        SpotsService.OnUpdated -= async () =>
-        {
-            await RenderMarkersAsync();
-            StateHasChanged();
-        };
+        SpotsService.OnUpdated -= OnSpotsUpdated;
     }
 }

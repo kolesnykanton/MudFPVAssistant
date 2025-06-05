@@ -1,81 +1,107 @@
-﻿@inject FirebaseAuthService AuthService
+﻿@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject FirebaseAuthService AuthService
 @inject AuthState AuthState
 @inject ISnackbar Snackbar
-@using MudFPVAssistant.Services
-@using Microsoft.AspNetCore.Components.Authorization
-@using MudFPVAssistant.Services.Firebase
+
 @inherits LayoutComponentBase
 
-<MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme"/>
+<MudThemeProvider @bind-IsDarkMode="_isDarkMode" Theme="_theme"/>
 <MudPopoverProvider/>
 <MudDialogProvider/>
 <MudSnackbarProvider PositionClass="@MudBlazor.Defaults.Classes.Position.BottomLeft"/>
 
 <MudLayout>
     <MudAppBar>
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
-                       OnClick="@((e) => DrawerToggle())"/>
+        <MudIconButton Icon="@Icons.Material.Filled.Menu"
+                       Color="Color.Inherit"
+                       Edge="Edge.Start"
+                       OnClick="ToggleDrawer"/>
         FPV Companion
 
         <MudSpacer/>
-        <MudText Class="mx-2" Typo="Typo.caption">
-            Debug: Uid = @AuthState.Uid
-        </MudText>
+
+        @if (_authChecked)
+        {
+            <MudText Class="mx-2" Typo="Typo.caption">
+                Debug: Uid = @(_user?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "<null>")
+            </MudText>
+        }
+        else
+        {
+            <MudText Class="mx-2" Typo="Typo.caption">
+                Debug: Checking auth…
+            </MudText>
+        }
+
         <AuthorizeView>
             <Authorized>
-                <MudIconButton Icon="@Icons.Material.Filled.Logout" OnClick="SignOut" />
+                <MudIconButton Icon="@Icons.Material.Filled.Logout"
+                               Color="Color.Warning"
+                               OnClick="SignOut"
+                               ToolTip="Logout"/>
             </Authorized>
             <NotAuthorized>
-                <MudIconButton Icon="@Icons.Material.Filled.Login" OnClick="SignIn" />
+                <MudIconButton Icon="@Icons.Material.Filled.Login"
+                               Color="Color.Tertiary"
+                               OnClick="SignIn"
+                               ToolTip="Login with Google"/>
             </NotAuthorized>
         </AuthorizeView>
+
         <MudToggleIconButton Icon="@Icons.Material.Filled.DarkMode"
                              @bind-Toggled="_isDarkMode"
                              Color="Color.Default"
                              ToggledIcon="@Icons.Material.Filled.WbSunny"
-                             ToggledColor="Color.Warning"
-        />
+                             ToggledColor="Color.Warning"/>
     </MudAppBar>
-    <MudDrawer SwipeAreaWidth="60" @bind-Open="@_drawerOpen">
+
+    <MudDrawer Anchor="Anchor.Left" @bind-Open="_drawerOpen">
         <NavMenu/>
     </MudDrawer>
+
     <MudMainContent>
-        <MudContainer>
+        <MudContainer Class="mt-4">
             @Body
         </MudContainer>
     </MudMainContent>
 </MudLayout>
 
 @code {
-    bool _drawerOpen = true;
-    bool _switchTheme;
-    bool _isDarkMode = true;
+    private bool _drawerOpen = true;
+    private bool _isDarkMode = true;
     private MudTheme _theme = new();
+    [CascadingParameter] private Task<AuthenticationState> AuthStateTask { get; set; } = default!;
+    private ClaimsPrincipal? _user;
+    private bool _authChecked = false;
 
-    void DrawerToggle()
+    private void ToggleDrawer()
     {
         _drawerOpen = !_drawerOpen;
     }
-
     protected override async Task OnInitializedAsync()
     {
-        var user = await AuthService.GetCurrentAsync();
-        AuthState.Initialize(user?.Uid);
         await AuthService.SubscribeAsync(DotNetObjectReference.Create(AuthState));
-        AuthState.PropertyChanged += (_, __) => InvokeAsync(StateHasChanged);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var authState = await AuthStateTask;
+        _user = authState.User;
+        _authChecked = true;
     }
 
     private async Task SignIn()
     {
         var userinfo = await AuthService.SignInAsync();
-
-        Snackbar.Add($"Hello {userinfo.DisplayName}!", Severity.Success, config =>
-        {
-            config.VisibleStateDuration = 2000;
-        });
+        Snackbar.Add($"Hello, {userinfo.DisplayName}!", Severity.Success, config => { config.VisibleStateDuration = 2000; });
     }
 
-    private async Task SignOut() => await AuthService.SignOutAsync();
-}
+    private async Task SignOut()
+    {
+        await AuthService.SignOutAsync();
+        Snackbar.Add("You have been logged out.", Severity.Info, config => { config.VisibleStateDuration = 2000; });
+    }
 
 }

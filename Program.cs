@@ -8,8 +8,8 @@ using MudBlazor;
 using MudFPVAssistant;
 using MudBlazor.Services;
 using MudFPVAssistant.Models;
-using MudFPVAssistant.Models.DataSources;
 using MudFPVAssistant.Services;
+using MudFPVAssistant.Services.DataSources;
 using MudFPVAssistant.Services.Firebase;
 
 
@@ -47,7 +47,9 @@ builder.Services.AddScoped<IDataSource<FlightSpot>, CloudSpotDataSource>();
 
 // 6. Фабрика для отримання IDataSource<T>
 builder.Services.AddScoped<DataSourceFactory>();
+/*
 builder.Services.AddScoped<CloudFlightDataSource>();
+*/
 
 
 
@@ -58,8 +60,6 @@ builder.Services.AddMudServices(cfg =>
 });
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazorGoogleMaps("AIzaSyA_Lhy8SbBeA7zyuveu2ocNKQCzfUlslaI");
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 var host = builder.Build();

@@ -1,4 +1,4 @@
-﻿namespace MudFPVAssistant.Models.DataSources;
+﻿namespace MudFPVAssistant.Services.DataSources;
 
 public interface IDataSource<T>
 {

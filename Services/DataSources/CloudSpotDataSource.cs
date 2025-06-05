@@ -1,7 +1,7 @@
-﻿using MudFPVAssistant.Services;
+﻿using MudFPVAssistant.Models;
 using MudFPVAssistant.Services.Firebase;
 
-namespace MudFPVAssistant.Models.DataSources;
+namespace MudFPVAssistant.Services.DataSources;
 
 public class CloudSpotDataSource : IDataSource<FlightSpot>, IDisposable
 {

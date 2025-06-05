@@ -1,6 +1,6 @@
-﻿using MudFPVAssistant.Services;
+﻿using MudFPVAssistant.Models;
 
-namespace MudFPVAssistant.Models.DataSources;
+namespace MudFPVAssistant.Services.DataSources;
 
 public class CloudFlightDataSource : IDataSource<FlightInfo>, IDisposable
 {

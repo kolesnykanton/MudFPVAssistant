@@ -1,6 +1,5 @@
 ﻿@using MudFPVAssistant.Converters
 @using MudFPVAssistant.Models
-@using MudFPVAssistant.Models.DataSources
 @using MudFPVAssistant.Services
 @using MudFPVAssistant.Services.Firebase
 @inject IFirebaseStorageService StorageService
@@ -11,18 +10,18 @@
     <TitleContent>
         <MudText Typo="Typo.h6">
             <MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3 mb-n1"/>
-            Редагувати спот
+            Edit flight spot
         </MudText>
     </TitleContent>
     <DialogContent>
-        <MudTextField @bind-Value="Spot.Name" Label="Назва" Required="true" Class="mb-2"/>
+        <MudTextField @bind-Value="Spot.Name" Label="Title" Required="true" Class="mb-2"/>
         <MudTextField T="GeolocationCoords"
-                      Label="Координати"
+                      Label="Coords"
                       ReadOnly="true"
                       Value="Spot.Coords"
                       Converter="@(new CoordinateConverter())"
                       Class="mb-2"/>
-        <MudTextField @bind-Value="Spot.Comments" Label="Коментарі" Class="mb-2"/>
+        <MudTextField @bind-Value="Spot.Comments" Label="Comments" Class="mb-2"/>
 
         <MudText>Тип:</MudText>
         <MudChipSet T="string"
@@ -35,7 +34,8 @@
                               ("Mountain", Color.Primary, Icons.Material.Filled.Terrain),
                               ("Beach", Color.Info, Icons.Material.Filled.BeachAccess),
                               ("Building", Color.Secondary, Icons.Material.Filled.LocationCity),
-                              ("Forest", Color.Success, Icons.Material.Filled.Forest)
+                              ("Forest", Color.Success, Icons.Material.Filled.Forest),
+                              ("Field", Color.Warning, Icons.Material.Filled.Grass)
                           })
             {
                 <MudChip Text="@cat.Name"
@@ -89,6 +89,7 @@
     // Якщо ви хочете зберігати storage path у Spot:
     // [JsonIgnore] public string? StoragePath { get; set; } — уже є в моделі
 
+    /*
     private async Task UploadFiles(IReadOnlyList<IBrowserFile> files)
     {
         if (files?.Count > 0)
@@ -127,6 +128,7 @@
             StateHasChanged();
         }
     }
+    */
 
     // тимчасово зберігаємо вибраний IBrowserFile
     private IBrowserFile? _pendingFile;
@@ -153,7 +155,7 @@
             }
             catch
             {
-                Snackbar.Add("Помилка при читанні файлу для прев’ю.", Severity.Error);
+                Snackbar.Add("Error reading file", Severity.Error);
             }
         }
     }
@@ -177,7 +179,6 @@
 
             try
             {
-                // Завантажуємо у Storage (JS-interop)
                 var downloadUrl = await StorageService.UploadAsync(storagePath, _pendingFile);
 
                 Spot.StoragePath = storagePath;
@@ -185,7 +186,7 @@
             }
             catch
             {
-                Snackbar.Add("Не вдалося завантажити фото на сервер.", Severity.Error);
+                Snackbar.Add("Cant upload to server", Severity.Error);
                 return;
             }
         }
