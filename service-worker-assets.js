@@ -1,5 +1,5 @@
 self.assetsManifest = {
-  "version": "Y8OAkq/1",
+  "version": "iOY8in36",
   "assets": [
     {
       "hash": "sha256-tf6vlkw9fHfFjL23sb1VV62Ne5PSuozx/qe+n2bSeL8=",
@@ -142,8 +142,8 @@ self.assetsManifest = {
       "url": "_framework/MudBlazor.wk23t3grtc.wasm"
     },
     {
-      "hash": "sha256-s3A57wN5JxpdjbDU5ia+swsi+mqmFh1bU/G6JsWIZjg=",
-      "url": "_framework/MudFPVAssistant.biqie71j9p.wasm"
+      "hash": "sha256-p4gdgxmkd7EGuDQsWzwbDhf4zwEwsx7qHv40mzQXq8Y=",
+      "url": "_framework/MudFPVAssistant.3t1a9mqsny.wasm"
     },
     {
       "hash": "sha256-akqbZuRazMph7GZNcPHLIOp1mgnkjdaWZMM9Up4LPfE=",
@@ -234,12 +234,12 @@ self.assetsManifest = {
       "url": "_framework/System.Runtime.Serialization.Primitives.0ya5uawo3s.wasm"
     },
     {
-      "hash": "sha256-Wwl+IEdz600dLxh7xlBplgqfLIgpLbm4nLN1E/FwCnk=",
-      "url": "_framework/System.Runtime.n9w0u2orhz.wasm"
+      "hash": "sha256-5N0MUCKymCO8YIMs2FuMdEG0uzG3a4N90ILlN5pZMUQ=",
+      "url": "_framework/System.Runtime.scxd84yuyx.wasm"
     },
     {
-      "hash": "sha256-kEhcixubT30noz3o9ld9M9AfRLfRXE4O/IA1FAQpjlI=",
-      "url": "_framework/System.Security.Claims.knwh1i6g8w.wasm"
+      "hash": "sha256-OFc2VI1799p8IRZZIjFyHzQwUjWzkU1Z/7ZE1cAohq0=",
+      "url": "_framework/System.Security.Claims.cj8s9t4b6u.wasm"
     },
     {
       "hash": "sha256-PVCrhDn4h1OgqMGUhEs25nlp1YW7mMfPoEgZxltnMoo=",
@@ -262,7 +262,7 @@ self.assetsManifest = {
       "url": "_framework/System.ezrw3d5kw2.wasm"
     },
     {
-      "hash": "sha256-epAxcTOpLfIKElPqeSHh7af7QpUkwFsdRxMLkT0GHrM=",
+      "hash": "sha256-hToEClTHCV7MHmKEeksp9nJbSBwKRM4aieBzaG0eRuU=",
       "url": "_framework/blazor.boot.json"
     },
     {
@@ -330,6 +330,10 @@ self.assetsManifest = {
       "url": "img/cda1_drone-green-grey.svg"
     },
     {
+      "hash": "sha256-KjJ0EWFREroh64xF2HQ0JZaS6+b3dk5DglJYfCzXhGs=",
+      "url": "img/drone-icon.svg"
+    },
+    {
       "hash": "sha256-TN2zwwU0D9peq+PBT5QlHvXpaXS6GwLJ+fdFHxJXPvY=",
       "url": "img/drone_controller_with_stick_ids.svg"
     },
@@ -366,7 +370,7 @@ self.assetsManifest = {
       "url": "js/map/mapInterop.js"
     },
     {
-      "hash": "sha256-Xt9sB60qUYdmBoEgqujLz7YNfbDJgjSbHpX2oAyFsBs=",
+      "hash": "sha256-JPWLh6YPHepuBcb34ZU7/QV0XyHEaHKFSUjFPiT2lSI=",
       "url": "js/map/mapMarkers.js"
     },
     {
