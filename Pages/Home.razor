@@ -1,8 +1,12 @@
 ﻿@page "/"
 @using System.Text.Json
 @using System.Text.Json.Serialization
+@using Blazor.QuickWeather
+@using Blazor.QuickWeather.Components
+@using Blazor.WeatherWidget
 @using MudFPVAssistant.Services.DataSources
 @inject ISnackbar Snackbar
+@inject IJSRuntime JS
 @inject ReactiveUserCollectionService<Models.FlightInfo> flightData
 @inject IDataSource<FlightSpot> flightSpotDataSource
 @inject NavigationManager Navigation
@@ -39,13 +43,22 @@
         <MudCard>
             <MudCardContent Class="text-center">
                 <MudText Typo="Typo.h6">Flight Spots</MudText>
-                <MudButton Variant="Variant.Text" Size="Size.Large" OnClick="@(() => Navigation.NavigateTo("/mapspotsave"))" Typo="Typo.h1">@flightSpotDataSource.Items.Count()</MudButton >
+                <MudButton Variant="Variant.Text" Size="Size.Large"
+                           OnClick="@(() => Navigation.NavigateTo("/mapspotsave"))"
+                           Typo="Typo.h1">@flightSpotDataSource.Items.Count()</MudButton>
             </MudCardContent>
         </MudCard>
     </MudItem>
 </MudGrid>
-<InputFile OnChange="OnFileChange" />
+<InputFile OnChange="OnFileChange"/>
 <MudButton OnClick="ImportFlights">Import data</MudButton>
+<QuickWeatherBasic Source="WeatherDataSource.OpenWeatherMap"
+                   IncludeForecast="true"
+                   UseSourceIcons="false"
+                   UpdateIntervalSeconds="300"/>
+<div id="openweathermap-widget-15"></div>
+<WeatherWidget CurrentCity="Munich, DE" />
+
 
 @code
 {
@@ -66,7 +79,6 @@
         };
 
         loadedFlights = JsonSerializer.Deserialize<List<Models.FlightInfo>>(json, options);
-        
     }
 
     private async Task ImportFlights()
@@ -79,15 +91,39 @@
 
         Snackbar.Add("Done", Severity.Success);
     }
+
     protected override async Task OnInitializedAsync()
     {
-        
         await flightData.InitializeAsync();
         await flightSpotDataSource.InitializeAsync();
         _flights = flightData.Items.ToList();
-        
+
         flightSpotDataSource.OnUpdated += Refresh;
         flightData.OnUpdated += OnFlightsChanged;
+    }
+
+    private const string ApiKey = "cb9057bc695e65c32bd8ad9081faba9b";
+    private bool _loading = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        try
+        {
+            var cityId = await JS.InvokeAsync<int>("getUserCityIdFromLocation", ApiKey);
+            await JS.InvokeVoidAsync("loadWeatherWidget", cityId, ApiKey);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Weather widget error: " + ex.Message);
+        }
+        finally
+        {
+            _loading = false;
+            StateHasChanged();
+        }
     }
     private void OnFlightsChanged()
     {
@@ -95,8 +131,10 @@
         _flights = flightData.Items.ToList();
         InvokeAsync(StateHasChanged);
     }
-    private void Refresh() 
+
+    private void Refresh()
         => InvokeAsync(StateHasChanged);
+
     public void Dispose()
     {
         flightData.OnUpdated -= OnFlightsChanged;
