@@ -20,9 +20,4 @@
         <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
     </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Blazor.QuickWeather\Blazor.QuickWeather.OpenWeatherMap\Blazor.QuickWeather.OpenWeatherMap.csproj" />
-      <ProjectReference Include="..\Blazor.QuickWeather\Blazor.QuickWeather\Blazor.QuickWeather.csproj" />
-    </ItemGroup>
-
 </Project>

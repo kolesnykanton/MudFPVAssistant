@@ -1,4 +1,3 @@
-using Blazor.QuickWeather.Extensions;
 using Blazor.WeatherWidget;
 using Blazor.WeatherWidget.Settings;
 using Blazored.LocalStorage;
@@ -53,12 +52,7 @@ builder.Services.AddScoped<DataSourceFactory>();
 /*
 builder.Services.AddScoped<CloudFlightDataSource>();
 */
-builder.Services.AddQuickWeather(_ => { });
-builder.Services.AddOpenWeatherMap(options =>
-{
-    options.CurrentWeatherApiKey = "cb9057bc695e65c32bd8ad9081faba9b";
-    options.OneCallApiKey = "cb9057bc695e65c32bd8ad9081faba9b";
-});
+
 // 1. Задаємо значення в ServiceCollection
 builder.Services.Configure<WeatherWidgetSettings>(opt =>
 {

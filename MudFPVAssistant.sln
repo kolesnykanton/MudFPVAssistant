@@ -5,12 +5,6 @@ VisualStudioVersion = 17.13.35931.197 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MudFPVAssistant", "MudFPVAssistant.csproj", "{F5F90A26-CA7D-0AD8-56C6-27E131467827}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.QuickWeather", "..\Blazor.QuickWeather\Blazor.QuickWeather\Blazor.QuickWeather.csproj", "{D61C457A-E4B6-4671-BBEF-16C3B47F4ABB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.QuickWeather.OpenWeatherMap", "..\Blazor.QuickWeather\Blazor.QuickWeather.OpenWeatherMap\Blazor.QuickWeather.OpenWeatherMap.csproj", "{252A41AB-A1E8-43A8-BE36-3F595A38A776}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.QuickWeather.WeatherApi", "..\Blazor.QuickWeather\Blazor.QuickWeather.WeatherApi\Blazor.QuickWeather.WeatherApi.csproj", "{6E028C13-B44B-4764-BB53-5D7EB596A8A3}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,18 +15,6 @@ Global
 		{F5F90A26-CA7D-0AD8-56C6-27E131467827}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F5F90A26-CA7D-0AD8-56C6-27E131467827}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F5F90A26-CA7D-0AD8-56C6-27E131467827}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D61C457A-E4B6-4671-BBEF-16C3B47F4ABB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D61C457A-E4B6-4671-BBEF-16C3B47F4ABB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D61C457A-E4B6-4671-BBEF-16C3B47F4ABB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D61C457A-E4B6-4671-BBEF-16C3B47F4ABB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{252A41AB-A1E8-43A8-BE36-3F595A38A776}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{252A41AB-A1E8-43A8-BE36-3F595A38A776}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{252A41AB-A1E8-43A8-BE36-3F595A38A776}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{252A41AB-A1E8-43A8-BE36-3F595A38A776}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6E028C13-B44B-4764-BB53-5D7EB596A8A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6E028C13-B44B-4764-BB53-5D7EB596A8A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6E028C13-B44B-4764-BB53-5D7EB596A8A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6E028C13-B44B-4764-BB53-5D7EB596A8A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

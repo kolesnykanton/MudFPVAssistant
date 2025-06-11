@@ -1,8 +1,6 @@
 ﻿@page "/"
 @using System.Text.Json
 @using System.Text.Json.Serialization
-@using Blazor.QuickWeather
-@using Blazor.QuickWeather.Components
 @using Blazor.WeatherWidget
 @using MudFPVAssistant.Services.DataSources
 @inject ISnackbar Snackbar
@@ -52,10 +50,6 @@
 </MudGrid>
 <InputFile OnChange="OnFileChange"/>
 <MudButton OnClick="ImportFlights">Import data</MudButton>
-<QuickWeatherBasic Source="WeatherDataSource.OpenWeatherMap"
-                   IncludeForecast="true"
-                   UseSourceIcons="false"
-                   UpdateIntervalSeconds="300"/>
 <div id="openweathermap-widget-15"></div>
 <WeatherWidget CurrentCity="Munich, DE" />
 
