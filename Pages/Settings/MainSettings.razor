@@ -1,0 +1,25 @@
+﻿@inject IDataSource<UserApiKeys> ApiKeysDataSource
+@implements IDisposable
+
+@page "/MainSettings"
+@using MudFPVAssistant.Services.DataSources
+<h3>Main Settings</h3>
+<MudGrid>
+    <MudItem xs="12">
+        <MudPaper Class="p-4 d-flex flex-column" Elevation="1">
+            <MudText Typo="Typo.subtitle1">OpenWeather API Key</MudText>
+            <MudTextField @bind-Value="_apiKeyGoogleMaps" Placeholder="API key" />
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12">
+        <MudPaper Class="p-4 d-flex flex-column" Elevation="1">
+            <MudText Typo="Typo.subtitle1">Google Maps API Key</MudText>
+            <MudTextField @bind-Value="_apiKeyOpenWeather" Placeholder="API key" />
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+
+@code {
+    
+}

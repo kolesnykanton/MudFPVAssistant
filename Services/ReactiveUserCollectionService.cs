@@ -34,7 +34,7 @@ namespace MudFPVAssistant.Services
         /// </summary>
         public event Action? OnUpdated;
 
-        private bool _isInitialized = false;
+        private bool _isInitialized;
 
         /// <summary>
         /// Constructor: injects IUserDocumentService and AuthenticationStateProvider.

@@ -6,14 +6,15 @@
     <MudText Typo="Typo.h6" Class="mb-2">1. Total mAh per Day</MudText>
     @if (!Flights.Any(f => f.Date.HasValue && f.UsedMah.HasValue))
     {
-        <MudAlert Severity="Severity.Info">Нема даних для відображення.</MudAlert>
+        <MudAlert Severity="Severity.Info">No info.</MudAlert>
     }
     else
     {
         <MudChart ChartType="ChartType.Line"
                   XAxisLabels="DailyLabels"
                   ChartSeries="DailySeries"
-                  Height="200" />
+                  Width="1200"
+                  Height="Auto" />
     }
 </MudPaper>
 
