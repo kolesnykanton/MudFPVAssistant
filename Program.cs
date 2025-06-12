@@ -40,6 +40,11 @@ builder.Services.AddScoped<ReactiveUserCollectionService<FlightSpot>>(sp =>
         sp.GetRequiredService<AuthenticationStateProvider>(),
         "FlightSpots"));
 
+builder.Services.AddScoped<ReactiveUserCollectionService<FlightSpot>>(sp =>
+    new ReactiveUserCollectionService<FlightSpot>(
+        sp.GetRequiredService<IUserDocumentService>(),
+        sp.GetRequiredService<AuthenticationStateProvider>(),
+        "ApiKeys"));
 // 4. Firebase Storage для фото
 builder.Services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
 
