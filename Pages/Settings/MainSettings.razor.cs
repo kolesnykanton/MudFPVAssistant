@@ -8,13 +8,15 @@ public partial class MainSettings : ComponentBase
     private string _apiKeyOpenWeather;
     protected override async Task OnInitializedAsync()
     {
-        await ApiKeysDataSource.InitializeAsync();
-        ApiKeysDataSource.OnUpdated += Refresh;
+        await ApiKeysReactiveUserCollectionService.InitializeAsync();
+        ApiKeysReactiveUserCollectionService.OnUpdated += Refresh;
+        _apiKeyGoogleMaps = ApiKeysReactiveUserCollectionService.Items[0].GoogleApiKey ?? string.Empty;
+        _apiKeyOpenWeather = ApiKeysReactiveUserCollectionService.Items[0].OpenWeatherApiKey ?? string.Empty;
     }
     private void Refresh()
         => InvokeAsync(StateHasChanged);
     public void Dispose()
     {
-        ApiKeysDataSource.OnUpdated -= Refresh;
+        ApiKeysReactiveUserCollectionService.OnUpdated -= Refresh;
     }
 }
