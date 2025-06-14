@@ -184,6 +184,40 @@ namespace MudFPVAssistant.Services
                 OnUpdated?.Invoke();
             }
         }
+        /// <summary>
+        /// Partially updates specified fields of a Firestore document and updates in-memory cache.
+        /// </summary>
+        /// <param name="id">Firestore document ID</param>
+        /// <param name="fieldUpdates">
+        /// Dictionary where:
+        ///   key   = name of the property in T to update,
+        ///   value = new value for that property.
+        /// </param>
+        public async Task PatchAsync(string id, Dictionary<string, object> fieldUpdates)
+        {
+            // Push partial update to Firestore (merge: true)
+            await _userDocs.UpdateAsync(_collectionName, id, fieldUpdates);
+
+            // Update in-memory cache
+            var idProp = typeof(T).GetProperty("Id", BindingFlags.Public | BindingFlags.Instance);
+            if (idProp == null) return;
+
+            // Find the existing item in cache
+            var existing = _items.FirstOrDefault(i =>
+                idProp.GetValue(i)?.ToString() == id);
+            if (existing == null) return;
+
+            // Reflectively apply each updated field
+            foreach (var kv in fieldUpdates)
+            {
+                var prop = typeof(T).GetProperty(kv.Key, BindingFlags.Public | BindingFlags.Instance);
+                if (prop != null && prop.CanWrite)
+                    prop.SetValue(existing, kv.Value);
+            }
+
+            // Notify subscribers that cache has changed
+            OnUpdated?.Invoke();
+        }
 
         /// <summary>
         /// Returns a snapshot of cached items.

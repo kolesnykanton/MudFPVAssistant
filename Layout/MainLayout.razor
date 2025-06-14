@@ -1,6 +1,7 @@
 ﻿@using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
-
+@inject AppSettingsService SettingsService
+@inject IJSRuntime JS
 @inject FirebaseAuthService AuthService
 @inject AuthState AuthState
 @inject ISnackbar Snackbar
@@ -25,7 +26,7 @@
         @if (_authChecked)
         {
             <MudText Class="mx-2" Typo="Typo.caption">
-                Debug: Uid = @(_user?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "<null>")
+                Hello @(_user?.FindFirst(ClaimTypes.Name)?.Value ?? "<null>")
             </MudText>
         }
         else
@@ -72,36 +73,73 @@
     private bool _drawerOpen = true;
     private bool _isDarkMode = true;
     private MudTheme _theme = new();
+
     [CascadingParameter] private Task<AuthenticationState> AuthStateTask { get; set; } = default!;
     private ClaimsPrincipal? _user;
-    private bool _authChecked = false;
+    private bool _authChecked;
 
-    private void ToggleDrawer()
-    {
-        _drawerOpen = !_drawerOpen;
-    }
     protected override async Task OnInitializedAsync()
     {
+        // 1) Підписуємося на OnSettingsChanged заздалегідь
+        SettingsService.OnSettingsChanged += PushKeysToJs;
+
+        // 2) Підписка на Firebase-auth
         await AuthService.SubscribeAsync(DotNetObjectReference.Create(AuthState));
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        var authState = await AuthStateTask;
-        _user = authState.User;
+        var auth = await AuthStateTask;
+        _user = auth.User;
         _authChecked = true;
     }
+
+    protected override async Task OnAfterRenderAsync(bool first)
+    {
+        if (!first)
+            return;
+
+        var auth = await AuthStateTask;
+        if (auth.User.Identity?.IsAuthenticated != true)
+            return; // чекаємо реального UID
+
+        // 3) Завантажуємо або створюємо документ лише раз
+        await SettingsService.EnsureLoadedAsync();
+
+        // 4) Якщо вже є ключі — відразу шлемо їх в JS
+        if (SettingsService.HasSettings)
+            PushKeysToJs();
+    }
+
+    private async void PushKeysToJs()
+    {
+        var keys = SettingsService.Current.ApiKeys;
+        if (string.IsNullOrWhiteSpace(keys.OpenWeatherApiKey) ||
+            string.IsNullOrWhiteSpace(keys.GoogleApiKey))
+            return;
+
+        await JS.InvokeVoidAsync("initializeAppApiKeys",
+            keys.OpenWeatherApiKey,
+            keys.GoogleApiKey);
+    }
+
+    private void ToggleDrawer() => _drawerOpen = !_drawerOpen;
 
     private async Task SignIn()
     {
         var userinfo = await AuthService.SignInAsync();
-        Snackbar.Add($"Hello, {userinfo.DisplayName}!", Severity.Success, config => { config.VisibleStateDuration = 2000; });
+        Snackbar.Add($"Hello, {userinfo.DisplayName}!", Severity.Success);
     }
 
     private async Task SignOut()
     {
         await AuthService.SignOutAsync();
-        Snackbar.Add("You have been logged out.", Severity.Info, config => { config.VisibleStateDuration = 2000; });
+        Snackbar.Add("You have been logged out.", Severity.Info);
+    }
+
+    public void Dispose()
+    {
+        SettingsService.OnSettingsChanged -= PushKeysToJs;
     }
 
 }

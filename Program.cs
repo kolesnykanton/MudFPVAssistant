@@ -45,6 +45,14 @@ builder.Services.AddScoped<ReactiveUserCollectionService<UserApiKeys>>(sp =>
         sp.GetRequiredService<IUserDocumentService>(),
         sp.GetRequiredService<AuthenticationStateProvider>(),
         "ApiKeys"));
+builder.Services
+    // Settings Collection
+    .AddScoped(sp =>
+        new ReactiveUserCollectionService<UserSettings>(
+            sp.GetRequiredService<IUserDocumentService>(),
+            sp.GetRequiredService<AuthenticationStateProvider>(),
+            "settings"))
+    .AddScoped<AppSettingsService>();
 
 // 4. Firebase Storage для фото
 builder.Services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
@@ -59,13 +67,13 @@ builder.Services.AddScoped<DataSourceFactory>();
 builder.Services.AddScoped<CloudFlightDataSource>();
 */
 
-// 1. Задаємо значення в ServiceCollection
+/*// 1. Задаємо значення в ServiceCollection
 builder.Services.Configure<WeatherWidgetSettings>(opt =>
 {
     opt.OpenWeatherApiKey = "cb9057bc695e65c32bd8ad9081faba9b";
 });
 // 2. Далі прив’язуємо все, як звичайно
-builder.Services.AddWeatherWidgetServices(builder.Configuration);
+builder.Services.AddWeatherWidgetServices(builder.Configuration);*/
 
 builder.Services.AddMudServices(cfg =>
 {

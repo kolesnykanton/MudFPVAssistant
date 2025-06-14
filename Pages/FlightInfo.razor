@@ -35,14 +35,9 @@
 @code {
     [CascadingParameter]
     Task<AuthenticationState> AuthStateTask { get; set; }
-
+    
     private DateTime? _filterDate = DateTime.Today;
-    private const string StorageKey = "flight-entries";
-    private string _duration;
-    private MudDataGrid<Models.FlightInfo> grid;
     private List<Models.FlightInfo> _flights = [];
-
-    private Models.FlightInfo.BatteryType _selectedType = Models.FlightInfo.BatteryType.Unknown;
   
     private IDataSource<Models.FlightInfo> _ds;
 
