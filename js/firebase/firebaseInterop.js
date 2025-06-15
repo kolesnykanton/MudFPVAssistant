@@ -50,8 +50,20 @@ window.getUserDocs = async (uid, coll) => {
     const snap = await getDocs(userColl(uid, coll));
     return snap.docs.map(d => ({ id: d.id, ...d.data() }));
 };
-window.updateUserDoc = (uid, coll, id, obj) =>
-    setDoc(doc(db, "users", uid, coll, id), obj, { merge: true });
+window.updateUserDoc = async (uid, coll, id, data) => {
+    const collRef = collection(db, "users", uid, coll);
+
+    if (!id) {
+        // 1) If id null or empty - create
+        const docRef = await addDoc(collRef, data);
+        return docRef.id;
+    } else {
+        // 2) OR — Update with merge: true
+        const docRef = doc(collRef, id);
+        await setDoc(docRef, data, { merge: true });
+        return id;
+    }
+};
 window.deleteUserDoc = (uid, coll, id) =>
     deleteDoc(doc(db, "users", uid, coll, id));
 

@@ -5,7 +5,11 @@ export function createMap(elementId, dotnetHelper) {
     // 1) Map Creation
     const map = L.map(elementId, {center: [40.4168, -3.7038], zoom: 13});
 
-    const apiKey = "cb9057bc695e65c32bd8ad9081faba9b";
+    const apiKey = window.appApiKeys.openWeather;
+    if (!apiKey) {
+        console.error("OpenWeather API key not initialized");
+        return;
+    }
 
     // 2) Map layers
     const layers = {
