@@ -1,5 +1,5 @@
 self.assetsManifest = {
-  "version": "uwvv4Opm",
+  "version": "dP/L5brZ",
   "assets": [
     {
       "hash": "sha256-X387/NLqYEl0QRhgS4NpH7QCzl7XJAiVJY/5Eh7drgE=",
@@ -250,8 +250,8 @@ self.assetsManifest = {
       "url": "_framework/MudBlazor.v6cdzxt3a3.wasm"
     },
     {
-      "hash": "sha256-LpRFsrrOPHS68FLR7YPQTwW/x5DtlIimqyYZ/wZOk1Y=",
-      "url": "_framework/MudFPVAssistant.igcb4hbxje.wasm"
+      "hash": "sha256-J1/fB3q1iY+iVg6+j18KvYhoq4t/oAedzbeI8U8U9xo=",
+      "url": "_framework/MudFPVAssistant.59ltwkq4ep.wasm"
     },
     {
       "hash": "sha256-PaicHOw1U7HF05kEvZI0Rgg1nwdA8hrzbzdkw1qgUuU=",
@@ -490,7 +490,7 @@ self.assetsManifest = {
       "url": "_framework/System.cunp5qiwjj.wasm"
     },
     {
-      "hash": "sha256-4VwoubvTm+eXH8HRmRgGX50mSn5wUyLbeTZFr/mCy+0=",
+      "hash": "sha256-rv5A8hc8k7tzdZtWAaGL5Giw+aZd0kYoKmw/99VM4tY=",
       "url": "_framework/blazor.boot.json"
     },
     {
@@ -598,7 +598,7 @@ self.assetsManifest = {
       "url": "js/map/mapInterop.js"
     },
     {
-      "hash": "sha256-JPWLh6YPHepuBcb34ZU7/QV0XyHEaHKFSUjFPiT2lSI=",
+      "hash": "sha256-JjHGliU7ZxfAiQkvYxl+wy99paPbjbFAdFhjVemDNlI=",
       "url": "js/map/mapMarkers.js"
     },
     {
