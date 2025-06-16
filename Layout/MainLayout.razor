@@ -81,7 +81,7 @@
     protected override async Task OnInitializedAsync()
     {
         // 1) Підписуємося на OnSettingsChanged заздалегідь
-        SettingsService.OnSettingsChanged += PushKeysToJs;
+        SettingsService.OnSettingsChanged += async () => await PushKeysToJs();
 
         // 2) Підписка на Firebase-auth
         await AuthService.SubscribeAsync(DotNetObjectReference.Create(AuthState));
@@ -108,10 +108,10 @@
 
         // 4) Якщо вже є ключі — відразу шлемо їх в JS
         if (SettingsService.HasSettings)
-            PushKeysToJs();
+            await PushKeysToJs();
     }
 
-    private async void PushKeysToJs()
+    private async Task PushKeysToJs()
     {
         var keys = SettingsService.Current.ApiKeys;
         if (string.IsNullOrWhiteSpace(keys.OpenWeatherApiKey) ||
@@ -139,7 +139,7 @@
 
     public void Dispose()
     {
-        SettingsService.OnSettingsChanged -= PushKeysToJs;
+        SettingsService.OnSettingsChanged -= async () => await PushKeysToJs();
     }
 
 }
