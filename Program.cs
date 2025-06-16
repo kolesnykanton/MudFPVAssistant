@@ -81,7 +81,7 @@ builder.Services.AddMudServices(cfg =>
     cfg.SnackbarConfiguration.VisibleStateDuration = 2000;
 });
 builder.Services.AddBlazoredLocalStorage();
-builder.Services.AddBlazorGoogleMaps("AIzaSyA_Lhy8SbBeA7zyuveu2ocNKQCzfUlslaI");
+builder.Services.AddScoped<IBlazorGoogleMapsKeyService, FirestoreGoogleMapsKeyService>();
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 var host = builder.Build();

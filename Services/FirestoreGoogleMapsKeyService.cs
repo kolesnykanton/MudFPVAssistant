@@ -3,26 +3,21 @@ using GoogleMapsComponents.Maps;
 
 namespace MudFPVAssistant.Services;
 
-public class FirestoreGoogleMapsKeyService : IBlazorGoogleMapsKeyService
+public class FirestoreGoogleMapsKeyService(AppSettingsService settings) : IBlazorGoogleMapsKeyService
 {
-    private readonly AppSettingsService _settings;
-
-    public FirestoreGoogleMapsKeyService(AppSettingsService settings)
+    public async Task<MapApiLoadOptions> GetApiOptions()
     {
-        _settings = settings;
-    }
+        
+        await settings.EnsureLoadedAsync();
+        
+        if (string.IsNullOrEmpty(settings.Current.ApiKeys.GoogleApiKey))
+        {
+            IsApiInitialized = false;
+            throw new Exception("Google Maps API Key is missing.");
+        }
 
-    public async ValueTask<string> GetApiKeyAsync()
-    {
-        // Переконаємося, що налаштування завантажені
-        await _settings.EnsureLoadedAsync();
-        // Повернемо ключ із Firestore
-        return _settings.Current.ApiKeys.GoogleApiKey;
-    }
-
-    public Task<MapApiLoadOptions> GetApiOptions()
-    {
-        throw new NotImplementedException();
+        IsApiInitialized = true;
+        return new MapApiLoadOptions(settings.Current.ApiKeys.GoogleApiKey);
     }
 
     public bool IsApiInitialized { get; set; }
