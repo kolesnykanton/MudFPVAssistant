@@ -1,7 +1,7 @@
 ﻿// Кастомні іконки (приклад, розширюй по мірі необхідності)
 const customIcons = {
     drone: L.icon({
-        iconUrl: '/img/drone-icon.svg',
+        iconUrl: 'img/drone-icon.svg',
         iconSize: [32, 32],
         iconAnchor: [16, 16],
         shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
