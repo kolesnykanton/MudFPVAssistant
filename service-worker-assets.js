@@ -1,5 +1,5 @@
 self.assetsManifest = {
-  "version": "dP/L5brZ",
+  "version": "54XLppMW",
   "assets": [
     {
       "hash": "sha256-X387/NLqYEl0QRhgS4NpH7QCzl7XJAiVJY/5Eh7drgE=",
@@ -246,12 +246,12 @@ self.assetsManifest = {
       "url": "_framework/Microsoft.Net.Http.Headers.h4nqxqwwch.wasm"
     },
     {
-      "hash": "sha256-9zWvJ4FOpwIUiuoeT3UOHUqnG7VAmhApJUnINpqKcpU=",
-      "url": "_framework/MudBlazor.v6cdzxt3a3.wasm"
+      "hash": "sha256-x2XGZN5KiNnFb3z7S39zozemWQ/08DIczkb01MkDYHA=",
+      "url": "_framework/MudBlazor.94yardcbqq.wasm"
     },
     {
-      "hash": "sha256-J1/fB3q1iY+iVg6+j18KvYhoq4t/oAedzbeI8U8U9xo=",
-      "url": "_framework/MudFPVAssistant.59ltwkq4ep.wasm"
+      "hash": "sha256-0xltcA5Y1Ku4CfTA6l8kt6FOypoiwXTBf0FdtbirWpw=",
+      "url": "_framework/MudFPVAssistant.9hwb1vbtoj.wasm"
     },
     {
       "hash": "sha256-PaicHOw1U7HF05kEvZI0Rgg1nwdA8hrzbzdkw1qgUuU=",
@@ -490,7 +490,7 @@ self.assetsManifest = {
       "url": "_framework/System.cunp5qiwjj.wasm"
     },
     {
-      "hash": "sha256-rv5A8hc8k7tzdZtWAaGL5Giw+aZd0kYoKmw/99VM4tY=",
+      "hash": "sha256-SivUu4E3yYQwHa+cF2CXefZgKiwILqpxYX8Bn6Bw1/E=",
       "url": "_framework/blazor.boot.json"
     },
     {
@@ -598,7 +598,7 @@ self.assetsManifest = {
       "url": "js/map/mapInterop.js"
     },
     {
-      "hash": "sha256-JjHGliU7ZxfAiQkvYxl+wy99paPbjbFAdFhjVemDNlI=",
+      "hash": "sha256-a28RE3zIILDQsXz3l2XtCRi9rLlZMoZUQfMK/AGt6yY=",
       "url": "js/map/mapMarkers.js"
     },
     {

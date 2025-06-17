@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "MudFPVAssistant",
   "resources": {
-    "hash": "sha256-tyfwriAFdUVg/yggx35gKNB8DCIXqjJGfgy9+SrTOOA=",
+    "hash": "sha256-6bIc+yNF4pK+5lVJp++6anJLYiHq/0iFqtiwv5QlfWk=",
     "fingerprinting": {
       "Blazor.WeatherWidget.7hbt8odkq1.wasm": "Blazor.WeatherWidget.wasm",
       "Blazored.LocalStorage.12n6dz54qr.wasm": "Blazored.LocalStorage.wasm",
@@ -50,7 +50,7 @@
       "Microsoft.JSInterop.cpf2g61708.wasm": "Microsoft.JSInterop.wasm",
       "Microsoft.JSInterop.WebAssembly.lsljofql11.wasm": "Microsoft.JSInterop.WebAssembly.wasm",
       "Microsoft.Net.Http.Headers.h4nqxqwwch.wasm": "Microsoft.Net.Http.Headers.wasm",
-      "MudBlazor.v6cdzxt3a3.wasm": "MudBlazor.wasm",
+      "MudBlazor.94yardcbqq.wasm": "MudBlazor.wasm",
       "Newtonsoft.Json.ryat7hvx56.wasm": "Newtonsoft.Json.wasm",
       "OneOf.yq61etxwqn.wasm": "OneOf.wasm",
       "Microsoft.CSharp.fan22u6q2t.wasm": "Microsoft.CSharp.wasm",
@@ -112,7 +112,7 @@
       "System.cunp5qiwjj.wasm": "System.wasm",
       "netstandard.2pfvuhna6h.wasm": "netstandard.wasm",
       "System.Private.CoreLib.vj0voc0aef.wasm": "System.Private.CoreLib.wasm",
-      "MudFPVAssistant.59ltwkq4ep.wasm": "MudFPVAssistant.wasm",
+      "MudFPVAssistant.9hwb1vbtoj.wasm": "MudFPVAssistant.wasm",
       "dotnet.js": "dotnet.js",
       "dotnet.native.rtblh4npr3.js": "dotnet.native.js",
       "dotnet.native.aqhezbunpl.wasm": "dotnet.native.wasm",
@@ -187,7 +187,7 @@
       "Microsoft.JSInterop.cpf2g61708.wasm": "sha256-AIwBCyhAOvrxtPb279PxMdqif6TMkHuZRNOSuWlXs/8=",
       "Microsoft.JSInterop.WebAssembly.lsljofql11.wasm": "sha256-63bzxZLVvNOmTsso6iLrptxGmKBQh2HUIEGtPUrRPeQ=",
       "Microsoft.Net.Http.Headers.h4nqxqwwch.wasm": "sha256-b59APrldqivzbOYVb0CV+lGgWn4HyUPjMa/cplEp2x8=",
-      "MudBlazor.v6cdzxt3a3.wasm": "sha256-9zWvJ4FOpwIUiuoeT3UOHUqnG7VAmhApJUnINpqKcpU=",
+      "MudBlazor.94yardcbqq.wasm": "sha256-x2XGZN5KiNnFb3z7S39zozemWQ/08DIczkb01MkDYHA=",
       "Newtonsoft.Json.ryat7hvx56.wasm": "sha256-PaicHOw1U7HF05kEvZI0Rgg1nwdA8hrzbzdkw1qgUuU=",
       "OneOf.yq61etxwqn.wasm": "sha256-akqbZuRazMph7GZNcPHLIOp1mgnkjdaWZMM9Up4LPfE=",
       "Microsoft.CSharp.fan22u6q2t.wasm": "sha256-mcOYaIxnUs/ITrddxC2o1MPZlswymPmX8gtJpQpbTq4=",
@@ -247,7 +247,7 @@
       "System.Xml.Linq.464ny307vp.wasm": "sha256-JH2xrHoPze3JMRfEdHB+v49DP2GBYXfK1SHBHjP/fL4=",
       "System.cunp5qiwjj.wasm": "sha256-DM5iEENhrifGKn33Y7cqRzxC0OtHXYOKO13icwIazj8=",
       "netstandard.2pfvuhna6h.wasm": "sha256-yuxQI4MO9Dz+Phux159P6jhl00iK8cKNu27/d0l7684=",
-      "MudFPVAssistant.59ltwkq4ep.wasm": "sha256-J1/fB3q1iY+iVg6+j18KvYhoq4t/oAedzbeI8U8U9xo="
+      "MudFPVAssistant.9hwb1vbtoj.wasm": "sha256-0xltcA5Y1Ku4CfTA6l8kt6FOypoiwXTBf0FdtbirWpw="
     }
   },
   "cacheBootResources": true,
