@@ -8,9 +8,9 @@
 
 <MudContainer MaxWidth="MaxWidth.Medium">
     <MudGrid>
-      <!-- New Flight Form -->
+        <!-- New Flight Form -->
         <MudItem xs="12" md="6" Class="mt-2">
-            <AddFlightForm OnAdd="AddAsync" />
+            <AddFlightForm OnAdd="AddAsync"/>
         </MudItem>
 
         <!-- DataGrid for selected flights -->
@@ -20,25 +20,22 @@
                 Class="w-25"
                 Label="Date Picker"
                 @bind-Date="_filterDate"
-                AdditionalDateClassesFunc="GetDayClass" />
+                AdditionalDateClassesFunc="GetDayClass"/>
             <FlightTable Flights="FilteredFlights" OnDelete="DeleteAsync"/>
         </MudItem>
-        
+
         <!-- Stats & Charts -->
         <MudItem xs="12">
-            <FlightStats Flights="_ds.Items" />
+            <FlightStats Flights="_ds.Items"/>
         </MudItem>
 
     </MudGrid>
 </MudContainer>
 
 @code {
-    [CascadingParameter]
-    Task<AuthenticationState> AuthStateTask { get; set; }
-    
+    [CascadingParameter] Task<AuthenticationState> AuthStateTask { get; set; }
+
     private DateTime? _filterDate = DateTime.Today;
-    private List<Models.FlightInfo> _flights = [];
-  
     private IDataSource<Models.FlightInfo> _ds;
 
     protected override async Task OnInitializedAsync()
@@ -58,13 +55,14 @@
         }*/
         //_isLoading = false;
     }
-    private void Refresh() 
+
+    private void Refresh()
         => InvokeAsync(StateHasChanged);
 
-    private Task AddAsync(Models.FlightInfo flight) 
+    private Task AddAsync(Models.FlightInfo flight)
         => _ds.AddAsync(flight);
 
-    private Task DeleteAsync(string id) 
+    private Task DeleteAsync(string id)
         => _ds.DeleteAsync(id);
 
     private IEnumerable<Models.FlightInfo> FilteredFlights =>
@@ -73,31 +71,60 @@
             : _ds.Items.Where(f => f.Date?.Date == _filterDate.Value.Date);
 
 
-
-    public void Dispose() 
+    public void Dispose()
         => _ds.OnUpdated -= Refresh;
 
-    IDictionary<string, object>? GetDayAttrs(DateTime day)
+    private string? GetDayClass(DateTime day)
     {
-        var count = _flights.Count(f => f.Date?.Date == day.Date);
-        if (count > 0)
-            return new Dictionary<string, object>
-            {
-                ["title"] = $"Польотів: {count}" // briwser tooltip
-            };
-
-        return null;
-    }
-    private string? GetDayClass(DateTime day) 
-        => _ds.Items.Any(f => f.Date?.Date == day.Date)
-            ? "flight-day"
+        var count = _ds.Items.Count(f => f.Date?.Date == day.Date);
+        return _ds.Items.Any(f => f.Date?.Date == day.Date)
+            ? $"flight-day flight-count-{count}"
             : null;
+    }
+        
+
 }
 
 <style>
-    .flight-day {
+    .mud-picker-calendar-day.flight-day {
+        position: relative !important;
         background: #d28819 !important;
         color: #fff !important;
-        border-radius: 50% !important
+        border-radius: 50% !important;
     }
+
+    .mud-picker-calendar-day.flight-day::after {
+        content: "";
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        background: #e53935;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        font-size: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        z-index: 1;
+    }
+    
+    .mud-picker-calendar-day.flight-day.flight-count-0::after  { content: "0";  }
+    .mud-picker-calendar-day.flight-day.flight-count-1::after  { content: "1";  }
+    .mud-picker-calendar-day.flight-day.flight-count-2::after  { content: "2";  }
+    .mud-picker-calendar-day.flight-day.flight-count-3::after  { content: "3";  }
+    .mud-picker-calendar-day.flight-day.flight-count-4::after  { content: "4";  }
+    .mud-picker-calendar-day.flight-day.flight-count-5::after  { content: "5";  }
+    .mud-picker-calendar-day.flight-day.flight-count-6::after  { content: "6";  }
+    .mud-picker-calendar-day.flight-day.flight-count-7::after  { content: "7";  }
+    .mud-picker-calendar-day.flight-day.flight-count-8::after  { content: "8";  }
+    .mud-picker-calendar-day.flight-day.flight-count-9::after  { content: "9";  }
+    .mud-picker-calendar-day.flight-day.flight-count-10::after { content: "10"; }
+    .mud-picker-calendar-day.flight-day.flight-count-11::after { content: "11"; }
+    .mud-picker-calendar-day.flight-day.flight-count-12::after { content: "12"; }
+    .mud-picker-calendar-day.flight-day.flight-count-13::after { content: "13"; }
+    .mud-picker-calendar-day.flight-day.flight-count-14::after { content: "14"; }
+    .mud-picker-calendar-day.flight-day.flight-count-15::after { content: "15"; }
+
 </style>

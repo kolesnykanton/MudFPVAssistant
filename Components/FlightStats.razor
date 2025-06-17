@@ -13,8 +13,8 @@
         <MudChart ChartType="ChartType.Line"
                   XAxisLabels="DailyLabels"
                   ChartSeries="DailySeries"
-                  Width="1200"
-                  Height="Auto" />
+                  Width="800"
+                  Height="Auto"/>
     }
 </MudPaper>
 
@@ -22,14 +22,21 @@
     <MudText Typo="Typo.h6" Class="mb-2">2. Flights by Battery Type</MudText>
     @if (!Flights.Any())
     {
-        <MudAlert Severity="Severity.Info">Нема даних для відображення.</MudAlert>
+        <MudAlert Severity="Severity.Info">No info</MudAlert>
     }
     else
     {
-        <MudChart ChartType="ChartType.Bar"
-                  XAxisLabels="BatteryTypeLabels"
-                  ChartSeries="BatteryTypeSeries"
-                  Height="200" />
+        <MudStack Row="true">
+            
+            <MudChart ChartType="ChartType.Pie" 
+                      InputData="@BatteryTypeSeries" InputLabels="@BatteryTypeLabels"
+                      Width="300px" Height="300px"/>
+            <MudChart ChartType="ChartType.Pie"
+                      InputLabels="LocationLabels"
+                      InputData="LocationData"
+                      Width="300px"
+                      Height="300px"/>
+        </MudStack>
     }
 </MudPaper>
 
@@ -37,54 +44,64 @@
     <MudText Typo="Typo.h6" Class="mb-2">3. Flights by Location (Pie)</MudText>
     @if (!LocationLabels.Any() || !LocationData.Any())
     {
-        <MudAlert Severity="Severity.Info">Немає даних по локаціях.</MudAlert>
+        <MudAlert Severity="Severity.Info">No Info.</MudAlert>
     }
     else
     {
         <MudChart ChartType="ChartType.Pie"
-                  XAxisLabels="LocationLabels"
-                  ChartSeries="LocationSeries"
-                  Height="200" />
+                  InputLabels="LocationLabels"
+                  InputData="LocationData"
+                  Width="300px"
+                  Height="300px"/>
     }
 </MudPaper>
 
-<MudPaper Class="p-4 mb-4">
-    <MudText Typo="Typo.h6" Class="mb-2">4. Average Flight Time per Drone Name (min)</MudText>
+<MudPaper Class="m-2">
+    <MudText Typo="Typo.h6" Class="m-2">Average Flight Time per Drone Name (min)</MudText>
     @if (!Flights.Any(f => f.FlightTime.HasValue && !string.IsNullOrWhiteSpace(f.Name)))
     {
-        <MudAlert Severity="Severity.Info">Нема даних про тривалість польотів.</MudAlert>
+        <MudAlert Severity="Severity.Info">No info.</MudAlert>
     }
     else
     {
         <MudChart ChartType="ChartType.Bar"
                   XAxisLabels="DroneLabels"
                   ChartSeries="DroneTimeSeries"
-                  Width="900px"
-                  Height="300px" />
+                  Width="800px"
+                  Height="400px"
+                  AxisChartOptions="_axisChartOptions"/>
     }
 </MudPaper>
 
 @code {
+
     /// <summary>
-    /// Список всіх польотів для побудови різних графіків.
+    /// Flight list for charts
     /// </summary>
     [Parameter]
     public IEnumerable<FlightInfo> Flights { get; set; } = Enumerable.Empty<FlightInfo>();
 
+    private AxisChartOptions _axisChartOptions = new()
+    {
+        MatchBoundsToSize = true,
+        XAxisLabelRotation = 15
+    };
+
+
     // ------------------------- 1. Total mAh per Day -------------------------
 
     /// <summary>
-    /// Унікальні відсортовані дати, у які були польоти (формат "dd.MM").
+    /// Unique flight dates ("dd.MM")
     /// </summary>
     private string[] DailyLabels => Flights
         .Where(f => f.Date.HasValue && f.UsedMah.HasValue)
         .GroupBy(f => f.Date!.Value.Date)
         .OrderBy(g => g.Key)
-        .Select(g => g.Key.ToString("dd.MM"))
+        .Select(g => g.Key.ToString("dd.MM")).Take(15)
         .ToArray();
 
     /// <summary>
-    /// Одна серія: сума mAh за кожну дату.
+    /// mAh sum daily
     /// </summary>
     private List<ChartSeries> DailySeries
     {
@@ -94,7 +111,7 @@
                 .Where(f => f.Date.HasValue && f.UsedMah.HasValue)
                 .GroupBy(f => f.Date!.Value.Date)
                 .OrderBy(g => g.Key)
-                .Select(g => (double)g.Sum(f => f.UsedMah!.Value))
+                .Select(g => (double)g.Sum(f => f.UsedMah!.Value)).Take(15)
                 .ToArray();
 
             return new List<ChartSeries>
@@ -110,19 +127,16 @@
 
     // ------------------------- 2. Flights by Battery Type -------------------------
 
-    /// <summary>
-    /// Назви всіх можливих типів акумуляторів.
-    /// </summary>
     private string[] BatteryTypeLabels => Enum.GetValues<FlightInfo.BatteryType>()
-                                             .Cast<FlightInfo.BatteryType>()
-                                             .OrderBy(t => t.ToString())
-                                             .Select(t => t.ToString())
-                                             .ToArray();
+        .Cast<FlightInfo.BatteryType>()
+        .OrderBy(t => t.ToString())
+        .Select(t => t.ToString())
+        .ToArray();
 
     /// <summary>
-    /// Одна серія: кількість польотів для кожного типу батареї.
+    /// Flights count by battery type
     /// </summary>
-    private List<ChartSeries> BatteryTypeSeries
+    private double[] BatteryTypeSeries
     {
         get
         {
@@ -131,28 +145,28 @@
                 .ToDictionary(g => g.Key, g => g.Count());
 
             var allTypes = Enum.GetValues<FlightInfo.BatteryType>()
-                               .Cast<FlightInfo.BatteryType>()
-                               .OrderBy(t => t.ToString())
-                               .ToList();
+                .Cast<FlightInfo.BatteryType>()
+                .OrderBy(t => t.ToString())
+                .ToList();
 
-            var data = allTypes
+            return allTypes
                 .Select(t => (double)(counts.ContainsKey(t) ? counts[t] : 0))
                 .ToArray();
 
-            return new List<ChartSeries>
+            /*return new List<ChartSeries>
             {
                 new()
                 {
-                    Name = "Кількість польотів",
+                    Name = "Flights number",
                     Data = data
                 }
-            };
+            };*/
         }
     }
 
     // ------------------------- 3. Flights by Location (Pie) -------------------------
 
-    private const int MaxLocationCount = 8;
+    private const int MaxLocationCount = 15;
 
     private IEnumerable<IGrouping<string, FlightInfo>> GroupedLocations =>
         Flights
@@ -164,7 +178,7 @@
         GroupedLocations
             .Take(MaxLocationCount - 1)
             .Select(g => g.Key)
-            .Append("Інші")
+            .Append("Other")
             .ToArray();
 
     private List<ChartSeries> LocationSeries
@@ -175,25 +189,25 @@
             var otherCount = GroupedLocations.Skip(MaxLocationCount - 1).Sum(g => g.Count());
 
             var data = topGroups.Select(g => (double)g.Count()).ToList();
-            data.Add(otherCount); // "Інші"
+            data.Add(otherCount);
 
             return new List<ChartSeries>
             {
                 new()
                 {
-                    Name = "Локації",
+                    Name = "Locations",
                     Data = data.ToArray()
                 }
             };
         }
     }
 
-    private IEnumerable<double> LocationData => LocationSeries.FirstOrDefault()?.Data ?? [];
+    private double[] LocationData => LocationSeries.Select(x => x.Data).FirstOrDefault() ?? [];
 
     // ------------------------- 4. Average Flight Time per Drone -------------------------
 
     /// <summary>
-    /// Унікальні імена дронів, які фігурують у польотах.
+    /// Unique names
     /// </summary>
     private string[] DroneLabels => Flights
         .Where(f => f.FlightTime.HasValue && !string.IsNullOrWhiteSpace(f.Name))
@@ -203,7 +217,7 @@
         .ToArray();
 
     /// <summary>
-    /// Одна серія: середня тривалість польоту (в хвилинах) для кожного дрона.
+    /// Average flight time by name
     /// </summary>
     private List<ChartSeries> DroneTimeSeries
     {
@@ -223,10 +237,11 @@
             {
                 new()
                 {
-                    Name = "Середня тривалість (хв)",
+                    Name = "Av. time",
                     Data = data
                 }
             };
         }
     }
+
 }

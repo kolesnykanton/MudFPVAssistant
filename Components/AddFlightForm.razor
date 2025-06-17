@@ -5,7 +5,7 @@
     <MudText Typo="Typo.h6">New Flight</MudText>
 
     <MudStack Spacing="2">
-        <MudTextField Label="Name (Drone, Battery, etc)" @bind-Value="_draft.Name" />
+        <MudTextField Label="Name (Drone, Battery, etc)" @bind-Value="_draft.Name" Required="true" />
         <MudNumericField Label="Battery Used (mAh)" @bind-Value="_draft.UsedMah" />
         <MudSelect T="FlightInfo.BatteryType"
                    Label="Battery Type"
@@ -20,24 +20,21 @@
                    Label="Cell count"
                    @bind-Value="_draft.CellCount"
                    Required="true">
-            @for (var i = 1; i <= 6; i++)
+            @for (var i = 1; i <= 8; i++)
             {
                 var i1 = i;
                 <MudSelectItem Value="i">@($"{i1}S")</MudSelectItem>
             }
         </MudSelect>
-
         <MudTextField Label="Duration (mm:ss)"
-                      @bind-Value="_duration"
-                      Placeholder="05:12"
+                      @bind-Value="_flightDuration"
+                      Placeholder="04:20"
                       Immediate="true"
-                      Mask="@mask1"
+                      Mask="@_mask1"
                       Pattern="^\d{2}:\d{2}$"
                       ErrorText="Please use format mm:ss" />
-
         <MudTextField Label="Location" @bind-Value="_draft.Location" />
         <MudTextField Label="Comment" @bind-Value="_draft.Comment" />
-
         <MudDatePicker @bind-Date="_draft.Date" Label="Flight Date" />
 
         <MudButton Color="Color.Primary"
@@ -53,10 +50,10 @@
     [Parameter] public EventCallback<FlightInfo> OnAdd { get; set; }
 
     private FlightInfo _draft = new() { Date = DateTime.Today };
-    private string _duration;
+    private string? _flightDuration;
     private bool _hasError = false;
-    public PatternMask mask1 = new PatternMask("##:##") { 
-        MaskChars = new[] { new MaskChar('#', @"[0-9]") } 
+    private PatternMask _mask1 = new PatternMask("##:##") { 
+        MaskChars = [new MaskChar('#', @"[0-9]")]
     };
     private bool IsValid => !string.IsNullOrWhiteSpace(_draft.Name);
 
@@ -64,7 +61,7 @@
     {
         if (!IsValid) 
             return;
-        if (TimeSpan.TryParseExact(_duration, @"mm\:ss", null, out var parsed))
+        if (TimeSpan.TryParseExact(_flightDuration, @"mm\:ss", null, out var parsed))
             _draft.FlightTime = parsed;
         else
         {
@@ -77,7 +74,7 @@
         await OnAdd.InvokeAsync(_draft);
 
         // Clean Form
-        _draft = new() { Date = DateTime.Today, BatType = FlightInfo.BatteryType.LiPo };
-        _duration = string.Empty;
+        _draft = new FlightInfo { Date = DateTime.Today, BatType = FlightInfo.BatteryType.LiPo };
+        _flightDuration = string.Empty;
     }
 }
