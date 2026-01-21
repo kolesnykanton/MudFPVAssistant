@@ -3,7 +3,7 @@
     L.control.locate({position: 'topleft', strings: {title: "Show me"}, flyTo: true}).addTo(map);
 
     // Fullscreen
-    map.addControl(L.control.fullscreen({position: 'topright', title: 'Fullscreen', titleCancel: 'Exit fullscreen'}));
+    map.addControl(new L.Control.FullScreen({position: 'topright', title: 'Fullscreen', titleCancel: 'Exit fullscreen'}));
 
     // Scale
     L.control.scale({imperial: false, position: 'bottomleft'}).addTo(map);
