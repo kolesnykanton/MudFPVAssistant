@@ -26,11 +26,11 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
   return (
     <AppShell
-      header={{ height: 60 }}
+      header={{ height: 'calc(60px + env(safe-area-inset-top, 0px))' }}
       navbar={{ width: 220, breakpoint: 'sm', collapsed: { mobile: !opened } }}
       padding="md"
     >
-      <AppShell.Header style={{ background: '#03173d' }}>
+      <AppShell.Header style={{ background: '#03173d', paddingTop: 'env(safe-area-inset-top, 0px)' }}>
         <Group h="100%" px="md" justify="space-between">
           <Group>
             <Burger
@@ -95,7 +95,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
         </Group>
       </AppShell.Header>
 
-      <AppShell.Navbar p="md" style={{ background: '#03173d' }}>
+      <AppShell.Navbar p="md" style={{ background: '#03173d', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
         <NavMenu onNavClick={() => { if (opened) toggle(); }} />
       </AppShell.Navbar>
 

@@ -29,7 +29,6 @@ export default function Settings() {
           <TextInput
             value={openWeatherKey}
             onChange={e => setOpenWeatherKey(e.target.value)}
-            onBlur={handleSave}
             placeholder="API key"
             size="sm"
           />
@@ -39,7 +38,6 @@ export default function Settings() {
           <TextInput
             value={googleMapsKey}
             onChange={e => setGoogleMapsKey(e.target.value)}
-            onBlur={handleSave}
             placeholder="API key"
             size="sm"
           />
