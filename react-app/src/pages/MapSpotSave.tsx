@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { Box, Menu, Text, Title } from '@mantine/core';
+import { Box, Button, Paper, Stack, Text, Title } from '@mantine/core';
 import { useUserCollection } from '../hooks/useUserCollection';
 import { useSettings } from '../hooks/useSettings';
 import { useAuth } from '../context/AuthContext';
@@ -14,6 +14,9 @@ interface ContextMenuState {
   isPoint: boolean;
   spotId: string | null;
 }
+
+const MENU_WIDTH = 170;
+const MENU_HEIGHT_APPROX = 80;
 
 export default function MapSpotSave() {
   const mapRef = useRef<HTMLDivElement>(null);
@@ -35,6 +38,14 @@ export default function MapSpotSave() {
   const handleMapClick = useCallback(() => {
     setContextMenu(null);
   }, []);
+
+  // Close context menu when clicking anywhere outside it
+  useEffect(() => {
+    if (!contextMenu) return;
+    const close = () => setContextMenu(null);
+    document.addEventListener('click', close);
+    return () => document.removeEventListener('click', close);
+  }, [contextMenu]);
 
   // Initialize map once (without API key — loaded async separately)
   useEffect(() => {
@@ -118,6 +129,14 @@ export default function MapSpotSave() {
     setDialogOpen(false);
   };
 
+  // Clamp position so menu never overflows the viewport
+  const menuLeft = contextMenu
+    ? Math.min(contextMenu.x + 2, window.innerWidth - MENU_WIDTH)
+    : 0;
+  const menuTop = contextMenu
+    ? Math.min(contextMenu.y + 2, window.innerHeight - MENU_HEIGHT_APPROX)
+    : 0;
+
   if (!uid) {
     return <Text p="xl">Please sign in to view flight spots.</Text>;
   }
@@ -133,36 +152,63 @@ export default function MapSpotSave() {
           onContextMenu={e => e.preventDefault()}
         />
 
-        <Menu
-          opened={!!contextMenu}
-          onClose={() => setContextMenu(null)}
-          position="bottom-start"
-        >
-          <Menu.Target>
-            {/* Invisible anchor positioned via style override */}
-            <div
-              style={{
-                position: 'fixed',
-                left: contextMenu?.x ?? 0,
-                top: contextMenu?.y ?? 0,
-                width: 1,
-                height: 1,
-                pointerEvents: 'none',
-              }}
-            />
-          </Menu.Target>
-          <Menu.Dropdown>
-            {!contextMenu?.isPoint && (
-              <Menu.Item onClick={handleAddSpot}>Add spot</Menu.Item>
-            )}
-            {contextMenu?.isPoint && (
-              <>
-                <Menu.Item onClick={handleEditSpot}>Edit spot</Menu.Item>
-                <Menu.Item color="red" onClick={handleDeleteSpot}>Delete spot</Menu.Item>
-              </>
-            )}
-          </Menu.Dropdown>
-        </Menu>
+        {/* Custom context menu — rendered at exact cursor coordinates */}
+        {contextMenu && (
+          <Paper
+            withBorder
+            shadow="md"
+            style={{
+              position: 'fixed',
+              left: menuLeft,
+              top: menuTop,
+              zIndex: 10000,
+              minWidth: MENU_WIDTH,
+              padding: '4px 0',
+              overflow: 'hidden',
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <Stack gap={0}>
+              {!contextMenu.isPoint && (
+                <Button
+                  variant="subtle"
+                  size="sm"
+                  justify="start"
+                  fullWidth
+                  style={{ borderRadius: 0 }}
+                  onClick={handleAddSpot}
+                >
+                  Add spot
+                </Button>
+              )}
+              {contextMenu.isPoint && (
+                <>
+                  <Button
+                    variant="subtle"
+                    size="sm"
+                    justify="start"
+                    fullWidth
+                    style={{ borderRadius: 0 }}
+                    onClick={handleEditSpot}
+                  >
+                    Edit spot
+                  </Button>
+                  <Button
+                    variant="subtle"
+                    color="red"
+                    size="sm"
+                    justify="start"
+                    fullWidth
+                    style={{ borderRadius: 0 }}
+                    onClick={handleDeleteSpot}
+                  >
+                    Delete spot
+                  </Button>
+                </>
+              )}
+            </Stack>
+          </Paper>
+        )}
       </Box>
 
       <FlightSpotEditDialog
