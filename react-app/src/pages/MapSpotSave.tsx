@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Box, Button, Paper, Stack, Text, Title } from '@mantine/core';
 import { useUserCollection } from '../hooks/useUserCollection';
 import { useSettings } from '../hooks/useSettings';
@@ -39,13 +39,10 @@ export default function MapSpotSave() {
     setContextMenu(null);
   }, []);
 
-  // Close context menu when clicking anywhere outside it
-  useEffect(() => {
-    if (!contextMenu) return;
-    const close = () => setContextMenu(null);
-    document.addEventListener('click', close);
-    return () => document.removeEventListener('click', close);
-  }, [contextMenu]);
+  const closeContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setContextMenu(null);
+  };
 
   // Initialize map once (without API key — loaded async separately)
   useEffect(() => {
@@ -152,62 +149,70 @@ export default function MapSpotSave() {
           onContextMenu={e => e.preventDefault()}
         />
 
-        {/* Custom context menu — rendered at exact cursor coordinates */}
+        {/* Transparent backdrop + context menu.
+            Clicking/right-clicking the backdrop closes the menu with no
+            extra useEffect or stopPropagation needed. */}
         {contextMenu && (
-          <Paper
-            withBorder
-            shadow="md"
-            style={{
-              position: 'fixed',
-              left: menuLeft,
-              top: menuTop,
-              zIndex: 10000,
-              minWidth: MENU_WIDTH,
-              padding: '4px 0',
-              overflow: 'hidden',
-            }}
-            onClick={e => e.stopPropagation()}
-          >
-            <Stack gap={0}>
-              {!contextMenu.isPoint && (
-                <Button
-                  variant="subtle"
-                  size="sm"
-                  justify="start"
-                  fullWidth
-                  style={{ borderRadius: 0 }}
-                  onClick={handleAddSpot}
-                >
-                  Add spot
-                </Button>
-              )}
-              {contextMenu.isPoint && (
-                <>
+          <>
+            <div
+              style={{ position: 'fixed', inset: 0, zIndex: 9999 }}
+              onClick={closeContextMenu}
+              onContextMenu={closeContextMenu}
+            />
+            <Paper
+              withBorder
+              shadow="md"
+              style={{
+                position: 'fixed',
+                left: menuLeft,
+                top: menuTop,
+                zIndex: 10000,
+                minWidth: MENU_WIDTH,
+                padding: '4px 0',
+                overflow: 'hidden',
+              }}
+            >
+              <Stack gap={0}>
+                {!contextMenu.isPoint && (
                   <Button
                     variant="subtle"
                     size="sm"
                     justify="start"
                     fullWidth
                     style={{ borderRadius: 0 }}
-                    onClick={handleEditSpot}
+                    onClick={handleAddSpot}
                   >
-                    Edit spot
+                    Add spot
                   </Button>
-                  <Button
-                    variant="subtle"
-                    color="red"
-                    size="sm"
-                    justify="start"
-                    fullWidth
-                    style={{ borderRadius: 0 }}
-                    onClick={handleDeleteSpot}
-                  >
-                    Delete spot
-                  </Button>
-                </>
-              )}
-            </Stack>
-          </Paper>
+                )}
+                {contextMenu.isPoint && (
+                  <>
+                    <Button
+                      variant="subtle"
+                      size="sm"
+                      justify="start"
+                      fullWidth
+                      style={{ borderRadius: 0 }}
+                      onClick={handleEditSpot}
+                    >
+                      Edit spot
+                    </Button>
+                    <Button
+                      variant="subtle"
+                      color="red"
+                      size="sm"
+                      justify="start"
+                      fullWidth
+                      style={{ borderRadius: 0 }}
+                      onClick={handleDeleteSpot}
+                    >
+                      Delete spot
+                    </Button>
+                  </>
+                )}
+              </Stack>
+            </Paper>
+          </>
         )}
       </Box>
 
