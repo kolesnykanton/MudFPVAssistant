@@ -24,6 +24,7 @@ export function createMap(elementId, callbacks, openWeatherApiKey) {
 
     layers["OSM Standard"].addTo(map);
     const layerControl = L.control.layers(layers, overlayLayers).addTo(map);
+    map._layerControl = layerControl;
 
     addPlugins(map);
 
@@ -77,6 +78,16 @@ export function createMap(elementId, callbacks, openWeatherApiKey) {
 
     window._fpvMap = map;
     return map;
+}
+
+export function addWeatherOverlays(map, apiKey) {
+    if (!apiKey || !map._layerControl || map._weatherLayersAdded) return;
+    map._weatherLayersAdded = true;
+    const L = window.L;
+    const lc = map._layerControl;
+    lc.addOverlay(L.tileLayer(`https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=${apiKey}`, { attribution: '&copy; OpenWeatherMap', opacity: 1 }), 'Wind');
+    lc.addOverlay(L.tileLayer(`https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${apiKey}`, { attribution: '&copy; OpenWeatherMap', opacity: 1 }), 'Clouds');
+    lc.addOverlay(L.tileLayer(`https://tile.openweathermap.org/map/precipitation/{z}/{x}/{y}.png?appid=${apiKey}`, { attribution: '&copy; OpenWeatherMap', opacity: 1 }), 'Rain');
 }
 
 export { addMarker, clearMarkers };
