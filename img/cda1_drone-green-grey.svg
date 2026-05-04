@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+    <g fill="none" fill-rule="evenodd">
+        <circle cx="52" cy="204" r="44" fill="#EBEBEB" fill-rule="nonzero"></circle>
+        <path stroke="#000000" stroke-width="4" d="M52.5 248L52.5 160"
+            transform="rotate(150 52.5 204)"></path>
+        <circle cx="204" cy="52" r="44" fill="#EBEBEB" fill-rule="nonzero"></circle>
+        <path stroke="#000000" stroke-width="4" d="M204.5 96L204.5 8"
+            transform="rotate(150 204.5 52)"></path>
+        <circle cx="204" cy="204" r="44" fill="#EBEBEB" fill-rule="nonzero"></circle>
+        <path stroke="#000000" stroke-width="4" d="M204.5 248L204.5 160"
+            transform="rotate(30 204.5 204)"></path>
+        <circle cx="52" cy="52" r="44" fill="#EBEBEB" fill-rule="nonzero"></circle>
+        <path stroke="#000000" stroke-width="4" d="M52.5 96L52.5 8" transform="rotate(-150 52.5 52)"></path>
+        <path fill-rule="nonzero" stroke="#000000" stroke-width="3.795"
+            d="M58.518 52.16l46.522 32.506c3.104-9.223 11.628-16.04 21.932-16.484.348-.015.696-.023 1.044-.023 11.284 0 20.767 7.713 23.465 18.155L198 53.808l5.803 8.27-52.192 45.632-2.287 53.048 50.484 36.9-5.06 8.745-46.877-27.002a10.124 10.124 0 01-9.309 6.143H117.47a10.124 10.124 0 01-9.43-6.438l-47.388 27.297-5.06-8.744 51.096-37.348-2.361-54.756L52.715 60.43l5.803-8.27z"></path>
+        <circle cx="52" cy="52" r="12" fill="#EBEBEB" fill-rule="nonzero" stroke="#000000"
+            stroke-width="3"></circle>
+        <circle cx="204" cy="204" r="12" fill="#EBEBEB" fill-rule="nonzero" stroke="#000000"
+            stroke-width="3"></circle>
+        <circle cx="52" cy="204" r="12" fill="#EBEBEB" fill-rule="nonzero" stroke="#000000"
+            stroke-width="3"></circle>
+        <circle cx="204" cy="52" r="12" fill="#EBEBEB" fill-rule="nonzero" stroke="#000000"
+            stroke-width="3"></circle>
+        <path fill-rule="nonzero" stroke="#000000" stroke-linecap="round" stroke-width="4"
+            d="M136.5 99L136.5 169"></path>
+        <path fill-rule="nonzero" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"
+            stroke-width="4" d="M120.5 99L120.5 169"></path>
+        <path fill-rule="nonzero" stroke="#000000" stroke-width="3.795"
+            d="M128.016 68.16c13.384 0 24.234 10.85 24.234 24.233 0 .349-.008.697-.023 1.044l-3.553 82.422a10.12 10.12 0 01-10.11 9.685h-21.095a10.12 10.12 0 01-10.112-9.685l-3.553-82.422c-.576-13.371 9.797-24.679 23.168-25.255.348-.015.696-.023 1.044-.023z"></path>
+    </g>
+</svg> 
