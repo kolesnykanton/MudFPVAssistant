@@ -1,6 +1,179 @@
 # React Migration Audit Notes
 
-## Виправлені баги (цей коміт)
+## Глобальний рефакторинг контекстного меню та asset bundling
+
+### Проблема
+Користувач повідомив, що контекстне меню (right-click на десктопі, long-press на мобілі) перестало працювати на обох платформах. Тестування показало, що ні `handleContextMenu` на React div, ні нативні `map.on('contextmenu')` в mapCore.js не спрацьовували. Паралельно виявлено **404 помилки** для двох assets: `drone-icon.svg` і `RC_Sticks_Animation.json`.
+
+### Кореневі причини
+
+#### A. Архітектурна: Double-hop pattern (JS → React → JS)
+**Файли**: `src/map/mapCore.js`, `src/map/mapMarkers.js`, `src/pages/MapSpotSave.tsx`
+
+Контекстне меню використовувало anti-pattern:
+1. Vanilla JS під час ініціалізації реєструє `map.on('contextmenu')` / `map.on('pointerdown')` та marker listeners
+2. Ці listeners викликають React callback `onContextMenu(payload)` через стан
+3. React оновлює state через `setContextMenu()`
+4. Результат: три переходи контексту + stale closure ризик у маркерів, які мали замикання на старий React state
+
+Додатково, якщо **будь-яка з 6 CDN-плагінів** (locate, fullscreen, scale, geocoder, measure, rainviewer) тихо не завантажилась, `addPlugins()` в `mapCore.js:31` кидала exception **перед** реєстрацією `map.on('contextmenu')` на рядку 58 → меню ніколи не реєструвалось.
+
+#### B. Asset bundling: Runtime-relative paths
+**Файли**: `src/map/mapMarkers.js`, `src/components/StickAnimation.tsx`
+
+```js
+// OLD
+iconUrl: './img/drone-icon.svg'          // Шукає від HTML-файлу, не від модуля
+animationData: './animations/RC_Sticks_Animation.json' // Те саме
+```
+
+При `base: './'` у vite.config.ts і URL на `/MudFPVAssistant/map-spot-save` браузер шукає:
+- `/MudFPVAssistant/map-spot-save/img/drone-icon.svg` (relative до поточної сторінки) → 404
+- `/MudFPVAssistant/map-spot-save/animations/RC_Sticks_Animation.json` → 404
+
+Правильні шляхи були б:
+- `/MudFPVAssistant/img/drone-icon.svg`
+- `/MudFPVAssistant/animations/RC_Sticks_Animation.json`
+
+Але це залежало б від структури деплою, що непрактично.
+
+### Рішення
+
+#### 1. Перенесення assets у `src/assets/` і імпорт через Vite
+**Зміни**:
+- Скопійовано `public/img/drone-icon.svg` → `src/assets/drone-icon.svg`
+- Скопійовано `public/animations/RC_Sticks_Animation.json` → `src/assets/RC_Sticks_Animation.json`
+- Видалено з `public/` (більше не потрібні)
+
+**Вплив**: Vite при build розраховує хешовані URL з правильним `base` префіксом, незалежно від структури деплою.
+
+#### 2. Переписання контекстного меню як React-first (видалення double-hop)
+**Видалено з `src/map/mapCore.js`**:
+- `map.on('contextmenu', ...)` listener (рядки ~42-51)
+- `container.addEventListener('pointerdown')` / `pointermove` / `pointerup` для long-press (рядки ~56-77)
+- `map.on('click', ...)` для закриття меню
+
+**Видалено з `src/map/mapMarkers.js`**:
+- `m.on('contextmenu', ...)` listener
+- `m.on('pointerdown', ...)` listener
+- Зберігання `m.spotId = spot.id` (властивість Leaflet-об'єкта, недосяжна з React)
+
+**Додано в `src/map/mapMarkers.js`**:
+```js
+// Після m.addTo(map)
+if (m._icon && spot.id) m._icon.dataset.spotId = spot.id;
+if (m._shadow && spot.id) m._shadow.dataset.spotId = spot.id;
+```
+DOM data attribute — ідіоматичний способ для React ідентифікувати елемент через `event.target.closest()`.
+
+**Додано в `src/pages/MapSpotSave.tsx`**:
+
+a) Desktop right-click через React `onContextMenu`:
+```tsx
+const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
+  e.preventDefault();
+  const map = mapInstanceRef.current;
+  if (!map) return;
+  const markerEl = (e.target as HTMLElement).closest('.leaflet-marker-icon, .leaflet-marker-shadow');
+  const latlng = map.mouseEventToLatLng(e.nativeEvent);
+  setContextMenu({
+    x: e.clientX,
+    y: e.clientY,
+    lat: latlng.lat,
+    lng: latlng.lng,
+    isPoint: markerEl !== null,
+    spotId: markerEl?.dataset.spotId ?? null,
+  });
+};
+<div id="fpvMap" onContextMenu={handleContextMenu} ... />
+```
+
+b) Touch long-press через `useEffect` з native listeners:
+```tsx
+useEffect(() => {
+  const div = mapRef.current;
+  if (!div || !mapReady) return;
+
+  let timer: number | null = null;
+  let startX = 0, startY = 0, startTarget: EventTarget | null = null;
+
+  const onDown = (e: PointerEvent) => {
+    if (e.pointerType !== 'touch') return;
+    startX = e.clientX;
+    startY = e.clientY;
+    startTarget = e.target;
+    timer = window.setTimeout(() => {
+      openContextMenuFromEvent(e.clientX, e.clientY, startTarget, e);
+    }, 600);
+  };
+
+  const onMove = (e: PointerEvent) => {
+    if (timer === null) return;
+    if (Math.hypot(e.clientX - startX, e.clientY - startY) > 10) {
+      clearTimeout(timer);
+      timer = null;
+    }
+  };
+
+  div.addEventListener('pointerdown', onDown);
+  div.addEventListener('pointermove', onMove);
+  div.addEventListener('pointerup', () => { if (timer !== null) clearTimeout(timer); });
+  div.addEventListener('pointercancel', () => { if (timer !== null) clearTimeout(timer); });
+
+  return () => {
+    if (timer !== null) clearTimeout(timer);
+    div.removeEventListener('pointerdown', onDown);
+    div.removeEventListener('pointermove', onMove);
+    // ...등
+  };
+}, [mapReady]);
+```
+
+#### 3. Укріплення `src/map/mapPlugins.js` від мовчазних CDN-помилок
+**Додано**:
+```js
+function safe(name, fn) {
+  try {
+    fn();
+  } catch (err) {
+    console.warn(`[map] plugin "${name}" failed to initialize:`, err);
+  }
+}
+```
+
+Кожен `L.control.X(...).addTo(map)` тепер обгорнутий:
+```js
+safe('locate', () => {
+  L.control.locate({ ... }).addTo(map);
+});
+// ... для всіх 6 плагінів
+```
+
+Результат: якщо один CDN тихо не завантажиться, карта продовжує працювати, контекстне меню ініціалізується нормально.
+
+### Архітектурні переваги нового підходу
+
+1. **Single source of truth**: Стан контекстного меню живе в React (`MapSpotSave.tsx`), не розсипаний між JS модулями
+2. **No stale closures**: Нові маркери не мають старих замикань на попередній стан
+3. **React DevTools debugging**: Медіа меню state видно в React DevTools, можна інспектувати під час роботи
+4. **Resilient**: Невдалі плагіни більше не ламають ініціалізацію меню
+5. **Idiomatic**: DOM data attributes замість Leaflet-властивостей — звичний паттерн для React
+
+### Файли змінені
+
+| Файл | Тип змін |
+|------|----------|
+| `src/assets/drone-icon.svg` | Нова локація (скопійовано з `public/img/`) |
+| `src/assets/RC_Sticks_Animation.json` | Нова локація (скопійовано з `public/animations/`) |
+| `src/map/mapMarkers.js` | Імпорт через Vite, DOM data attribute замість listener |
+| `src/map/mapCore.js` | Видалено весь контекстне-меню код |
+| `src/map/mapPlugins.js` | Обгорнуто в try/catch `safe()` wrapper |
+| `src/pages/MapSpotSave.tsx` | Desktop/mobile контекстне меню обробка в React |
+| `src/components/StickAnimation.tsx` | Імпорт JSON через Vite замість fetch |
+
+---
+
+## Виправлені баги (попередні коміти)
 
 ### 1. mapCore.js — подвійний контекстний timer на мобільному (mobile context menu conflict)
 **Файл**: `src/map/mapCore.js`  
@@ -84,9 +257,9 @@
 ---
 
 ### G. mapPlugins.js — `javascript:void(0)` (deprecated)
-**Файл**: `src/map/mapPlugins.js`, рядок 43  
-**Проблема**: `link.setAttribute('href', 'javascript:void(0)')` — застарілий антипатерн.  
-**Рекомендація**: Замінити на `link.removeAttribute('href')` або `link.setAttribute('href', '#')` + `e.preventDefault()`.
+**Статус**: ✅ ВИРІШЕНО в глобальному рефакторингу  
+**Файл**: `src/map/mapPlugins.js`, рядок 57  
+**Рішення**: Використовується `link.removeAttribute('href')` — правильний підхід, не потребує подальших змін.
 
 ---
 
@@ -98,9 +271,12 @@
 ---
 
 ### I. mapMarkers.js — іконка drone-icon.svg через відносний шлях
-**Файл**: `src/map/mapMarkers.js`, рядок 3  
-**Проблема**: `iconUrl: './img/drone-icon.svg'` — відносний шлях від HTML-файлу. При `base: './'` у vite.config.ts це залежить від URL деплою. При `<base href="/subpath/">` шлях зламається.  
-**Рекомендація**: Імпортувати svg через Vite: `import droneIconUrl from '../assets/drone-icon.svg?url'` і передавати в `addMarker` як параметр.
+**Статус**: ✅ ВИРІШЕНО в глобальному рефакторингу  
+**Файл**: `src/map/mapMarkers.js`  
+**Рішення**: 
+- Перенесено `drone-icon.svg` з `public/img/` → `src/assets/drone-icon.svg`
+- Додано: `import droneIconUrl from '../assets/drone-icon.svg'`
+- Результат: Vite генерує правильний хешований URL з префіксом `base` незалежно від структури деплою
 
 ---
 
