@@ -47,7 +47,7 @@ export function createMap(elementId, callbacks, openWeatherApiKey) {
                 e.preventDefault();
                 e.stopPropagation();
                 const latlng = map.mouseEventToLatLng(e);
-                callbacks.onContextMenu({ x: e.clientX, y: e.clientY, lat: latlng.lat, lng: latlng.lng, isPoint: false, id: null });
+                callbacks.onContextMenu({ x: e.clientX, y: e.clientY, lat: latlng.lat, lng: latlng.lng, isPoint: false, spotId: null });
             }, 600);
         }
     });
@@ -58,7 +58,7 @@ export function createMap(elementId, callbacks, openWeatherApiKey) {
     map.on('contextmenu', e => {
         if (e.originalEvent.target.closest('.leaflet-marker-icon')) return;
         e.originalEvent.preventDefault();
-        callbacks.onContextMenu({ x: e.originalEvent.clientX, y: e.originalEvent.clientY, lat: e.latlng.lat, lng: e.latlng.lng, isPoint: false, id: null });
+        callbacks.onContextMenu({ x: e.originalEvent.clientX, y: e.originalEvent.clientY, lat: e.latlng.lat, lng: e.latlng.lng, isPoint: false, spotId: null });
     });
 
     // Geolocation

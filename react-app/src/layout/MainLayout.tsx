@@ -45,7 +45,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
             </Text>
           </Group>
 
-          <Group gap="xs">
+          <Group gap="xs" align="center">
             <Tooltip label={colorScheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}>
               <ActionIcon onClick={() => toggleColorScheme()} variant="subtle" color="white" size="lg">
                 {colorScheme === 'dark' ? <IconSun size={20} /> : <IconMoon size={20} />}
@@ -72,7 +72,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
                     variant="subtle"
                     color="orange"
                     leftSection={<IconLogout size={16} />}
-                    size="xs"
+                    size="sm"
                   >
                     Logout
                   </Button>
@@ -84,7 +84,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
                     variant="subtle"
                     color="white"
                     leftSection={<IconLogin size={16} />}
-                    size="xs"
+                    size="sm"
                   >
                     Sign in
                   </Button>
