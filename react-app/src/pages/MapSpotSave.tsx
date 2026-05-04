@@ -40,8 +40,12 @@ export default function MapSpotSave() {
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
 
+    let cancelled = false;
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     import('../map/mapCore.js').then((mod: any) => {
+      // Guard against StrictMode double-invoke or component unmount before import resolves
+      if (cancelled || mapInstanceRef.current) return;
       const map = mod.createMap('fpvMap', {
         onContextMenu: handleContextMenu,
         onMapClick: handleMapClick,
@@ -51,6 +55,7 @@ export default function MapSpotSave() {
     });
 
     return () => {
+      cancelled = true;
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;

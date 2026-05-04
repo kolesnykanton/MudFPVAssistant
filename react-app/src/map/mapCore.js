@@ -39,18 +39,17 @@ export function createMap(elementId, callbacks, openWeatherApiKey) {
         })
         .catch(console.error);
 
-    // Long-press for touch
+    // Long-press for touch (map background only — markers handle their own long-press)
     const container = map.getContainer();
     let longPressTimer;
     container.addEventListener('pointerdown', e => {
-        if (e.pointerType === 'touch') {
-            longPressTimer = setTimeout(() => {
-                e.preventDefault();
-                e.stopPropagation();
-                const latlng = map.mouseEventToLatLng(e);
-                callbacks.onContextMenu({ x: e.clientX, y: e.clientY, lat: latlng.lat, lng: latlng.lng, isPoint: false, spotId: null });
-            }, 600);
-        }
+        if (e.pointerType !== 'touch') return;
+        // Skip if the touch started on a marker — mapMarkers.js handles those
+        if (e.target.closest('.leaflet-marker-icon, .leaflet-marker-shadow')) return;
+        const latlng = map.mouseEventToLatLng(e);
+        longPressTimer = setTimeout(() => {
+            callbacks.onContextMenu({ x: e.clientX, y: e.clientY, lat: latlng.lat, lng: latlng.lng, isPoint: false, spotId: null });
+        }, 600);
     });
     container.addEventListener('pointerup', () => clearTimeout(longPressTimer));
     container.addEventListener('pointermove', () => clearTimeout(longPressTimer));
