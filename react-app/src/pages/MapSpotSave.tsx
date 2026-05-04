@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
-import { Box, Menu, Text, Title } from '@mantine/core';
+import React, { useEffect, useRef, useState } from 'react';
+import { Box, Button, Paper, Stack, Text, Title } from '@mantine/core';
 import { useUserCollection } from '../hooks/useUserCollection';
 import { useSettings } from '../hooks/useSettings';
 import { useAuth } from '../context/AuthContext';
@@ -15,9 +15,17 @@ interface ContextMenuState {
   spotId: string | null;
 }
 
+const MENU_WIDTH = 170;
+const MENU_HEIGHT_APPROX = 80;
+const LONG_PRESS_MS = 600;
+const LONG_PRESS_MOVE_TOLERANCE_PX = 10;
+
 export default function MapSpotSave() {
   const mapRef = useRef<HTMLDivElement>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mapInstanceRef = useRef<any>(null);
+  const contextMenuOpenedAt = useRef<number>(0);
+
   const { uid } = useAuth();
   const { settings } = useSettings();
   const { items: spots, add, update, remove } = useUserCollection<FlightSpot>('FlightSpots');
@@ -28,35 +36,113 @@ export default function MapSpotSave() {
   const [editingSpot, setEditingSpot] = useState<FlightSpot | null>(null);
   const [newSpotCoords, setNewSpotCoords] = useState<{ lat: number; lng: number } | null>(null);
 
-  const handleContextMenu = useCallback((payload: ContextMenuState) => {
-    setContextMenu(payload);
-  }, []);
+  // Read spotId attached to the marker icon DOM by addMarker()
+  const spotIdFromTarget = (target: EventTarget | null): string | null => {
+    if (!(target instanceof Element)) return null;
+    const markerEl = target.closest<HTMLElement>('.leaflet-marker-icon, .leaflet-marker-shadow');
+    return markerEl?.dataset.spotId ?? null;
+  };
 
-  const handleMapClick = useCallback(() => {
-    setContextMenu(null);
-  }, []);
+  const openContextMenuFromEvent = (
+    clientX: number,
+    clientY: number,
+    target: EventTarget | null,
+    nativeEvent: MouseEvent | PointerEvent,
+  ) => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+    const latlng = map.mouseEventToLatLng(nativeEvent);
+    const spotId = spotIdFromTarget(target);
+    contextMenuOpenedAt.current = Date.now();
+    setContextMenu({
+      x: clientX,
+      y: clientY,
+      lat: latlng.lat,
+      lng: latlng.lng,
+      isPoint: spotId !== null,
+      spotId,
+    });
+  };
 
-  // Initialize map once (without API key — loaded async separately)
+  // Desktop right-click — handled directly in React
+  const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    openContextMenuFromEvent(e.clientX, e.clientY, e.target, e.nativeEvent);
+  };
+
+  // Initialize map once
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
 
+    let cancelled = false;
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     import('../map/mapCore.js').then((mod: any) => {
-      const map = mod.createMap('fpvMap', {
-        onContextMenu: handleContextMenu,
-        onMapClick: handleMapClick,
-      });
+      if (cancelled || mapInstanceRef.current) return;
+      const map = mod.createMap('fpvMap');
       mapInstanceRef.current = map;
-      setMapReady(true); // triggers marker sync effect
+      setMapReady(true);
     });
 
     return () => {
+      cancelled = true;
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
       }
     };
-  }, []); // empty deps - initialize once
+  }, []);
+
+  // Touch long-press — native pointer listeners scoped to the map div.
+  // Re-attached when the map is ready.
+  useEffect(() => {
+    const div = mapRef.current;
+    if (!div || !mapReady) return;
+
+    let timer: number | null = null;
+    let startX = 0;
+    let startY = 0;
+    let startTarget: EventTarget | null = null;
+
+    const clear = () => {
+      if (timer !== null) {
+        clearTimeout(timer);
+        timer = null;
+      }
+    };
+
+    const onDown = (e: PointerEvent) => {
+      if (e.pointerType !== 'touch') return;
+      startX = e.clientX;
+      startY = e.clientY;
+      startTarget = e.target;
+      clear();
+      timer = window.setTimeout(() => {
+        timer = null;
+        openContextMenuFromEvent(e.clientX, e.clientY, startTarget, e);
+      }, LONG_PRESS_MS);
+    };
+
+    const onMove = (e: PointerEvent) => {
+      if (timer === null) return;
+      if (Math.hypot(e.clientX - startX, e.clientY - startY) > LONG_PRESS_MOVE_TOLERANCE_PX) {
+        clear();
+      }
+    };
+
+    div.addEventListener('pointerdown', onDown);
+    div.addEventListener('pointermove', onMove);
+    div.addEventListener('pointerup', clear);
+    div.addEventListener('pointercancel', clear);
+
+    return () => {
+      clear();
+      div.removeEventListener('pointerdown', onDown);
+      div.removeEventListener('pointermove', onMove);
+      div.removeEventListener('pointerup', clear);
+      div.removeEventListener('pointercancel', clear);
+    };
+  }, [mapReady]);
 
   // Add weather overlays once map is ready and API key is available
   const openWeatherApiKey = settings.apiKeys?.openWeatherApiKey;
@@ -68,17 +154,17 @@ export default function MapSpotSave() {
     });
   }, [mapReady, openWeatherApiKey]);
 
-  // Sync spots to map markers — runs when map is ready OR spots change
+  // Sync spots to map markers
   useEffect(() => {
     if (!mapReady || !mapInstanceRef.current) return;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     import('../map/mapCore.js').then((mod: any) => {
       mod.clearMarkers(mapInstanceRef.current);
       spots.forEach((spot: FlightSpot) => {
-        mod.addMarker(spot, mapInstanceRef.current, handleContextMenu);
+        mod.addMarker(spot, mapInstanceRef.current);
       });
     });
-  }, [spots, handleContextMenu, mapReady]);
+  }, [spots, mapReady]);
 
   const handleAddSpot = () => {
     if (!contextMenu) return;
@@ -113,6 +199,18 @@ export default function MapSpotSave() {
     setDialogOpen(false);
   };
 
+  const closeContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setContextMenu(null);
+  };
+
+  const menuLeft = contextMenu
+    ? Math.min(contextMenu.x + 2, window.innerWidth - MENU_WIDTH)
+    : 0;
+  const menuTop = contextMenu
+    ? Math.min(contextMenu.y + 2, window.innerHeight - MENU_HEIGHT_APPROX)
+    : 0;
+
   if (!uid) {
     return <Text p="xl">Please sign in to view flight spots.</Text>;
   }
@@ -125,39 +223,71 @@ export default function MapSpotSave() {
           id="fpvMap"
           ref={mapRef}
           style={{ width: '100%', height: '80vh' }}
-          onContextMenu={e => e.preventDefault()}
+          onContextMenu={handleContextMenu}
         />
 
-        <Menu
-          opened={!!contextMenu}
-          onClose={() => setContextMenu(null)}
-          position="bottom-start"
-        >
-          <Menu.Target>
-            {/* Invisible anchor positioned via style override */}
+        {contextMenu && (
+          <>
             <div
+              style={{ position: 'fixed', inset: 0, zIndex: 9999 }}
+              onClick={closeContextMenu}
+              onContextMenu={closeContextMenu}
+            />
+            <Paper
+              withBorder
+              shadow="md"
               style={{
                 position: 'fixed',
-                left: contextMenu?.x ?? 0,
-                top: contextMenu?.y ?? 0,
-                width: 1,
-                height: 1,
-                pointerEvents: 'none',
+                left: menuLeft,
+                top: menuTop,
+                zIndex: 10000,
+                minWidth: MENU_WIDTH,
+                padding: '4px 0',
+                overflow: 'hidden',
               }}
-            />
-          </Menu.Target>
-          <Menu.Dropdown>
-            {!contextMenu?.isPoint && (
-              <Menu.Item onClick={handleAddSpot}>Add spot</Menu.Item>
-            )}
-            {contextMenu?.isPoint && (
-              <>
-                <Menu.Item onClick={handleEditSpot}>Edit spot</Menu.Item>
-                <Menu.Item color="red" onClick={handleDeleteSpot}>Delete spot</Menu.Item>
-              </>
-            )}
-          </Menu.Dropdown>
-        </Menu>
+            >
+              <Stack gap={0}>
+                {!contextMenu.isPoint && (
+                  <Button
+                    variant="subtle"
+                    size="sm"
+                    justify="start"
+                    fullWidth
+                    style={{ borderRadius: 0 }}
+                    onClick={handleAddSpot}
+                  >
+                    Add spot
+                  </Button>
+                )}
+                {contextMenu.isPoint && (
+                  <>
+                    <Button
+                      variant="subtle"
+                      size="sm"
+                      justify="start"
+                      fullWidth
+                      style={{ borderRadius: 0 }}
+                      onClick={handleEditSpot}
+                    >
+                      Edit spot
+                    </Button>
+                    <Button
+                      variant="subtle"
+                      color="red"
+                      size="sm"
+                      justify="start"
+                      fullWidth
+                      style={{ borderRadius: 0 }}
+                      onClick={handleDeleteSpot}
+                    >
+                      Delete spot
+                    </Button>
+                  </>
+                )}
+              </Stack>
+            </Paper>
+          </>
+        )}
       </Box>
 
       <FlightSpotEditDialog

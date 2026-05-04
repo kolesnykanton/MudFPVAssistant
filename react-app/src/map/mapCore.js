@@ -2,9 +2,11 @@ import { addPlugins } from './mapPlugins.js';
 import { addMarker, clearMarkers } from './mapMarkers.js';
 
 /**
- * callbacks: { onContextMenu(payload), onMapClick(lat, lng) }
+ * Create the Leaflet map. Pure rendering — all interaction (click, right-click,
+ * long-press) is handled in React (see MapSpotSave.tsx) so that state lives in
+ * a single place and there is no double-hop between vanilla JS and React.
  */
-export function createMap(elementId, callbacks, openWeatherApiKey) {
+export function createMap(elementId, openWeatherApiKey) {
     const L = window.L;
     const map = L.map(elementId, { center: [40.4168, -3.7038], zoom: 13 });
 
@@ -39,30 +41,6 @@ export function createMap(elementId, callbacks, openWeatherApiKey) {
         })
         .catch(console.error);
 
-    // Long-press for touch
-    const container = map.getContainer();
-    let longPressTimer;
-    container.addEventListener('pointerdown', e => {
-        if (e.pointerType === 'touch') {
-            longPressTimer = setTimeout(() => {
-                e.preventDefault();
-                e.stopPropagation();
-                const latlng = map.mouseEventToLatLng(e);
-                callbacks.onContextMenu({ x: e.clientX, y: e.clientY, lat: latlng.lat, lng: latlng.lng, isPoint: false, spotId: null });
-            }, 600);
-        }
-    });
-    container.addEventListener('pointerup', () => clearTimeout(longPressTimer));
-    container.addEventListener('pointermove', () => clearTimeout(longPressTimer));
-
-    // Right-click on map (not on marker)
-    map.on('contextmenu', e => {
-        if (e.originalEvent.target.closest('.leaflet-marker-icon')) return;
-        e.originalEvent.preventDefault();
-        callbacks.onContextMenu({ x: e.originalEvent.clientX, y: e.originalEvent.clientY, lat: e.latlng.lat, lng: e.latlng.lng, isPoint: false, spotId: null });
-    });
-
-    // Geolocation
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(pos => {
             const { latitude: lat, longitude: lng } = pos.coords;
@@ -70,11 +48,6 @@ export function createMap(elementId, callbacks, openWeatherApiKey) {
             L.marker([lat, lng]).addTo(map).bindPopup('<b>You</b>').openPopup();
         }, err => console.warn('Geo error:', err), { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
     }
-
-    // Left click
-    map.on('click', e => {
-        callbacks.onMapClick(e.latlng.lat, e.latlng.lng);
-    });
 
     window._fpvMap = map;
     return map;
