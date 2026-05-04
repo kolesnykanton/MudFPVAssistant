@@ -2,16 +2,16 @@ import { useState } from 'react';
 import {
   Box,
   Button,
-  FormControl,
   Grid,
-  InputLabel,
-  MenuItem,
+  NumberInput,
   Paper,
   Select,
-  TextField,
-  Typography,
-} from '@mui/material';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
+  Textarea,
+  TextInput,
+  Title,
+} from '@mantine/core';
+import { DateInput } from '@mantine/dates';
+import { IconCirclePlus } from '@tabler/icons-react';
 import type { FlightInfo, BatteryType } from '../types';
 
 interface AddFlightFormProps {
@@ -21,19 +21,15 @@ interface AddFlightFormProps {
 const BATTERY_TYPES: BatteryType[] = ['Unknown', 'LiPo', 'LiIon'];
 const CELL_COUNTS = [1, 2, 3, 4, 5, 6, 7, 8];
 
-function todayString(): string {
-  return new Date().toISOString().split('T')[0];
-}
-
 export default function AddFlightForm({ onAdd }: AddFlightFormProps) {
   const [name, setName] = useState('');
-  const [usedMah, setUsedMah] = useState<number | ''>('');
+  const [usedMah, setUsedMah] = useState<number | string>('');
   const [batType, setBatType] = useState<BatteryType>('LiPo');
   const [cellCount, setCellCount] = useState<number>(4);
   const [flightTime, setFlightTime] = useState('');
   const [location, setLocation] = useState('');
   const [comment, setComment] = useState('');
-  const [date, setDate] = useState(todayString());
+  const [date, setDate] = useState<string | null>(new Date().toISOString().split('T')[0]);
   const [submitting, setSubmitting] = useState(false);
   const [timeError, setTimeError] = useState('');
 
@@ -57,7 +53,7 @@ export default function AddFlightForm({ onAdd }: AddFlightFormProps) {
       comment: comment.trim() || undefined,
       usedMah: usedMah !== '' ? Number(usedMah) : undefined,
       flightTime: flightTime || undefined,
-      date: date || undefined,
+      date: date ?? undefined,
     };
 
     try {
@@ -71,130 +67,110 @@ export default function AddFlightForm({ onAdd }: AddFlightFormProps) {
       setFlightTime('');
       setLocation('');
       setComment('');
-      setDate(todayString());
+      setDate(new Date().toISOString().split('T')[0]);
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <Paper sx={{ p: 3 }}>
-      <Typography variant="h6" gutterBottom>
-        New Flight
-      </Typography>
+    <Paper withBorder p="lg" radius="md">
+      <Title order={5} mb="md">New Flight</Title>
 
-      <Box component="form" noValidate>
-        <Grid container spacing={2}>
-          <Grid size={{ xs: 12 }}>
-            <TextField
+      <Box component="form" onSubmit={e => { e.preventDefault(); handleSubmit(); }}>
+        <Grid gap="sm">
+          <Grid.Col span={12}>
+            <TextInput
               label="Name (Drone, Battery, etc.)"
               value={name}
               onChange={e => setName(e.target.value)}
               required
-              fullWidth
-              size="small"
+              size="sm"
             />
-          </Grid>
+          </Grid.Col>
 
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField
+          <Grid.Col span={{ base: 12, sm: 6 }}>
+            <NumberInput
               label="Battery Used (mAh)"
-              type="number"
               value={usedMah}
-              onChange={e => setUsedMah(e.target.value === '' ? '' : Number(e.target.value))}
-              fullWidth
-              size="small"
-              slotProps={{ htmlInput: { min: 0 } }}
+              onChange={val => setUsedMah(val)}
+              min={0}
+              size="sm"
             />
-          </Grid>
+          </Grid.Col>
 
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <FormControl fullWidth size="small">
-              <InputLabel>Battery Type</InputLabel>
-              <Select
-                value={batType}
-                label="Battery Type"
-                onChange={e => setBatType(e.target.value as BatteryType)}
-              >
-                {BATTERY_TYPES.map(t => (
-                  <MenuItem key={t} value={t}>{t}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
+          <Grid.Col span={{ base: 12, sm: 6 }}>
+            <Select
+              label="Battery Type"
+              value={batType}
+              onChange={val => setBatType((val ?? 'LiPo') as BatteryType)}
+              data={BATTERY_TYPES}
+              size="sm"
+            />
+          </Grid.Col>
 
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <FormControl fullWidth size="small">
-              <InputLabel>Cell Count</InputLabel>
-              <Select
-                value={cellCount}
-                label="Cell Count"
-                onChange={e => setCellCount(Number(e.target.value))}
-              >
-                {CELL_COUNTS.map(c => (
-                  <MenuItem key={c} value={c}>{c}S</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
+          <Grid.Col span={{ base: 12, sm: 6 }}>
+            <Select
+              label="Cell Count"
+              value={String(cellCount)}
+              onChange={val => setCellCount(Number(val ?? '4'))}
+              data={CELL_COUNTS.map(c => ({ value: String(c), label: `${c}S` }))}
+              size="sm"
+            />
+          </Grid.Col>
 
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField
+          <Grid.Col span={{ base: 12, sm: 6 }}>
+            <TextInput
               label="Flight Time"
               value={flightTime}
               onChange={e => { setFlightTime(e.target.value); setTimeError(''); }}
               placeholder="04:20"
-              fullWidth
-              size="small"
-              error={!!timeError}
-              helperText={timeError || 'Format: mm:ss'}
+              size="sm"
+              error={timeError || undefined}
+              description={!timeError ? 'Format: mm:ss' : undefined}
             />
-          </Grid>
+          </Grid.Col>
 
-          <Grid size={{ xs: 12 }}>
-            <TextField
+          <Grid.Col span={12}>
+            <TextInput
               label="Location"
               value={location}
               onChange={e => setLocation(e.target.value)}
-              fullWidth
-              size="small"
+              size="sm"
             />
-          </Grid>
+          </Grid.Col>
 
-          <Grid size={{ xs: 12 }}>
-            <TextField
+          <Grid.Col span={12}>
+            <Textarea
               label="Comment"
               value={comment}
               onChange={e => setComment(e.target.value)}
-              fullWidth
-              size="small"
-              multiline
+              size="sm"
               rows={2}
             />
-          </Grid>
+          </Grid.Col>
 
-          <Grid size={{ xs: 12 }}>
-            <TextField
+          <Grid.Col span={12}>
+            <DateInput
               label="Flight Date"
-              type="date"
               value={date}
-              onChange={e => setDate(e.target.value)}
-              fullWidth
-              size="small"
-              slotProps={{ inputLabel: { shrink: true } }}
+              onChange={setDate}
+              size="sm"
+              clearable
             />
-          </Grid>
+          </Grid.Col>
 
-          <Grid size={{ xs: 12 }}>
+          <Grid.Col span={12}>
             <Button
-              variant="contained"
-              startIcon={<AddCircleIcon />}
+              variant="filled"
+              leftSection={<IconCirclePlus size={16} />}
               disabled={!isValid || submitting}
+              loading={submitting}
               onClick={handleSubmit}
             >
               Add Flight
             </Button>
-          </Grid>
+          </Grid.Col>
         </Grid>
       </Box>
     </Paper>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { Box, Menu, MenuItem, Typography } from '@mui/material';
+import { Box, Menu, Text, Title } from '@mantine/core';
 import { useUserCollection } from '../hooks/useUserCollection';
 import { useSettings } from '../hooks/useSettings';
 import { useAuth } from '../context/AuthContext';
@@ -103,13 +103,13 @@ export default function MapSpotSave() {
   };
 
   if (!uid) {
-    return <Typography sx={{ p: 4 }}>Please sign in to view flight spots.</Typography>;
+    return <Text p="xl">Please sign in to view flight spots.</Text>;
   }
 
   return (
     <Box>
-      <Typography variant="h5" sx={{ p: 2 }}>Flight Spot Saver</Typography>
-      <Box sx={{ position: 'relative' }}>
+      <Title order={2} p="sm" pb={0}>Flight Spot Saver</Title>
+      <Box style={{ position: 'relative' }} mt="sm">
         <div
           id="fpvMap"
           ref={mapRef}
@@ -118,18 +118,34 @@ export default function MapSpotSave() {
         />
 
         <Menu
-          open={!!contextMenu}
+          opened={!!contextMenu}
           onClose={() => setContextMenu(null)}
-          anchorReference="anchorPosition"
-          anchorPosition={contextMenu ? { top: contextMenu.y, left: contextMenu.x } : undefined}
+          position="bottom-start"
         >
-          {!contextMenu?.isPoint && (
-            <MenuItem onClick={handleAddSpot}>Add spot</MenuItem>
-          )}
-          {contextMenu?.isPoint && [
-            <MenuItem key="edit" onClick={handleEditSpot}>Edit spot</MenuItem>,
-            <MenuItem key="delete" onClick={handleDeleteSpot}>Delete spot</MenuItem>,
-          ]}
+          <Menu.Target>
+            {/* Invisible anchor positioned via style override */}
+            <div
+              style={{
+                position: 'fixed',
+                left: contextMenu?.x ?? 0,
+                top: contextMenu?.y ?? 0,
+                width: 1,
+                height: 1,
+                pointerEvents: 'none',
+              }}
+            />
+          </Menu.Target>
+          <Menu.Dropdown>
+            {!contextMenu?.isPoint && (
+              <Menu.Item onClick={handleAddSpot}>Add spot</Menu.Item>
+            )}
+            {contextMenu?.isPoint && (
+              <>
+                <Menu.Item onClick={handleEditSpot}>Edit spot</Menu.Item>
+                <Menu.Item color="red" onClick={handleDeleteSpot}>Delete spot</Menu.Item>
+              </>
+            )}
+          </Menu.Dropdown>
         </Menu>
       </Box>
 

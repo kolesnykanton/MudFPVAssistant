@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Box, Grid, Paper, Typography } from '@mui/material';
+import { Box, Grid, Paper, Text, Title } from '@mantine/core';
 import {
   LineChart, Line, BarChart, Bar,
   PieChart, Pie, Cell,
@@ -38,8 +38,8 @@ function secondsToMmSs(sec: number): string {
 export default function FlightStats({ flights }: FlightStatsProps) {
   if (flights.length === 0) {
     return (
-      <Paper sx={{ p: 3 }}>
-        <Typography color="text.secondary">No flight data to display charts.</Typography>
+      <Paper withBorder p="lg" radius="md">
+        <Text c="dimmed">No flight data to display charts.</Text>
       </Paper>
     );
   }
@@ -106,17 +106,15 @@ export default function FlightStats({ flights }: FlightStatsProps) {
 
   return (
     <Box>
-      <Grid container spacing={3}>
+      <Grid gap="lg">
         {/* Chart 1: mAh per day */}
-        <Grid size={{ xs: 12 }}>
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              1. Total mAh per Day (last 15 days)
-            </Typography>
+        <Grid.Col span={{ base: 12 }}>
+          <Paper withBorder p="md" radius="md">
+            <Title order={5} mb="sm">1. Total mAh per Day (last 15 days)</Title>
             {dailyMahData.length === 0 ? (
-              <Typography color="text.secondary">No mAh data available.</Typography>
+              <Text c="dimmed">No mAh data available.</Text>
             ) : (
-              <Box sx={{ height: 300 }}>
+              <Box h={300}>
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={dailyMahData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -137,18 +135,16 @@ export default function FlightStats({ flights }: FlightStatsProps) {
               </Box>
             )}
           </Paper>
-        </Grid>
+        </Grid.Col>
 
         {/* Chart 2: Battery type pie */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              2. Flights by Battery Type
-            </Typography>
+        <Grid.Col span={{ base: 12, md: 6 }}>
+          <Paper withBorder p="md" radius="md">
+            <Title order={5} mb="sm">2. Flights by Battery Type</Title>
             {batteryTypeData.length === 0 ? (
-              <Typography color="text.secondary">No data.</Typography>
+              <Text c="dimmed">No data.</Text>
             ) : (
-              <Box sx={{ height: 300 }}>
+              <Box h={300}>
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -171,18 +167,16 @@ export default function FlightStats({ flights }: FlightStatsProps) {
               </Box>
             )}
           </Paper>
-        </Grid>
+        </Grid.Col>
 
         {/* Chart 3: Locations pie */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              3. Top Locations by Flight Count
-            </Typography>
+        <Grid.Col span={{ base: 12, md: 6 }}>
+          <Paper withBorder p="md" radius="md">
+            <Title order={5} mb="sm">3. Top Locations by Flight Count</Title>
             {locationData.length === 0 ? (
-              <Typography color="text.secondary">No location data.</Typography>
+              <Text c="dimmed">No location data.</Text>
             ) : (
-              <Box sx={{ height: 300 }}>
+              <Box h={300}>
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -205,18 +199,16 @@ export default function FlightStats({ flights }: FlightStatsProps) {
               </Box>
             )}
           </Paper>
-        </Grid>
+        </Grid.Col>
 
         {/* Chart 4: Average flight time per drone */}
-        <Grid size={{ xs: 12 }}>
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              4. Average Flight Time per Drone (mm:ss)
-            </Typography>
+        <Grid.Col span={{ base: 12 }}>
+          <Paper withBorder p="md" radius="md">
+            <Title order={5} mb="sm">4. Average Flight Time per Drone (mm:ss)</Title>
             {droneAvgTimeData.length === 0 ? (
-              <Typography color="text.secondary">No flight time data available.</Typography>
+              <Text c="dimmed">No flight time data available.</Text>
             ) : (
-              <Box sx={{ height: 350 }}>
+              <Box h={350}>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={droneAvgTimeData}
@@ -244,7 +236,7 @@ export default function FlightStats({ flights }: FlightStatsProps) {
               </Box>
             )}
           </Paper>
-        </Grid>
+        </Grid.Col>
       </Grid>
     </Box>
   );

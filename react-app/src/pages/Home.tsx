@@ -4,16 +4,19 @@ import {
   Box,
   Button,
   Card,
-  CardContent,
   Grid,
-  Typography,
-  CircularProgress,
-} from '@mui/material';
-import FlightTakeoffIcon from '@mui/icons-material/FlightTakeoff';
-import BatteryChargingFullIcon from '@mui/icons-material/BatteryChargingFull';
-import AirplanemodeActiveIcon from '@mui/icons-material/AirplanemodeActive';
-import PlaceIcon from '@mui/icons-material/Place';
-import SettingsIcon from '@mui/icons-material/Settings';
+  Text,
+  Title,
+  Group,
+  Loader,
+} from '@mantine/core';
+import {
+  IconPlaneTilt,
+  IconBattery2,
+  IconPlane,
+  IconMapPin,
+  IconSettings,
+} from '@tabler/icons-react';
 import { useUserCollection } from '../hooks/useUserCollection';
 import { useSettings } from '../hooks/useSettings';
 import type { FlightInfo, FlightSpot } from '../types';
@@ -74,17 +77,17 @@ export default function Home() {
     {
       title: 'Total Flights',
       value: totalFlights,
-      icon: <FlightTakeoffIcon sx={{ fontSize: 40, color: 'primary.main' }} />,
+      icon: <IconPlaneTilt size={40} color="var(--mantine-color-blue-6)" />,
     },
     {
       title: 'Total mAh',
       value: totalMah.toLocaleString(),
-      icon: <BatteryChargingFullIcon sx={{ fontSize: 40, color: 'success.main' }} />,
+      icon: <IconBattery2 size={40} color="var(--mantine-color-green-6)" />,
     },
     {
       title: 'Unique Drones',
       value: uniqueDrones,
-      icon: <AirplanemodeActiveIcon sx={{ fontSize: 40, color: 'warning.main' }} />,
+      icon: <IconPlane size={40} color="var(--mantine-color-yellow-6)" />,
     },
   ];
 
@@ -92,110 +95,90 @@ export default function Home() {
 
   return (
     <Box>
-      <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
-        Dashboard
-      </Typography>
+      <Title order={2} mb="lg">Dashboard</Title>
 
       {isLoading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          <CircularProgress />
-        </Box>
+        <Group justify="center" mt="xl">
+          <Loader />
+        </Group>
       ) : (
-        <Grid container spacing={3}>
+        <Grid gap="lg">
           {/* Stats cards */}
           {statsCards.map((card) => (
-            <Grid key={card.title} size={{ xs: 12, sm: 6, md: 3 }}>
-              <Card>
-                <CardContent sx={{ textAlign: 'center', py: 3 }}>
-                  {card.icon}
-                  <Typography variant="h6" color="text.secondary" sx={{ mt: 1 }}>
-                    {card.title}
-                  </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700 }}>
-                    {card.value}
-                  </Typography>
-                </CardContent>
+            <Grid.Col key={card.title} span={{ base: 12, sm: 6, md: 3 }}>
+              <Card withBorder shadow="sm" radius="md" style={{ textAlign: 'center' }} py="lg">
+                {card.icon}
+                <Text size="sm" c="dimmed" mt="xs">{card.title}</Text>
+                <Title order={3} fw={700}>{card.value}</Title>
               </Card>
-            </Grid>
+            </Grid.Col>
           ))}
 
           {/* Flight Spots card */}
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <Card>
-              <CardContent sx={{ textAlign: 'center', py: 3 }}>
-                <PlaceIcon sx={{ fontSize: 40, color: 'error.main' }} />
-                <Typography variant="h6" color="text.secondary" sx={{ mt: 1 }}>
-                  Flight Spots
-                </Typography>
-                <Typography variant="h4" sx={{ fontWeight: 700 }}>
-                  {spots.length}
-                </Typography>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  sx={{ mt: 1 }}
-                  onClick={() => navigate('/map-spot-save')}
-                >
-                  View Map
-                </Button>
-              </CardContent>
+          <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+            <Card withBorder shadow="sm" radius="md" style={{ textAlign: 'center' }} py="lg">
+              <IconMapPin size={40} color="var(--mantine-color-red-6)" />
+              <Text size="sm" c="dimmed" mt="xs">Flight Spots</Text>
+              <Title order={3} fw={700}>{spots.length}</Title>
+              <Button
+                variant="outline"
+                size="xs"
+                mt="xs"
+                onClick={() => navigate('/map-spot-save')}
+              >
+                View Map
+              </Button>
             </Card>
-          </Grid>
+          </Grid.Col>
 
           {/* Weather widget */}
-          <Grid size={{ xs: 12 }}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Weather
-                </Typography>
+          <Grid.Col span={{ base: 12 }}>
+            <Card withBorder shadow="sm" radius="md">
+              <Title order={5} mb="sm">Weather</Title>
 
-                {settingsLoading || weatherLoading ? (
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <CircularProgress size={20} />
-                    <Typography color="text.secondary">Loading weather…</Typography>
+              {settingsLoading || weatherLoading ? (
+                <Group gap="xs">
+                  <Loader size="xs" />
+                  <Text c="dimmed">Loading weather…</Text>
+                </Group>
+              ) : !apiKey ? (
+                <Group gap="md">
+                  <Text c="dimmed">
+                    Configure OpenWeather API key in Settings to see local weather.
+                  </Text>
+                  <Button
+                    variant="outline"
+                    size="xs"
+                    leftSection={<IconSettings size={14} />}
+                    onClick={() => navigate('/settings')}
+                  >
+                    Settings
+                  </Button>
+                </Group>
+              ) : weatherError ? (
+                <Text c="red">{weatherError}</Text>
+              ) : weather ? (
+                <Group gap="lg">
+                  {weather.weather[0]?.icon && (
+                    <img
+                      src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
+                      alt={weather.weather[0].description}
+                      style={{ width: 64, height: 64 }}
+                    />
+                  )}
+                  <Box>
+                    <Title order={4}>{weather.name}</Title>
+                    <Text style={{ textTransform: 'capitalize' }}>{weather.weather[0]?.description}</Text>
+                    <Text size="sm" c="dimmed">
+                      Temp: {Math.round(weather.main.temp)}°C &nbsp;|&nbsp;
+                      Humidity: {weather.main.humidity}% &nbsp;|&nbsp;
+                      Wind: {weather.wind.speed} m/s
+                    </Text>
                   </Box>
-                ) : !apiKey ? (
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Typography color="text.secondary">
-                      Configure OpenWeather API key in Settings to see local weather.
-                    </Typography>
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      startIcon={<SettingsIcon />}
-                      onClick={() => navigate('/settings')}
-                    >
-                      Settings
-                    </Button>
-                  </Box>
-                ) : weatherError ? (
-                  <Typography color="error">{weatherError}</Typography>
-                ) : weather ? (
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                    {weather.weather[0]?.icon && (
-                      <img
-                        src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
-                        alt={weather.weather[0].description}
-                        style={{ width: 64, height: 64 }}
-                      />
-                    )}
-                    <Box>
-                      <Typography variant="h5">{weather.name}</Typography>
-                      <Typography variant="body1" sx={{ textTransform: 'capitalize' }}>
-                        {weather.weather[0]?.description}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Temp: {Math.round(weather.main.temp)}°C &nbsp;|&nbsp;
-                        Humidity: {weather.main.humidity}% &nbsp;|&nbsp;
-                        Wind: {weather.wind.speed} m/s
-                      </Typography>
-                    </Box>
-                  </Box>
-                ) : null}
-              </CardContent>
+                </Group>
+              ) : null}
             </Card>
-          </Grid>
+          </Grid.Col>
         </Grid>
       )}
     </Box>

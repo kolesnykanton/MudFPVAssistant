@@ -1,15 +1,5 @@
-import {
-  IconButton,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-} from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { ActionIcon, Paper, ScrollArea, Table, Text, Title } from '@mantine/core';
+import { IconTrash } from '@tabler/icons-react';
 import type { FlightInfo } from '../types';
 
 interface FlightTableProps {
@@ -32,61 +22,62 @@ export default function FlightTable({ flights, selectedDate, onDelete }: FlightT
   });
 
   return (
-    <Paper sx={{ p: 2 }}>
-      <Typography variant="h6" gutterBottom>
+    <Paper withBorder p="md" radius="md">
+      <Title order={5} mb="sm">
         Flight History {selectedDate ? `— ${selectedDate}` : '(all)'}
-      </Typography>
+      </Title>
 
       {sorted.length === 0 ? (
-        <Typography color="text.secondary" sx={{ py: 2 }}>
+        <Text c="dimmed" py="sm">
           No flights found{selectedDate ? ' for this date' : ''}.
-        </Typography>
+        </Text>
       ) : (
-        <TableContainer>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>Date</TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>Location</TableCell>
-                <TableCell>Time</TableCell>
-                <TableCell>mAh</TableCell>
-                <TableCell>Cells</TableCell>
-                <TableCell>Type</TableCell>
-                <TableCell>Comment</TableCell>
-                <TableCell>Delete</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
+        <ScrollArea>
+          <Table striped highlightOnHover withTableBorder withColumnBorders fz="sm">
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>Date</Table.Th>
+                <Table.Th>Name</Table.Th>
+                <Table.Th>Location</Table.Th>
+                <Table.Th>Time</Table.Th>
+                <Table.Th>mAh</Table.Th>
+                <Table.Th>Cells</Table.Th>
+                <Table.Th>Type</Table.Th>
+                <Table.Th>Comment</Table.Th>
+                <Table.Th>Delete</Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
               {sorted.map(flight => (
-                <TableRow key={flight.id} hover>
-                  <TableCell>{flight.date ?? '—'}</TableCell>
-                  <TableCell>{flight.name}</TableCell>
-                  <TableCell>{flight.location}</TableCell>
-                  <TableCell>{flight.flightTime ?? '—'}</TableCell>
-                  <TableCell>{flight.usedMah ?? '—'}</TableCell>
-                  <TableCell>{flight.cellCount}S</TableCell>
-                  <TableCell>{flight.batType}</TableCell>
-                  <TableCell
-                    sx={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                <Table.Tr key={flight.id}>
+                  <Table.Td>{flight.date ?? '—'}</Table.Td>
+                  <Table.Td>{flight.name}</Table.Td>
+                  <Table.Td>{flight.location}</Table.Td>
+                  <Table.Td>{flight.flightTime ?? '—'}</Table.Td>
+                  <Table.Td>{flight.usedMah ?? '—'}</Table.Td>
+                  <Table.Td>{flight.cellCount}S</Table.Td>
+                  <Table.Td>{flight.batType}</Table.Td>
+                  <Table.Td
+                    style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
                   >
                     {flight.comment ?? '—'}
-                  </TableCell>
-                  <TableCell>
-                    <IconButton
-                      size="small"
-                      color="error"
+                  </Table.Td>
+                  <Table.Td>
+                    <ActionIcon
+                      size="sm"
+                      color="red"
+                      variant="subtle"
                       onClick={() => flight.id && onDelete(flight.id)}
                       disabled={!flight.id}
                     >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
+                      <IconTrash size={14} />
+                    </ActionIcon>
+                  </Table.Td>
+                </Table.Tr>
               ))}
-            </TableBody>
+            </Table.Tbody>
           </Table>
-        </TableContainer>
+        </ScrollArea>
       )}
     </Paper>
   );

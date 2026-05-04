@@ -1,60 +1,53 @@
-import type { ReactNode } from 'react';
+import { NavLink, Stack } from '@mantine/core';
 import {
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-} from '@mui/material';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import FlightTakeoffIcon from '@mui/icons-material/FlightTakeoff';
-import MapIcon from '@mui/icons-material/Map';
-import BuildIcon from '@mui/icons-material/Build';
-import SettingsIcon from '@mui/icons-material/Settings';
-import { NavLink } from 'react-router-dom';
+  IconLayoutDashboard,
+  IconPlaneTilt,
+  IconMap,
+  IconTool,
+  IconSettings,
+} from '@tabler/icons-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-interface NavItem {
-  label: string;
-  to: string;
-  icon: ReactNode;
-  end?: boolean;
-}
-
-const navItems: NavItem[] = [
-  { label: 'Dashboard', to: '/', icon: <DashboardIcon />, end: true },
-  { label: 'Flights', to: '/flight-info', icon: <FlightTakeoffIcon /> },
-  { label: 'Flight Spots', to: '/map-spot-save', icon: <MapIcon /> },
-  { label: 'Utilities', to: '/utils', icon: <BuildIcon /> },
-  { label: 'Settings', to: '/settings', icon: <SettingsIcon /> },
+const links = [
+  { to: '/', label: 'Dashboard', icon: IconLayoutDashboard, end: true },
+  { to: '/flight-info', label: 'Flights', icon: IconPlaneTilt },
+  { to: '/map-spot-save', label: 'Flight Spots', icon: IconMap },
+  { to: '/utils', label: 'Utilities', icon: IconTool },
+  { to: '/settings', label: 'Settings', icon: IconSettings },
 ];
 
 interface NavMenuProps {
-  onClose?: () => void;
+  onNavClick?: () => void;
 }
 
-export default function NavMenu({ onClose }: NavMenuProps) {
+export default function NavMenu({ onNavClick }: NavMenuProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   return (
-    <List disablePadding>
-      {navItems.map(({ label, to, icon, end }) => (
-        <ListItem key={to} disablePadding>
-          <ListItemButton
-            component={NavLink}
-            to={to}
-            end={end}
-            onClick={onClose}
-            sx={{
-              '&.active': {
-                backgroundColor: 'action.selected',
-                color: 'primary.main',
-                '& .MuiListItemIcon-root': { color: 'primary.main' },
-              },
+    <Stack gap={4}>
+      {links.map(({ to, label, icon: Icon, end }) => {
+        const isActive = end
+          ? location.pathname === to
+          : location.pathname.startsWith(to);
+
+        return (
+          <NavLink
+            key={to}
+            label={label}
+            leftSection={<Icon size={18} stroke={1.5} />}
+            active={isActive}
+            onClick={() => {
+              navigate(to);
+              onNavClick?.();
             }}
-          >
-            <ListItemIcon sx={{ minWidth: 40 }}>{icon}</ListItemIcon>
-            <ListItemText primary={label} />
-          </ListItemButton>
-        </ListItem>
-      ))}
-    </List>
+            styles={{
+              root: { borderRadius: 8, color: 'white' },
+              label: { color: 'white' },
+            }}
+          />
+        );
+      })}
+    </Stack>
   );
 }

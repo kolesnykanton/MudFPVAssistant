@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Box, Paper, Typography, TextField, Button, Stack } from '@mui/material';
+import { Box, Paper, Title, Text, TextInput, Button, Stack } from '@mantine/core';
 import { useSettings } from '../hooks/useSettings';
 
 export default function Settings() {
@@ -18,35 +18,33 @@ export default function Settings() {
     });
   };
 
-  if (loading) return <Typography sx={{ p: 4 }}>Loading...</Typography>;
+  if (loading) return <Text p="xl">Loading...</Text>;
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h5" sx={{ mb: 3 }}>Settings</Typography>
-      <Stack spacing={3} sx={{ maxWidth: 500 }}>
-        <Paper elevation={1} sx={{ p: 3 }}>
-          <Typography variant="subtitle1" sx={{ mb: 2 }}>OpenWeather API Key</Typography>
-          <TextField
-            fullWidth
+    <Box p="lg">
+      <Title order={2} mb="lg">Settings</Title>
+      <Stack gap="lg" maw={500}>
+        <Paper withBorder p="lg" radius="md">
+          <Text fw={500} mb="sm">OpenWeather API Key</Text>
+          <TextInput
             value={openWeatherKey}
             onChange={e => setOpenWeatherKey(e.target.value)}
             onBlur={handleSave}
             placeholder="API key"
-            size="small"
+            size="sm"
           />
         </Paper>
-        <Paper elevation={1} sx={{ p: 3 }}>
-          <Typography variant="subtitle1" sx={{ mb: 2 }}>Google Maps API Key</Typography>
-          <TextField
-            fullWidth
+        <Paper withBorder p="lg" radius="md">
+          <Text fw={500} mb="sm">Google Maps API Key</Text>
+          <TextInput
             value={googleMapsKey}
             onChange={e => setGoogleMapsKey(e.target.value)}
             onBlur={handleSave}
             placeholder="API key"
-            size="small"
+            size="sm"
           />
         </Paper>
-        <Button variant="contained" onClick={handleSave}>Save</Button>
+        <Button variant="filled" onClick={handleSave}>Save</Button>
       </Stack>
     </Box>
   );

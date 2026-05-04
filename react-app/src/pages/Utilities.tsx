@@ -1,5 +1,4 @@
-import { Accordion, AccordionSummary, AccordionDetails, Typography, Box, Link, Stack } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Accordion, Anchor, Grid, Stack } from '@mantine/core';
 import OsdCommandPanel from '../components/OsdCommandPanel';
 
 const OSD_COMMANDS = [
@@ -15,31 +14,40 @@ const OSD_COMMANDS = [
 export default function Utilities() {
   return (
     <div style={{ margin: '16px' }}>
-      <Accordion defaultExpanded>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>Stick Commands</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-            {OSD_COMMANDS.map(cmd => (
-              <Box key={cmd.key} sx={{ width: { xs: '100%', sm: '50%', md: '33.33%', lg: '25%' } }}>
-                <OsdCommandPanel command={cmd.label} leftSegment={cmd.left} rightSegment={cmd.right} />
-              </Box>
-            ))}
-          </Box>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>Configurators</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Stack spacing={1}>
-            <Link href="https://app.betaflight.com" target="_blank" rel="noreferrer">Betaflight Configurator</Link>
-            <Link href="https://esc-configurator.com" target="_blank" rel="noreferrer">ESC Configurator</Link>
-            <Link href="https://expresslrs.github.io/web-flasher/" target="_blank" rel="noreferrer">ELRS Web Flasher</Link>
-          </Stack>
-        </AccordionDetails>
+      <Accordion defaultValue="stick-commands">
+        <Accordion.Item value="stick-commands">
+          <Accordion.Control>Stick Commands</Accordion.Control>
+          <Accordion.Panel>
+            <Grid>
+              {OSD_COMMANDS.map(cmd => (
+                <Grid.Col key={cmd.key} span={{ base: 12, sm: 6, md: 4, lg: 3 }}>
+                  <OsdCommandPanel
+                    command={cmd.label}
+                    leftSegment={cmd.left}
+                    rightSegment={cmd.right}
+                  />
+                </Grid.Col>
+              ))}
+            </Grid>
+          </Accordion.Panel>
+        </Accordion.Item>
+
+        <Accordion.Item value="configurators">
+          <Accordion.Control>Configurators</Accordion.Control>
+          <Accordion.Panel>
+            <Stack gap="xs">
+              <Anchor href="https://app.betaflight.com" target="_blank" rel="noreferrer">
+                Betaflight Configurator
+              </Anchor>
+              <Anchor href="https://esc-configurator.com" target="_blank" rel="noreferrer">
+                ESC Configurator
+              </Anchor>
+              <Anchor href="https://expresslrs.github.io/web-flasher/" target="_blank" rel="noreferrer">
+                ELRS Web Flasher
+              </Anchor>
+            </Stack>
+          </Accordion.Panel>
+        </Accordion.Item>
       </Accordion>
     </div>
   );

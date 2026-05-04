@@ -1,4 +1,4 @@
-import { Paper, Typography, Box } from '@mui/material';
+import { Paper, Title, Group } from '@mantine/core';
 import StickAnimation from './StickAnimation';
 
 interface Props {
@@ -9,16 +9,12 @@ interface Props {
 
 export default function OsdCommandPanel({ command, leftSegment, rightSegment }: Props) {
   return (
-    <Paper elevation={1} sx={{ p: 2, m: 1 }}>
-      <Typography variant="h6" sx={{ textAlign: 'center', mb: 1 }}>{command}</Typography>
-      <Box sx={{ display: 'flex' }}>
-        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-          <StickAnimation segment={leftSegment} />
-        </Box>
-        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-          <StickAnimation segment={rightSegment} />
-        </Box>
-      </Box>
+    <Paper withBorder shadow="xs" p="sm" m="xs" radius="md">
+      <Title order={5} ta="center" mb="xs">{command}</Title>
+      <Group justify="center" gap={0} grow>
+        <StickAnimation segment={leftSegment} />
+        <StickAnimation segment={rightSegment} />
+      </Group>
     </Paper>
   );
 }

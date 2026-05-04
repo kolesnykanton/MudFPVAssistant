@@ -1,8 +1,14 @@
 import { useState, useEffect } from 'react';
 import {
-  Dialog, DialogTitle, DialogContent, DialogActions,
-  TextField, Button, Chip, Stack, Typography, Box,
-} from '@mui/material';
+  Modal,
+  TextInput,
+  Textarea,
+  Button,
+  Chip,
+  Stack,
+  Group,
+  Text,
+} from '@mantine/core';
 import type { FlightSpot } from '../types';
 
 const CATEGORIES = ['Mountain', 'Beach', 'Building', 'Forest', 'Field'];
@@ -42,54 +48,51 @@ export default function FlightSpotEditDialog({ open, spot, coords, onSave, onClo
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>{spot?.id ? 'Edit Flight Spot' : 'Add Flight Spot'}</DialogTitle>
-      <DialogContent>
-        <Stack spacing={2} sx={{ mt: 1 }}>
-          <TextField
-            label="Name"
-            value={name}
-            onChange={e => setName(e.target.value)}
-            required
-            fullWidth
-            size="small"
-          />
-          <TextField
-            label="Comments"
-            value={comments}
-            onChange={e => setComments(e.target.value)}
-            multiline
-            rows={3}
-            fullWidth
-            size="small"
-          />
-          <Box>
-            <Typography variant="caption" color="text.secondary">Category</Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 0.5 }}>
+    <Modal
+      opened={open}
+      onClose={onClose}
+      title={spot?.id ? 'Edit Flight Spot' : 'Add Flight Spot'}
+      centered
+      size="sm"
+    >
+      <Stack gap="sm">
+        <TextInput
+          label="Name"
+          value={name}
+          onChange={e => setName(e.target.value)}
+          required
+          size="sm"
+        />
+        <Textarea
+          label="Comments"
+          value={comments}
+          onChange={e => setComments(e.target.value)}
+          rows={3}
+          size="sm"
+        />
+        <div>
+          <Text size="sm" fw={500} mb={6}>Category</Text>
+          <Chip.Group value={category} onChange={val => setCategory(typeof val === 'string' ? val : '')}>
+            <Group gap="xs">
               {CATEGORIES.map(cat => (
-                <Chip
-                  key={cat}
-                  label={cat}
-                  clickable
-                  color={category === cat ? 'primary' : 'default'}
-                  onClick={() => setCategory(prev => (prev === cat ? '' : cat))}
-                />
+                <Chip key={cat} value={cat} size="sm">
+                  {cat}
+                </Chip>
               ))}
-            </Box>
-          </Box>
-          <TextField
-            label="Tags (comma-separated)"
-            value={tagsInput}
-            onChange={e => setTagsInput(e.target.value)}
-            fullWidth
-            size="small"
-          />
-        </Stack>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={handleSave} variant="contained" disabled={!name.trim()}>Save</Button>
-      </DialogActions>
-    </Dialog>
+            </Group>
+          </Chip.Group>
+        </div>
+        <TextInput
+          label="Tags (comma-separated)"
+          value={tagsInput}
+          onChange={e => setTagsInput(e.target.value)}
+          size="sm"
+        />
+        <Group justify="flex-end" mt="md">
+          <Button variant="subtle" onClick={onClose}>Cancel</Button>
+          <Button onClick={handleSave} disabled={!name.trim()}>Save</Button>
+        </Group>
+      </Stack>
+    </Modal>
   );
 }

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Box } from '@mui/material';
+import { Box } from '@mantine/core';
 
 const SEGMENTS: Record<string, [number, number]> = {
   up_left:      [0,   20],
@@ -66,5 +66,10 @@ export default function StickAnimation({ segment }: Props) {
     return () => { anim.destroy(); };
   }, [segment]);
 
-  return <Box ref={containerRef} sx={{ width: '100%', maxWidth: 120, aspectRatio: '1/1' }} />;
+  return (
+    <Box
+      ref={containerRef}
+      style={{ width: '100%', maxWidth: 120, aspectRatio: '1/1' }}
+    />
+  );
 }

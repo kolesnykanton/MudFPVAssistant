@@ -1,24 +1,26 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   Box,
-  CircularProgress,
   Grid,
-  TextField,
-  Typography,
-} from '@mui/material';
+  Text,
+  Title,
+  Group,
+  Loader,
+  Indicator,
+} from '@mantine/core';
+import { DatePicker } from '@mantine/dates';
 import { useUserCollection } from '../hooks/useUserCollection';
 import type { FlightInfo as FlightInfoType } from '../types';
 import AddFlightForm from '../components/AddFlightForm';
 import FlightTable from '../components/FlightTable';
 import FlightStats from '../components/FlightStats';
 
-function todayString(): string {
-  return new Date().toISOString().split('T')[0];
-}
-
 export default function FlightInfo() {
   const { items: flights, loading, add, remove } = useUserCollection<FlightInfoType>('FlightInfos');
-  const [selectedDate, setSelectedDate] = useState<string>(todayString());
+  // Mantine 9 DatePicker uses string (ISO date) for value
+  const [selectedDate, setSelectedDate] = useState<string | null>(
+    new Date().toISOString().split('T')[0]
+  );
 
   const handleAdd = async (flight: Omit<FlightInfoType, 'id'>) => {
     await add(flight);
@@ -28,62 +30,91 @@ export default function FlightInfo() {
     await remove(id);
   };
 
+  // Compute flight counts by date string "YYYY-MM-DD"
+  const flightCountByDate = useMemo(() => {
+    const counts: Record<string, number> = {};
+    flights.forEach(f => {
+      if (f.date) {
+        const d = f.date.split('T')[0];
+        counts[d] = (counts[d] || 0) + 1;
+      }
+    });
+    return counts;
+  }, [flights]);
+
+  // selectedDate is already "YYYY-MM-DD" or null
+  const selectedDateStr = selectedDate;
+
   return (
     <Box>
-      <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
-        Flight Log
-      </Typography>
+      <Title order={2} mb="lg">Flight Log</Title>
 
       {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          <CircularProgress />
-        </Box>
+        <Group justify="center" mt="xl">
+          <Loader />
+        </Group>
       ) : (
-        <Grid container spacing={3}>
+        <Grid gap="lg">
           {/* Add flight form */}
-          <Grid size={{ xs: 12, md: 5 }}>
+          <Grid.Col span={{ base: 12, md: 5 }}>
             <AddFlightForm onAdd={handleAdd} />
-          </Grid>
+          </Grid.Col>
 
           {/* Date filter + table */}
-          <Grid size={{ xs: 12, md: 7 }}>
-            <Box sx={{ mb: 2 }}>
-              <TextField
-                label="Filter by Date"
-                type="date"
+          <Grid.Col span={{ base: 12, md: 7 }}>
+            <Box mb="md">
+              <DatePicker
                 value={selectedDate}
-                onChange={e => setSelectedDate(e.target.value)}
-                slotProps={{ inputLabel: { shrink: true } }}
-                size="small"
-                sx={{ width: 200 }}
+                onChange={setSelectedDate}
+                renderDay={(dateStr) => {
+                  // dateStr is an ISO string like "2024-06-15"
+                  const key = dateStr.split('T')[0];
+                  const count = flightCountByDate[key] ?? 0;
+                  const day = new Date(dateStr).getUTCDate();
+                  return (
+                    <Indicator
+                      size={6}
+                      color="blue"
+                      offset={-2}
+                      disabled={count === 0}
+                    >
+                      <div>{day}</div>
+                    </Indicator>
+                  );
+                }}
               />
-              <Typography
-                component="span"
-                variant="body2"
-                color="text.secondary"
-                sx={{ ml: 2, cursor: 'pointer', textDecoration: 'underline' }}
-                onClick={() => setSelectedDate('')}
-              >
-                Show all
-              </Typography>
+              <Group gap="xs" mt="xs">
+                <Text size="sm" c="dimmed">
+                  {selectedDateStr ? `Showing flights for ${selectedDateStr}` : 'Showing all flights'}
+                </Text>
+                {selectedDate && (
+                  <Text
+                    size="sm"
+                    c="blue"
+                    style={{ cursor: 'pointer', textDecoration: 'underline' }}
+                    onClick={() => setSelectedDate(null)}
+                  >
+                    Show all
+                  </Text>
+                )}
+              </Group>
             </Box>
             <FlightTable
               flights={flights}
-              selectedDate={selectedDate || null}
+              selectedDate={selectedDateStr}
               onDelete={handleDelete}
             />
-          </Grid>
+          </Grid.Col>
 
           {/* Stats charts — visible only when there are flights */}
           {flights.length > 0 && (
-            <Grid size={{ xs: 12 }}>
-              <Typography variant="h6" gutterBottom sx={{ mt: 1 }}>
-                Statistics
-              </Typography>
+            <Grid.Col span={{ base: 12 }}>
+              <Title order={4} mb="sm" mt="xs">Statistics</Title>
               <FlightStats flights={flights} />
-            </Grid>
+            </Grid.Col>
           )}
         </Grid>
+
       )}
     </Box>
   );
