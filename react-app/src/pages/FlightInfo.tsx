@@ -42,9 +42,6 @@ export default function FlightInfo() {
     return counts;
   }, [flights]);
 
-  // selectedDate is already "YYYY-MM-DD" or null
-  const selectedDateStr = selectedDate;
-
   return (
     <Box>
       <Title order={2} mb="lg">Flight Log</Title>
@@ -85,7 +82,7 @@ export default function FlightInfo() {
               />
               <Group gap="xs" mt="xs">
                 <Text size="sm" c="dimmed">
-                  {selectedDateStr ? `Showing flights for ${selectedDateStr}` : 'Showing all flights'}
+                  {selectedDate ? `Showing flights for ${selectedDate}` : 'Showing all flights'}
                 </Text>
                 {selectedDate && (
                   <Text
@@ -101,7 +98,7 @@ export default function FlightInfo() {
             </Box>
             <FlightTable
               flights={flights}
-              selectedDate={selectedDateStr}
+              selectedDate={selectedDate}
               onDelete={handleDelete}
             />
           </Grid.Col>

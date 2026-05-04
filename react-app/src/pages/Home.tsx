@@ -43,30 +43,43 @@ export default function Home() {
   useEffect(() => {
     if (!apiKey || settingsLoading) return;
 
+    let cancelled = false;
+    const controller = new AbortController();
+
     setWeatherLoading(true);
     setWeatherError(null);
 
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
+        if (cancelled) return;
         try {
           const { latitude: lat, longitude: lon } = pos.coords;
           const res = await fetch(
-            `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`
+            `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`,
+            { signal: controller.signal }
           );
           if (!res.ok) throw new Error(`Weather API error: ${res.status}`);
           const data: WeatherData = await res.json();
-          setWeather(data);
+          if (!cancelled) setWeather(data);
         } catch (err) {
+          if (cancelled) return;
           setWeatherError(err instanceof Error ? err.message : 'Failed to load weather');
         } finally {
-          setWeatherLoading(false);
+          if (!cancelled) setWeatherLoading(false);
         }
       },
       (geoErr) => {
-        setWeatherError(`Location access denied: ${geoErr.message}`);
-        setWeatherLoading(false);
+        if (!cancelled) {
+          setWeatherError(`Location access denied: ${geoErr.message}`);
+          setWeatherLoading(false);
+        }
       }
     );
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
   }, [apiKey, settingsLoading]);
 
   const totalFlights = flights.length;

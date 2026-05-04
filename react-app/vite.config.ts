@@ -4,6 +4,19 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
   base: './',
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return;
+          if (id.includes('/@firebase/') || id.includes('/firebase/')) return 'vendor-firebase';
+          if (id.includes('/@mantine/')) return 'vendor-mantine';
+          if (id.includes('/recharts/')) return 'vendor-charts';
+          if (id.includes('/react') || id.includes('/scheduler/')) return 'vendor-react';
+        },
+      },
+    },
+  },
   plugins: [
     react(),
     VitePWA({
