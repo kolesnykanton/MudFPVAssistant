@@ -10,7 +10,7 @@ interface FlightTableProps {
 
 export default function FlightTable({ flights, selectedDate, onDelete }: FlightTableProps) {
   const filtered = selectedDate
-    ? flights.filter(f => f.date === selectedDate)
+    ? flights.filter(f => f.date?.split('T')[0] === selectedDate)
     : flights;
 
   // Sort by date descending

@@ -22,6 +22,7 @@ export default function MapSpotSave() {
   const { settings } = useSettings();
   const { items: spots, add, update, remove } = useUserCollection<FlightSpot>('FlightSpots');
 
+  const [mapReady, setMapReady] = useState(false);
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSpot, setEditingSpot] = useState<FlightSpot | null>(null);
@@ -47,6 +48,7 @@ export default function MapSpotSave() {
         onMapClick: handleMapClick,
       }, apiKey);
       mapInstanceRef.current = map;
+      setMapReady(true); // triggers marker sync effect
     });
 
     return () => {
@@ -57,9 +59,9 @@ export default function MapSpotSave() {
     };
   }, []); // empty deps - initialize once
 
-  // Sync spots to map markers
+  // Sync spots to map markers — runs when map is ready OR spots change
   useEffect(() => {
-    if (!mapInstanceRef.current) return;
+    if (!mapReady || !mapInstanceRef.current) return;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     import('../map/mapCore.js').then((mod: any) => {
       mod.clearMarkers(mapInstanceRef.current);
@@ -67,7 +69,7 @@ export default function MapSpotSave() {
         mod.addMarker(spot, mapInstanceRef.current, handleContextMenu);
       });
     });
-  }, [spots, handleContextMenu]);
+  }, [spots, handleContextMenu, mapReady]);
 
   const handleAddSpot = () => {
     if (!contextMenu) return;
