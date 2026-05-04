@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "MudFPVAssistant",
   "resources": {
-    "hash": "sha256-bD7kBBI6pz+UzpSq3QUe/BMbn/zcpwAXS3jyoRBjw+I=",
+    "hash": "sha256-0lA/VXBaNEC0LCSoCsGLK8BWhFWv+M6L2iGfXF+E5ok=",
     "fingerprinting": {
       "Blazor.WeatherWidget.7hbt8odkq1.wasm": "Blazor.WeatherWidget.wasm",
       "Blazored.LocalStorage.12n6dz54qr.wasm": "Blazored.LocalStorage.wasm",
@@ -112,7 +112,7 @@
       "System.dqfxtvioy0.wasm": "System.wasm",
       "netstandard.uykmi1ms91.wasm": "netstandard.wasm",
       "System.Private.CoreLib.pfui532obj.wasm": "System.Private.CoreLib.wasm",
-      "MudFPVAssistant.qek35joctx.wasm": "MudFPVAssistant.wasm",
+      "MudFPVAssistant.0nltayyiei.wasm": "MudFPVAssistant.wasm",
       "dotnet.js": "dotnet.js",
       "dotnet.native.l1ds2rhypd.js": "dotnet.native.js",
       "dotnet.native.etgrtk5jba.wasm": "dotnet.native.wasm",
@@ -247,7 +247,7 @@
       "System.Xml.Linq.53liyo777g.wasm": "sha256-v9JHsJbBkO3lHVBoE7qJxiS0WfQzkxg+A8GpOWF+ls8=",
       "System.dqfxtvioy0.wasm": "sha256-5QZAjy4n7513fYxCXSXTsAkUmRsLiZ8m621Ot4k7FB0=",
       "netstandard.uykmi1ms91.wasm": "sha256-Wpaw8XhUPDDiMDnxW4t+/ADafatkeYDdnB9DxkYTNzk=",
-      "MudFPVAssistant.qek35joctx.wasm": "sha256-EluyzyzNNMxBDS59vRukiYMbQ0uTFa/zzSwGVy41xCU="
+      "MudFPVAssistant.0nltayyiei.wasm": "sha256-NDuaxy3PN6W+fpv+0F86nGoqJ3uRocucZ4rPKkzGBVc="
     }
   },
   "cacheBootResources": true,
