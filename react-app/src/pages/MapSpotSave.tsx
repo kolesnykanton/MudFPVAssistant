@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Box, Button, Paper, Stack, Text, Title } from '@mantine/core';
 import { useUserCollection } from '../hooks/useUserCollection';
 import { useSettings } from '../hooks/useSettings';
@@ -17,10 +17,15 @@ interface ContextMenuState {
 
 const MENU_WIDTH = 170;
 const MENU_HEIGHT_APPROX = 80;
+const LONG_PRESS_MS = 600;
+const LONG_PRESS_MOVE_TOLERANCE_PX = 10;
 
 export default function MapSpotSave() {
   const mapRef = useRef<HTMLDivElement>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mapInstanceRef = useRef<any>(null);
+  const contextMenuOpenedAt = useRef<number>(0);
+
   const { uid } = useAuth();
   const { settings } = useSettings();
   const { items: spots, add, update, remove } = useUserCollection<FlightSpot>('FlightSpots');
@@ -31,29 +36,41 @@ export default function MapSpotSave() {
   const [editingSpot, setEditingSpot] = useState<FlightSpot | null>(null);
   const [newSpotCoords, setNewSpotCoords] = useState<{ lat: number; lng: number } | null>(null);
 
-  const contextMenuOpenedAt = useRef<number>(0);
-
-  const handleContextMenu = useCallback((payload: ContextMenuState) => {
-    contextMenuOpenedAt.current = Date.now();
-    setContextMenu(payload);
-  }, []);
-
-  // iOS emits a synthetic tap/click after a long-press even though the user
-  // didn't intend to click. That event fires on the original touch target
-  // (the map div) and reaches Leaflet's click handler regardless of the
-  // backdrop, closing the menu immediately after it opens.
-  // Guard: ignore map clicks that arrive within 500 ms of opening the menu.
-  const handleMapClick = useCallback(() => {
-    if (Date.now() - contextMenuOpenedAt.current < 500) return;
-    setContextMenu(null);
-  }, []);
-
-  const closeContextMenu = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setContextMenu(null);
+  // Read spotId attached to the marker icon DOM by addMarker()
+  const spotIdFromTarget = (target: EventTarget | null): string | null => {
+    if (!(target instanceof Element)) return null;
+    const markerEl = target.closest<HTMLElement>('.leaflet-marker-icon, .leaflet-marker-shadow');
+    return markerEl?.dataset.spotId ?? null;
   };
 
-  // Initialize map once (without API key — loaded async separately)
+  const openContextMenuFromEvent = (
+    clientX: number,
+    clientY: number,
+    target: EventTarget | null,
+    nativeEvent: MouseEvent | PointerEvent,
+  ) => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+    const latlng = map.mouseEventToLatLng(nativeEvent);
+    const spotId = spotIdFromTarget(target);
+    contextMenuOpenedAt.current = Date.now();
+    setContextMenu({
+      x: clientX,
+      y: clientY,
+      lat: latlng.lat,
+      lng: latlng.lng,
+      isPoint: spotId !== null,
+      spotId,
+    });
+  };
+
+  // Desktop right-click — handled directly in React
+  const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    openContextMenuFromEvent(e.clientX, e.clientY, e.target, e.nativeEvent);
+  };
+
+  // Initialize map once
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
 
@@ -61,14 +78,10 @@ export default function MapSpotSave() {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     import('../map/mapCore.js').then((mod: any) => {
-      // Guard against StrictMode double-invoke or component unmount before import resolves
       if (cancelled || mapInstanceRef.current) return;
-      const map = mod.createMap('fpvMap', {
-        onContextMenu: handleContextMenu,
-        onMapClick: handleMapClick,
-      });
+      const map = mod.createMap('fpvMap');
       mapInstanceRef.current = map;
-      setMapReady(true); // triggers marker sync effect
+      setMapReady(true);
     });
 
     return () => {
@@ -78,7 +91,58 @@ export default function MapSpotSave() {
         mapInstanceRef.current = null;
       }
     };
-  }, []); // empty deps - initialize once
+  }, []);
+
+  // Touch long-press — native pointer listeners scoped to the map div.
+  // Re-attached when the map is ready.
+  useEffect(() => {
+    const div = mapRef.current;
+    if (!div || !mapReady) return;
+
+    let timer: number | null = null;
+    let startX = 0;
+    let startY = 0;
+    let startTarget: EventTarget | null = null;
+
+    const clear = () => {
+      if (timer !== null) {
+        clearTimeout(timer);
+        timer = null;
+      }
+    };
+
+    const onDown = (e: PointerEvent) => {
+      if (e.pointerType !== 'touch') return;
+      startX = e.clientX;
+      startY = e.clientY;
+      startTarget = e.target;
+      clear();
+      timer = window.setTimeout(() => {
+        timer = null;
+        openContextMenuFromEvent(e.clientX, e.clientY, startTarget, e);
+      }, LONG_PRESS_MS);
+    };
+
+    const onMove = (e: PointerEvent) => {
+      if (timer === null) return;
+      if (Math.hypot(e.clientX - startX, e.clientY - startY) > LONG_PRESS_MOVE_TOLERANCE_PX) {
+        clear();
+      }
+    };
+
+    div.addEventListener('pointerdown', onDown);
+    div.addEventListener('pointermove', onMove);
+    div.addEventListener('pointerup', clear);
+    div.addEventListener('pointercancel', clear);
+
+    return () => {
+      clear();
+      div.removeEventListener('pointerdown', onDown);
+      div.removeEventListener('pointermove', onMove);
+      div.removeEventListener('pointerup', clear);
+      div.removeEventListener('pointercancel', clear);
+    };
+  }, [mapReady]);
 
   // Add weather overlays once map is ready and API key is available
   const openWeatherApiKey = settings.apiKeys?.openWeatherApiKey;
@@ -90,17 +154,17 @@ export default function MapSpotSave() {
     });
   }, [mapReady, openWeatherApiKey]);
 
-  // Sync spots to map markers — runs when map is ready OR spots change
+  // Sync spots to map markers
   useEffect(() => {
     if (!mapReady || !mapInstanceRef.current) return;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     import('../map/mapCore.js').then((mod: any) => {
       mod.clearMarkers(mapInstanceRef.current);
       spots.forEach((spot: FlightSpot) => {
-        mod.addMarker(spot, mapInstanceRef.current, handleContextMenu);
+        mod.addMarker(spot, mapInstanceRef.current);
       });
     });
-  }, [spots, handleContextMenu, mapReady]);
+  }, [spots, mapReady]);
 
   const handleAddSpot = () => {
     if (!contextMenu) return;
@@ -135,7 +199,11 @@ export default function MapSpotSave() {
     setDialogOpen(false);
   };
 
-  // Clamp position so menu never overflows the viewport
+  const closeContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setContextMenu(null);
+  };
+
   const menuLeft = contextMenu
     ? Math.min(contextMenu.x + 2, window.innerWidth - MENU_WIDTH)
     : 0;
@@ -155,12 +223,9 @@ export default function MapSpotSave() {
           id="fpvMap"
           ref={mapRef}
           style={{ width: '100%', height: '80vh' }}
-          onContextMenu={e => e.preventDefault()}
+          onContextMenu={handleContextMenu}
         />
 
-        {/* Transparent backdrop + context menu.
-            Clicking/right-clicking the backdrop closes the menu with no
-            extra useEffect or stopPropagation needed. */}
         {contextMenu && (
           <>
             <div

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Box } from '@mantine/core';
+import animationData from '../assets/RC_Sticks_Animation.json';
 
 const SEGMENTS: Record<string, [number, number]> = {
   up_left:      [0,   20],
@@ -18,14 +19,16 @@ interface Props {
 
 export default function StickAnimation({ segment }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const animRef = useRef<any>(null);
   const directionRef = useRef(1);
   const segRef = useRef<[number, number]>(SEGMENTS[segment] || [0, 20]);
 
   useEffect(() => {
-    if (!containerRef.current || !(window as any).lottie) return;
-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const lottie = (window as any).lottie;
+    if (!containerRef.current || !lottie) return;
+
     const seg = SEGMENTS[segment] || [0, 20];
     segRef.current = seg;
     directionRef.current = 1;
@@ -35,7 +38,7 @@ export default function StickAnimation({ segment }: Props) {
       renderer: 'svg',
       loop: false,
       autoplay: true,
-      path: './animations/RC_Sticks_Animation.json',
+      animationData,
     });
     animRef.current = anim;
 
