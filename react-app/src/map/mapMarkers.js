@@ -18,7 +18,7 @@ export function addMarker(spot, map, onContextMenu) {
             markerTimer = setTimeout(() => {
                 e.originalEvent.preventDefault();
                 e.originalEvent.stopPropagation();
-                onContextMenu({ x: e.originalEvent.clientX, y: e.originalEvent.clientY, lat: e.latlng.lat, lng: e.latlng.lng, id: m.spotId, isPoint: true });
+                onContextMenu({ x: e.originalEvent.clientX, y: e.originalEvent.clientY, lat: e.latlng.lat, lng: e.latlng.lng, spotId: m.spotId, isPoint: true });
             }, 600);
         }
     });
@@ -26,7 +26,7 @@ export function addMarker(spot, map, onContextMenu) {
 
     m.on('contextmenu', e => {
         e.originalEvent.preventDefault();
-        onContextMenu({ x: e.originalEvent.clientX, y: e.originalEvent.clientY, lat: e.latlng.lat, lng: e.latlng.lng, id: m.spotId, isPoint: true });
+        onContextMenu({ x: e.originalEvent.clientX, y: e.originalEvent.clientY, lat: e.latlng.lat, lng: e.latlng.lng, spotId: m.spotId, isPoint: true });
     });
 
     return m;

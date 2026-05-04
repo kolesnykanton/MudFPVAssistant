@@ -36,17 +36,16 @@ export default function MapSpotSave() {
     setContextMenu(null);
   }, []);
 
-  // Initialize map once
+  // Initialize map once (without API key — loaded async separately)
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     import('../map/mapCore.js').then((mod: any) => {
-      const apiKey = settings.apiKeys?.openWeatherApiKey || '';
       const map = mod.createMap('fpvMap', {
         onContextMenu: handleContextMenu,
         onMapClick: handleMapClick,
-      }, apiKey);
+      });
       mapInstanceRef.current = map;
       setMapReady(true); // triggers marker sync effect
     });
@@ -58,6 +57,16 @@ export default function MapSpotSave() {
       }
     };
   }, []); // empty deps - initialize once
+
+  // Add weather overlays once map is ready and API key is available
+  const openWeatherApiKey = settings.apiKeys?.openWeatherApiKey;
+  useEffect(() => {
+    if (!mapReady || !mapInstanceRef.current || !openWeatherApiKey) return;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    import('../map/mapCore.js').then((mod: any) => {
+      mod.addWeatherOverlays(mapInstanceRef.current, openWeatherApiKey);
+    });
+  }, [mapReady, openWeatherApiKey]);
 
   // Sync spots to map markers — runs when map is ready OR spots change
   useEffect(() => {
