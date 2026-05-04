@@ -31,11 +31,20 @@ export default function MapSpotSave() {
   const [editingSpot, setEditingSpot] = useState<FlightSpot | null>(null);
   const [newSpotCoords, setNewSpotCoords] = useState<{ lat: number; lng: number } | null>(null);
 
+  const contextMenuOpenedAt = useRef<number>(0);
+
   const handleContextMenu = useCallback((payload: ContextMenuState) => {
+    contextMenuOpenedAt.current = Date.now();
     setContextMenu(payload);
   }, []);
 
+  // iOS emits a synthetic tap/click after a long-press even though the user
+  // didn't intend to click. That event fires on the original touch target
+  // (the map div) and reaches Leaflet's click handler regardless of the
+  // backdrop, closing the menu immediately after it opens.
+  // Guard: ignore map clicks that arrive within 500 ms of opening the menu.
   const handleMapClick = useCallback(() => {
+    if (Date.now() - contextMenuOpenedAt.current < 500) return;
     setContextMenu(null);
   }, []);
 
