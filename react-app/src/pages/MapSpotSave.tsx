@@ -1,29 +1,17 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, Box, Button, Loader, Paper, Stack, Text, Title } from '@mantine/core';
+import { useCallback, useEffect, useState } from 'react';
+import { Alert, Box, Button, Paper, Stack, Text, Title } from '@mantine/core';
 import { useUserCollection } from '../hooks/useUserCollection';
 import { useSettings } from '../hooks/useSettings';
 import { useAuth } from '../context/AuthContext';
-import { useLeafletMap } from '../hooks/useLeafletMap';
 import type { FlightSpot } from '../types';
+import { FpvMap } from '../components/map/FpvMap';
+import type { ContextMenuState } from '../components/map/FpvMap';
 import FlightSpotEditDialog, { DIALOG_Z_INDEX } from '../components/FlightSpotEditDialog';
-
-interface ContextMenuState {
-  x: number;
-  y: number;
-  lat: number;
-  lng: number;
-  isPoint: boolean;
-  spotId: string | null;
-}
 
 const MENU_WIDTH = 170;
 const MENU_HEIGHT_APPROX = 80;
-const LONG_PRESS_MS = 600;
-const LONG_PRESS_MOVE_TOLERANCE_PX = 10;
 
 export default function MapSpotSave() {
-  const { containerRef, mapInstanceRef, mapReady, pluginWarnings, dismissPluginWarnings, addWeatherOverlays, syncSpots } = useLeafletMap('fpvMap');
-
   const { uid } = useAuth();
   const { settings } = useSettings();
   const { items: spots, add, update, remove } = useUserCollection<FlightSpot>('FlightSpots');
@@ -34,89 +22,6 @@ export default function MapSpotSave() {
   const [newSpotCoords, setNewSpotCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
-  const spotIdFromTarget = useCallback((target: EventTarget | null): string | null => {
-    if (!(target instanceof Element)) return null;
-    const markerEl = target.closest<HTMLElement>('.leaflet-marker-icon, .leaflet-marker-shadow');
-    return markerEl?.dataset.spotId ?? null;
-  }, []);
-
-  const openContextMenuFromEvent = useCallback((
-    clientX: number,
-    clientY: number,
-    target: EventTarget | null,
-    nativeEvent: MouseEvent | PointerEvent,
-  ) => {
-    const map = mapInstanceRef.current;
-    if (!map) return;
-    const latlng = map.mouseEventToLatLng(nativeEvent);
-    const spotId = spotIdFromTarget(target);
-    setContextMenu({
-      x: clientX,
-      y: clientY,
-      lat: latlng.lat,
-      lng: latlng.lng,
-      isPoint: spotId !== null,
-      spotId,
-    });
-  }, [spotIdFromTarget]);
-
-  // Desktop right-click — handled directly in React
-  const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    openContextMenuFromEvent(e.clientX, e.clientY, e.target, e.nativeEvent);
-  };
-
-  // Touch long-press — native pointer listeners scoped to the map div.
-  // Re-attached when the map is ready.
-  useEffect(() => {
-    const div = containerRef.current;
-    if (!div || !mapReady) return;
-
-    let timer: number | null = null;
-    let startX = 0;
-    let startY = 0;
-    let startTarget: EventTarget | null = null;
-
-    const clear = () => {
-      if (timer !== null) {
-        clearTimeout(timer);
-        timer = null;
-      }
-    };
-
-    const onDown = (e: PointerEvent) => {
-      if (e.pointerType !== 'touch') return;
-      startX = e.clientX;
-      startY = e.clientY;
-      startTarget = e.target;
-      clear();
-      timer = window.setTimeout(() => {
-        timer = null;
-        openContextMenuFromEvent(e.clientX, e.clientY, startTarget, e);
-      }, LONG_PRESS_MS);
-    };
-
-    const onMove = (e: PointerEvent) => {
-      if (timer === null) return;
-      if (Math.hypot(e.clientX - startX, e.clientY - startY) > LONG_PRESS_MOVE_TOLERANCE_PX) {
-        clear();
-      }
-    };
-
-    div.addEventListener('pointerdown', onDown);
-    div.addEventListener('pointermove', onMove);
-    div.addEventListener('pointerup', clear);
-    div.addEventListener('pointercancel', clear);
-
-    return () => {
-      clear();
-      div.removeEventListener('pointerdown', onDown);
-      div.removeEventListener('pointermove', onMove);
-      div.removeEventListener('pointerup', clear);
-      div.removeEventListener('pointercancel', clear);
-    };
-  }, [mapReady, openContextMenuFromEvent]);
-
   // Dismiss context menu on Escape
   useEffect(() => {
     if (!contextMenu) return;
@@ -124,19 +29,6 @@ export default function MapSpotSave() {
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [contextMenu]);
-
-  // Add weather overlays once map is ready and API key is available
-  const openWeatherApiKey = settings.apiKeys?.openWeatherApiKey;
-  useEffect(() => {
-    if (!mapReady || !openWeatherApiKey) return;
-    addWeatherOverlays(openWeatherApiKey);
-  }, [mapReady, openWeatherApiKey, addWeatherOverlays]);
-
-  // Sync spots to map markers (diff-based — only adds/removes changed spots)
-  useEffect(() => {
-    if (!mapReady) return;
-    syncSpots(spots);
-  }, [spots, mapReady, syncSpots]);
 
   const handleAddSpot = () => {
     if (!contextMenu) return;
@@ -174,10 +66,10 @@ export default function MapSpotSave() {
     setDialogOpen(false);
   };
 
-  const closeContextMenu = (e: React.MouseEvent) => {
+  const closeContextMenu = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     setContextMenu(null);
-  };
+  }, []);
 
   const menuLeft = contextMenu
     ? Math.min(contextMenu.x + 2, window.innerWidth - MENU_WIDTH)
@@ -190,32 +82,21 @@ export default function MapSpotSave() {
     return <Text p="xl">Please sign in to view flight spots.</Text>;
   }
 
+  const openWeatherApiKey = settings.apiKeys?.openWeatherApiKey;
+
   return (
-    <Box>
+    <Box style={{ userSelect: 'none' }}>
       <Title order={2} p="sm" pb={0}>Flight Spot Saver</Title>
-      {pluginWarnings.length > 0 && (
-        <Alert color="yellow" variant="light" withCloseButton onClose={dismissPluginWarnings} mx="sm" mt="sm">
-          Some map controls failed to load: {pluginWarnings.join(', ')}.
-        </Alert>
-      )}
       {deleteError && (
         <Alert color="red" variant="light" withCloseButton onClose={() => setDeleteError(null)} mx="sm" mt="sm">
           {deleteError}
         </Alert>
       )}
       <Box style={{ position: 'relative' }} mt="sm">
-        {!mapReady && (
-          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1, background: 'var(--mantine-color-body)' }}>
-            <Loader size="lg" />
-          </div>
-        )}
-        <div
-          id="fpvMap"
-          ref={containerRef}
-          role="application"
-          aria-label="Flight spot map"
-          style={{ width: '100%', height: '80vh' }}
-          onContextMenu={handleContextMenu}
+        <FpvMap
+          spots={spots}
+          openWeatherApiKey={openWeatherApiKey}
+          onContextMenu={setContextMenu}
         />
 
         {contextMenu && (

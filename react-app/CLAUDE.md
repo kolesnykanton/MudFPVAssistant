@@ -1,12 +1,12 @@
 # react-app
 
-Vite + React 19 + TypeScript 6 + Mantine 9 SPA. Firebase backend (Auth + Firestore). Leaflet map loaded via CDN (`window.L`), not npm.
+Vite + React 19 + TypeScript 6 + Mantine 9 SPA. Firebase backend (Auth + Firestore). Leaflet map via **react-leaflet** npm package (not CDN).
 
 ## Commands
 
 ```bash
 npm run dev        # dev server at http://localhost:5173
-npm run build      # npx tsc -b && npx vite build  (no global tsc)
+npm run build      # tsc -b && vite build
 npm run lint       # eslint
 ```
 
@@ -15,9 +15,9 @@ npm run lint       # eslint
 | Path | Purpose |
 |------|---------|
 | `src/pages/` | Route-level components (MapSpotSave, FlightInfo, Home, Settings) |
-| `src/hooks/` | `useUserCollection<T>`, `useSettings`, `useLeafletMap` |
-| `src/map/` | Leaflet JS modules — `mapCore.js`, `mapMarkers.js`, `mapPlugins.js` |
-| `src/types/index.ts` | All shared types including `LeafletMap` interface |
+| `src/hooks/` | `useUserCollection<T>`, `useSettings` |
+| `src/components/map/` | react-leaflet map components — `FpvMap`, `SpotMarker`, `MapControls`, `WeatherLayers`, `MapInteraction` |
+| `src/types/index.ts` | All shared types (`FlightSpot`, `FlightInfo`, `UserSettings`) |
 | `src/components/` | Reusable UI (FlightSpotEditDialog, FlightTable, etc.) |
 | `src/context/AuthContext.tsx` | Firebase auth, provides `uid` |
 | `src/firebase/firebaseConfig.ts` | Firebase project config |
@@ -26,10 +26,11 @@ npm run lint       # eslint
 
 - **Firestore CRUD**: `useUserCollection<T>('FlightSpots' | 'FlightInfos' | 'settings')` — returns `{ items, add, update, remove }` with live `onSnapshot`
 - **Settings**: `useSettings()` — returns `{ settings, loading, updateSettings }`
-- **Map lifecycle**: `useLeafletMap('fpvMap')` hook — single dynamic import, registry-based marker diffing, AbortController cleanup
+- **Map**: `<FpvMap spots={...} openWeatherApiKey={...} onContextMenu={...} />` — fully declarative react-leaflet; `ContextMenuState` type exported from `FpvMap.tsx`
+- **Map controls**: `MapControls.tsx` adds plugins (locate, fullscreen, geocoder, measure) via `useMap()` effect; safe-wrapped so one failure doesn't block others
+- **Weather overlays**: `WeatherLayers.tsx` — fetches RainViewer API for last radar frame; renders OWM Wind/Clouds/Rain if API key present
 - **Error handling**: no global toast — inline `Alert` state inside dialogs; `handleSaveSpot` throws, dialog catches
-- **Leaflet**: CDN-loaded via `window.L`; typed via `src/types/leaflet.d.ts` stub and `LeafletMap` interface
-- **No `any` in map flow** — use `LeafletMap` from types
+- **No `any` in map flow** — all Leaflet types from `@types/leaflet`; only `leaflet-measure` needs a manual declaration in `src/types/leaflet.d.ts`
 
 ## UI library
 

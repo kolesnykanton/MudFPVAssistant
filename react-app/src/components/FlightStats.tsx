@@ -114,8 +114,8 @@ export default function FlightStats({ flights }: FlightStatsProps) {
             {dailyMahData.length === 0 ? (
               <Text c="dimmed">No mAh data available.</Text>
             ) : (
-              <Box h={300}>
-                <ResponsiveContainer width="100%" height="100%">
+              <Box>
+                <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={dailyMahData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="date" tick={{ fontSize: 11 }} />
@@ -144,8 +144,8 @@ export default function FlightStats({ flights }: FlightStatsProps) {
             {batteryTypeData.length === 0 ? (
               <Text c="dimmed">No data.</Text>
             ) : (
-              <Box h={300}>
-                <ResponsiveContainer width="100%" height="100%">
+              <Box>
+                <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Pie
                       data={batteryTypeData}
@@ -176,8 +176,8 @@ export default function FlightStats({ flights }: FlightStatsProps) {
             {locationData.length === 0 ? (
               <Text c="dimmed">No location data.</Text>
             ) : (
-              <Box h={300}>
-                <ResponsiveContainer width="100%" height="100%">
+              <Box>
+                <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Pie
                       data={locationData}
@@ -208,8 +208,8 @@ export default function FlightStats({ flights }: FlightStatsProps) {
             {droneAvgTimeData.length === 0 ? (
               <Text c="dimmed">No flight time data available.</Text>
             ) : (
-              <Box h={350}>
-                <ResponsiveContainer width="100%" height="100%">
+              <Box>
+                <ResponsiveContainer width="100%" height={350}>
                   <BarChart
                     data={droneAvgTimeData}
                     margin={{ top: 5, right: 30, left: 20, bottom: 60 }}

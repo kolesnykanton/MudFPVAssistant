@@ -10,6 +10,7 @@ export default defineConfig({
         manualChunks(id) {
           if (!id.includes('node_modules')) return;
           if (id.includes('/@firebase/') || id.includes('/firebase/')) return 'vendor-firebase';
+          if (id.includes('/leaflet') || id.includes('/react-leaflet')) return 'vendor-leaflet';
           if (id.includes('/@mantine/')) return 'vendor-mantine';
           if (id.includes('/recharts/')) return 'vendor-charts';
           if (id.includes('/react') || id.includes('/scheduler/')) return 'vendor-react';
