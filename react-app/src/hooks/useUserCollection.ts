@@ -6,7 +6,9 @@ import {
 import { db } from '../firebase/firebaseConfig';
 import { useAuth } from '../context/AuthContext';
 
-export function useUserCollection<T extends { id?: string }>(collectionName: string) {
+export type CollectionName = 'FlightSpots' | 'FlightInfos' | 'settings';
+
+export function useUserCollection<T extends { id?: string }>(collectionName: CollectionName) {
   const { uid } = useAuth();
   const [items, setItems] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);

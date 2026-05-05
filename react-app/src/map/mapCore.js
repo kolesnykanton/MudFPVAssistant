@@ -6,7 +6,7 @@ import { addMarker, clearMarkers } from './mapMarkers.js';
  * long-press) is handled in React (see MapSpotSave.tsx) so that state lives in
  * a single place and there is no double-hop between vanilla JS and React.
  */
-export function createMap(elementId, openWeatherApiKey) {
+export function createMap(elementId) {
     const L = window.L;
     const map = L.map(elementId, { center: [40.4168, -3.7038], zoom: 13 });
 
@@ -18,11 +18,6 @@ export function createMap(elementId, openWeatherApiKey) {
     };
 
     const overlayLayers = {};
-    if (openWeatherApiKey) {
-        overlayLayers["Wind"] = L.tileLayer(`https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=${openWeatherApiKey}`, { attribution: '&copy; OpenWeatherMap', opacity: 1 });
-        overlayLayers["Clouds"] = L.tileLayer(`https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${openWeatherApiKey}`, { attribution: '&copy; OpenWeatherMap', opacity: 1 });
-        overlayLayers["Rain"] = L.tileLayer(`https://tile.openweathermap.org/map/precipitation/{z}/{x}/{y}.png?appid=${openWeatherApiKey}`, { attribution: '&copy; OpenWeatherMap', opacity: 1 });
-    }
 
     layers["OSM Standard"].addTo(map);
     const layerControl = L.control.layers(layers, overlayLayers).addTo(map);
@@ -41,15 +36,16 @@ export function createMap(elementId, openWeatherApiKey) {
         })
         .catch(console.error);
 
+    map._userLocationMarker = null;
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(pos => {
             const { latitude: lat, longitude: lng } = pos.coords;
             map.setView([lat, lng], 13);
-            L.marker([lat, lng]).addTo(map).bindPopup('<b>You</b>').openPopup();
+            // Store reference so clearMarkers can skip this marker by identity.
+            map._userLocationMarker = L.marker([lat, lng]).addTo(map).bindPopup('<b>You</b>').openPopup();
         }, err => console.warn('Geo error:', err), { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
     }
 
-    window._fpvMap = map;
     return map;
 }
 

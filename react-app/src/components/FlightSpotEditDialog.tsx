@@ -8,8 +8,13 @@ import {
   Stack,
   Group,
   Text,
+  Alert,
 } from '@mantine/core';
 import type { FlightSpot } from '../types';
+
+// Leaflet panes use z-index 400–700 inside a transform stacking context.
+// Context menu sits at 9999/10000 (MapSpotSave.tsx). Modal must exceed map panes.
+export const DIALOG_Z_INDEX = 9999;
 
 const CATEGORIES = ['Mountain', 'Beach', 'Building', 'Forest', 'Field'];
 
@@ -17,7 +22,7 @@ interface Props {
   open: boolean;
   spot: Partial<FlightSpot> | null;
   coords?: { lat: number; lng: number };
-  onSave: (spot: Omit<FlightSpot, 'id'>) => void;
+  onSave: (spot: Omit<FlightSpot, 'id'>) => Promise<void>;
   onClose: () => void;
 }
 
@@ -26,6 +31,8 @@ export default function FlightSpotEditDialog({ open, spot, coords, onSave, onClo
   const [comments, setComments] = useState('');
   const [category, setCategory] = useState('');
   const [tagsInput, setTagsInput] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
     if (open) {
@@ -33,18 +40,28 @@ export default function FlightSpotEditDialog({ open, spot, coords, onSave, onClo
       setComments(spot?.comments ?? '');
       setCategory(spot?.category ?? '');
       setTagsInput(spot?.tags?.join(', ') ?? '');
+      setSaving(false);
+      setSaveError(null);
     }
   }, [open, spot]);
 
-  const handleSave = () => {
-    if (!name.trim()) return;
+  const handleSave = async () => {
+    if (!name.trim() || saving) return;
     const latitude = spot?.latitude ?? coords?.lat ?? 0;
     const longitude = spot?.longitude ?? coords?.lng ?? 0;
     const tags = tagsInput
       .split(',')
       .map(t => t.trim())
       .filter(Boolean);
-    onSave({ name: name.trim(), comments, category, tags, latitude, longitude });
+    setSaving(true);
+    setSaveError(null);
+    try {
+      await onSave({ name: name.trim(), comments, category, tags, latitude, longitude });
+    } catch {
+      setSaveError('Failed to save spot. Please try again.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -54,6 +71,7 @@ export default function FlightSpotEditDialog({ open, spot, coords, onSave, onClo
       title={spot?.id ? 'Edit Flight Spot' : 'Add Flight Spot'}
       centered
       size="sm"
+      zIndex={DIALOG_Z_INDEX}
     >
       <Stack gap="sm">
         <TextInput
@@ -88,9 +106,12 @@ export default function FlightSpotEditDialog({ open, spot, coords, onSave, onClo
           onChange={e => setTagsInput(e.target.value)}
           size="sm"
         />
+        {saveError && (
+          <Alert color="red" variant="light">{saveError}</Alert>
+        )}
         <Group justify="flex-end" mt="md">
-          <Button variant="subtle" onClick={onClose}>Cancel</Button>
-          <Button onClick={handleSave} disabled={!name.trim()}>Save</Button>
+          <Button variant="subtle" onClick={onClose} disabled={saving}>Cancel</Button>
+          <Button onClick={handleSave} disabled={!name.trim() || saving} loading={saving}>Save</Button>
         </Group>
       </Stack>
     </Modal>

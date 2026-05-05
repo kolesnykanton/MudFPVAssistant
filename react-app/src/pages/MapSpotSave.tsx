@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Box, Button, Paper, Stack, Text, Title } from '@mantine/core';
 import { useUserCollection } from '../hooks/useUserCollection';
 import { useSettings } from '../hooks/useSettings';
 import { useAuth } from '../context/AuthContext';
 import type { FlightSpot } from '../types';
-import FlightSpotEditDialog from '../components/FlightSpotEditDialog';
+import FlightSpotEditDialog, { DIALOG_Z_INDEX } from '../components/FlightSpotEditDialog';
 
 interface ContextMenuState {
   x: number;
@@ -36,14 +36,13 @@ export default function MapSpotSave() {
   const [editingSpot, setEditingSpot] = useState<FlightSpot | null>(null);
   const [newSpotCoords, setNewSpotCoords] = useState<{ lat: number; lng: number } | null>(null);
 
-  // Read spotId attached to the marker icon DOM by addMarker()
-  const spotIdFromTarget = (target: EventTarget | null): string | null => {
+  const spotIdFromTarget = useCallback((target: EventTarget | null): string | null => {
     if (!(target instanceof Element)) return null;
     const markerEl = target.closest<HTMLElement>('.leaflet-marker-icon, .leaflet-marker-shadow');
     return markerEl?.dataset.spotId ?? null;
-  };
+  }, []);
 
-  const openContextMenuFromEvent = (
+  const openContextMenuFromEvent = useCallback((
     clientX: number,
     clientY: number,
     target: EventTarget | null,
@@ -62,7 +61,7 @@ export default function MapSpotSave() {
       isPoint: spotId !== null,
       spotId,
     });
-  };
+  }, [spotIdFromTarget]);
 
   // Desktop right-click — handled directly in React
   const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -142,7 +141,7 @@ export default function MapSpotSave() {
       div.removeEventListener('pointerup', clear);
       div.removeEventListener('pointercancel', clear);
     };
-  }, [mapReady]);
+  }, [mapReady, openContextMenuFromEvent]);
 
   // Add weather overlays once map is ready and API key is available
   const openWeatherApiKey = settings.apiKeys?.openWeatherApiKey;
@@ -190,13 +189,17 @@ export default function MapSpotSave() {
     setContextMenu(null);
   };
 
-  const handleSaveSpot = async (spotData: Omit<FlightSpot, 'id'>) => {
-    if (editingSpot?.id) {
-      await update(editingSpot.id, spotData);
-    } else {
-      await add(spotData);
+  const handleSaveSpot = async (spotData: Omit<FlightSpot, 'id'>): Promise<void> => {
+    try {
+      if (editingSpot?.id) {
+        await update(editingSpot.id, spotData);
+      } else {
+        await add(spotData);
+      }
+      setDialogOpen(false);
+    } catch (err) {
+      console.error('Failed to save spot:', err);
     }
-    setDialogOpen(false);
   };
 
   const closeContextMenu = (e: React.MouseEvent) => {
@@ -229,7 +232,7 @@ export default function MapSpotSave() {
         {contextMenu && (
           <>
             <div
-              style={{ position: 'fixed', inset: 0, zIndex: 9999 }}
+              style={{ position: 'fixed', inset: 0, zIndex: DIALOG_Z_INDEX }}
               onClick={closeContextMenu}
               onContextMenu={closeContextMenu}
             />
@@ -240,7 +243,7 @@ export default function MapSpotSave() {
                 position: 'fixed',
                 left: menuLeft,
                 top: menuTop,
-                zIndex: 10000,
+                zIndex: DIALOG_Z_INDEX + 1,
                 minWidth: MENU_WIDTH,
                 padding: '4px 0',
                 overflow: 'hidden',

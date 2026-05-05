@@ -11,7 +11,11 @@ export function addMarker(spot, map) {
         shadowAnchor: [16, 16],
     });
     const m = L.marker([spot.latitude, spot.longitude], { icon }).addTo(map);
-    if (spot.name) m.bindPopup(`<b>${spot.name}</b>`);
+    if (spot.name) {
+        const el = document.createElement('b');
+        el.textContent = spot.name;
+        m.bindPopup(el);
+    }
 
     // Expose spot id on the DOM so React contextmenu/long-press handlers
     // can identify the marker via event.target.closest('.leaflet-marker-icon').
@@ -23,9 +27,11 @@ export function addMarker(spot, map) {
 
 export function clearMarkers(map) {
     const L = window.L;
+    const toRemove = [];
     map.eachLayer(layer => {
-        if (layer instanceof L.Marker && !layer.getPopup()?.getContent().includes('You')) {
-            map.removeLayer(layer);
+        if (layer instanceof L.Marker && layer !== map._userLocationMarker) {
+            toRemove.push(layer);
         }
     });
+    toRemove.forEach(layer => map.removeLayer(layer));
 }

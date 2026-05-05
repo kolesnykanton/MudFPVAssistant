@@ -127,8 +127,25 @@
 
     private async Task SignIn()
     {
-        var userinfo = await AuthService.SignInAsync();
-        Snackbar.Add($"Hello, {userinfo.DisplayName}!", Severity.Success);
+        try
+        {
+            var userinfo = await AuthService.SignInAsync();
+            if (userinfo is null)
+            {
+                Snackbar.Add("Sign-in was cancelled.", Severity.Warning);
+                return;
+            }
+
+            Snackbar.Add($"Hello, {userinfo.DisplayName}!", Severity.Success);
+        }
+        catch (JSException ex)
+        {
+            Snackbar.Add($"Sign-in failed: {ex.Message}", Severity.Error);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Sign-in failed: {ex.Message}", Severity.Error);
+        }
     }
 
     private async Task SignOut()
