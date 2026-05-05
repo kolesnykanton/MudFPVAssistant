@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Box, Button, Paper, Stack, Text, Title } from '@mantine/core';
 import { useUserCollection } from '../hooks/useUserCollection';
 import { useSettings } from '../hooks/useSettings';
@@ -21,6 +21,12 @@ export default function MapSpotSave() {
   const [editingSpot, setEditingSpot] = useState<FlightSpot | null>(null);
   const [newSpotCoords, setNewSpotCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const contextMenuOpenedAt = useRef(0);
+
+  const handleContextMenu = useCallback((state: ContextMenuState) => {
+    contextMenuOpenedAt.current = Date.now();
+    setContextMenu(state);
+  }, []);
 
   // Dismiss context menu on Escape
   useEffect(() => {
@@ -68,6 +74,11 @@ export default function MapSpotSave() {
 
   const closeContextMenu = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
+    // Guard against the synthetic click/tap browsers fire after a long-press
+    // (~50–300ms post-detection). The backdrop is already in the DOM by then
+    // and would immediately dismiss the menu the user just opened. 300ms covers
+    // all known browser/OS combinations while never blocking deliberate dismissals.
+    if (Date.now() - contextMenuOpenedAt.current < 350) return;
     setContextMenu(null);
   }, []);
 
@@ -85,7 +96,7 @@ export default function MapSpotSave() {
   const openWeatherApiKey = settings.apiKeys?.openWeatherApiKey;
 
   return (
-    <Box style={{ userSelect: 'none' }}>
+    <Box style={{ userSelect: 'none', WebkitUserSelect: 'none' } as React.CSSProperties}>
       <Title order={2} p="sm" pb={0}>Flight Spot Saver</Title>
       {deleteError && (
         <Alert color="red" variant="light" withCloseButton onClose={() => setDeleteError(null)} mx="sm" mt="sm">
@@ -96,7 +107,7 @@ export default function MapSpotSave() {
         <FpvMap
           spots={spots}
           openWeatherApiKey={openWeatherApiKey}
-          onContextMenu={setContextMenu}
+          onContextMenu={handleContextMenu}
         />
 
         {contextMenu && (
