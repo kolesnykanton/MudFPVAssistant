@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Box, Button, Paper, Stack, Text, Title } from '@mantine/core';
+import classes from './MapSpotSave.module.css';
 import { useUserCollection } from '../hooks/useUserCollection';
 import { useSettings } from '../hooks/useSettings';
 import { useAuth } from '../context/AuthContext';
@@ -96,14 +97,14 @@ export default function MapSpotSave() {
   const openWeatherApiKey = settings.apiKeys?.openWeatherApiKey;
 
   return (
-    <Box style={{ userSelect: 'none', WebkitUserSelect: 'none' } as React.CSSProperties}>
+    <Box className={classes.root}>
       <Title order={2} p="sm" pb={0}>Flight Spot Saver</Title>
       {deleteError && (
         <Alert color="red" variant="light" withCloseButton onClose={() => setDeleteError(null)} mx="sm" mt="sm">
           {deleteError}
         </Alert>
       )}
-      <Box style={{ position: 'relative' }} mt="sm">
+      <Box className={classes.mapWrapper}>
         <FpvMap
           spots={spots}
           openWeatherApiKey={openWeatherApiKey}

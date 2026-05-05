@@ -28,7 +28,7 @@ export function FpvMap({ spots, openWeatherApiKey, onContextMenu }: FpvMapProps)
       zoom={13}
       style={{
         width: '100%',
-        height: '80vh',
+        height: '100%',
         userSelect: 'none',
         WebkitUserSelect: 'none',
         WebkitTouchCallout: 'none',

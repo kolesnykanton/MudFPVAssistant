@@ -1,0 +1,18 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  /* 100vh fallback for browsers without dvh support */
+  height: calc(100vh  - var(--app-shell-header-height) - var(--app-shell-padding) * 2);
+  /* 100dvh accounts for iOS Safari's collapsing address bar */
+  height: calc(100dvh - var(--app-shell-header-height) - var(--app-shell-padding) * 2);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.mapWrapper {
+  flex: 1;
+  position: relative;
+  /* Without min-height: 0, flex children refuse to shrink below content height */
+  min-height: 0;
+  overflow: hidden;
+}
