@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, Box, Button, Paper, Stack, Text, Title } from '@mantine/core';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Alert, Box, Button, Loader, Paper, Stack, Text, Title } from '@mantine/core';
 import { useUserCollection } from '../hooks/useUserCollection';
 import { useSettings } from '../hooks/useSettings';
 import { useAuth } from '../context/AuthContext';
@@ -23,7 +23,6 @@ const LONG_PRESS_MOVE_TOLERANCE_PX = 10;
 
 export default function MapSpotSave() {
   const { containerRef, mapInstanceRef, mapReady, pluginWarnings, dismissPluginWarnings, addWeatherOverlays, syncSpots } = useLeafletMap('fpvMap');
-  const contextMenuOpenedAt = useRef<number>(0);
 
   const { uid } = useAuth();
   const { settings } = useSettings();
@@ -33,6 +32,7 @@ export default function MapSpotSave() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSpot, setEditingSpot] = useState<FlightSpot | null>(null);
   const [newSpotCoords, setNewSpotCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const spotIdFromTarget = useCallback((target: EventTarget | null): string | null => {
     if (!(target instanceof Element)) return null;
@@ -50,7 +50,6 @@ export default function MapSpotSave() {
     if (!map) return;
     const latlng = map.mouseEventToLatLng(nativeEvent);
     const spotId = spotIdFromTarget(target);
-    contextMenuOpenedAt.current = Date.now();
     setContextMenu({
       x: clientX,
       y: clientY,
@@ -118,6 +117,14 @@ export default function MapSpotSave() {
     };
   }, [mapReady, openContextMenuFromEvent]);
 
+  // Dismiss context menu on Escape
+  useEffect(() => {
+    if (!contextMenu) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setContextMenu(null); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [contextMenu]);
+
   // Add weather overlays once map is ready and API key is available
   const openWeatherApiKey = settings.apiKeys?.openWeatherApiKey;
   useEffect(() => {
@@ -149,10 +156,13 @@ export default function MapSpotSave() {
   };
 
   const handleDeleteSpot = async () => {
-    if (contextMenu?.spotId) {
+    if (!contextMenu?.spotId) return;
+    try {
       await remove(contextMenu.spotId);
+      setContextMenu(null);
+    } catch {
+      setDeleteError('Failed to delete spot. Please try again.');
     }
-    setContextMenu(null);
   };
 
   const handleSaveSpot = async (spotData: Omit<FlightSpot, 'id'>): Promise<void> => {
@@ -188,10 +198,22 @@ export default function MapSpotSave() {
           Some map controls failed to load: {pluginWarnings.join(', ')}.
         </Alert>
       )}
+      {deleteError && (
+        <Alert color="red" variant="light" withCloseButton onClose={() => setDeleteError(null)} mx="sm" mt="sm">
+          {deleteError}
+        </Alert>
+      )}
       <Box style={{ position: 'relative' }} mt="sm">
+        {!mapReady && (
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1, background: 'var(--mantine-color-body)' }}>
+            <Loader size="lg" />
+          </div>
+        )}
         <div
           id="fpvMap"
           ref={containerRef}
+          role="application"
+          aria-label="Flight spot map"
           style={{ width: '100%', height: '80vh' }}
           onContextMenu={handleContextMenu}
         />
@@ -199,6 +221,7 @@ export default function MapSpotSave() {
         {contextMenu && (
           <>
             <div
+              role="presentation"
               style={{ position: 'fixed', inset: 0, zIndex: DIALOG_Z_INDEX }}
               onClick={closeContextMenu}
               onContextMenu={closeContextMenu}

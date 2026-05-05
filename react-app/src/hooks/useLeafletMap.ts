@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import type { FlightSpot, LeafletMap } from '../types';
 
 interface MapModule {
@@ -11,8 +11,8 @@ interface MapModule {
 }
 
 interface UseLeafletMapReturn {
-  containerRef: React.RefObject<HTMLDivElement | null>;
-  mapInstanceRef: React.RefObject<LeafletMap | null>;
+  containerRef: RefObject<HTMLDivElement | null>;
+  mapInstanceRef: RefObject<LeafletMap | null>;
   mapReady: boolean;
   pluginWarnings: string[];
   dismissPluginWarnings(): void;

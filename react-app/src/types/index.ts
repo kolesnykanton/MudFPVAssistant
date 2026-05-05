@@ -43,7 +43,7 @@ export interface LeafletMap {
   setView(latlng: [number, number], zoom: number): void;
   _layerControl: unknown;
   _weatherLayersAdded?: boolean;
-  _userLocationMarker: unknown | null;
+  _userLocationMarker: unknown;
   _rainviewerController?: AbortController;
   _pluginFailures?: string[];
 }
