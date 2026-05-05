@@ -3,7 +3,7 @@ import { useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { LocateControl } from 'leaflet.locatecontrol';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css';
-import 'leaflet.fullscreen';
+import FullScreen from 'leaflet.fullscreen';
 import 'leaflet.fullscreen/dist/Control.FullScreen.css';
 import { geocoder } from 'leaflet-control-geocoder';
 import 'leaflet-control-geocoder/dist/Control.Geocoder.css';
@@ -26,8 +26,7 @@ export function MapControls() {
     );
 
     safe('fullscreen', () =>
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      new (L.Control as any).FullScreen({ position: 'topright', title: 'Fullscreen', titleCancel: 'Exit fullscreen' }).addTo(map)
+      new FullScreen({ position: 'topright', title: 'Fullscreen', titleCancel: 'Exit fullscreen' }).addTo(map)
     );
 
     safe('scale', () =>

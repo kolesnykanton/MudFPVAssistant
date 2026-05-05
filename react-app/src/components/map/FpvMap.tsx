@@ -1,10 +1,23 @@
 import 'leaflet/dist/leaflet.css';
-import { MapContainer, TileLayer, LayersControl, ZoomControl } from 'react-leaflet';
+import { useEffect } from 'react';
+import { MapContainer, TileLayer, LayersControl, ZoomControl, useMap } from 'react-leaflet';
 import type { FlightSpot } from '../../types';
 import { MapControls } from './MapControls';
 import { WeatherLayers } from './WeatherLayers';
 import { SpotMarker } from './SpotMarker';
 import { MapInteraction } from './MapInteraction';
+
+function MapAutoCenter() {
+  const map = useMap();
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => map.setView([coords.latitude, coords.longitude], 13, { animate: false }),
+      () => { /* permission denied — keep the default Madrid fallback */ },
+      { timeout: 8000 },
+    );
+  }, [map]);
+  return null;
+}
 
 export interface ContextMenuState {
   x: number;
@@ -60,6 +73,7 @@ export function FpvMap({ spots, openWeatherApiKey, onContextMenu }: FpvMapProps)
         </LayersControl.BaseLayer>
         <WeatherLayers openWeatherApiKey={openWeatherApiKey} />
       </LayersControl>
+      <MapAutoCenter />
       <MapControls />
       <MapInteraction onContextMenu={onContextMenu} />
       {spots.map(spot => spot.id && (

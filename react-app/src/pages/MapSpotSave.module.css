@@ -15,4 +15,7 @@
   /* Without min-height: 0, flex children refuse to shrink below content height */
   min-height: 0;
   overflow: hidden;
+  /* Contain Leaflet's internal z-indices (200–700) so the AppShell sidebar
+     (z-index ~200 at page level) paints on top of the entire map block */
+  isolation: isolate;
 }
