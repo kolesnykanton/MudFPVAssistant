@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Box, Button, Paper, Stack, Text, Title } from '@mantine/core';
+import { Alert, Box, Button, Paper, Stack, Text, Title } from '@mantine/core';
 import { useUserCollection } from '../hooks/useUserCollection';
 import { useSettings } from '../hooks/useSettings';
 import { useAuth } from '../context/AuthContext';
+import { useLeafletMap } from '../hooks/useLeafletMap';
 import type { FlightSpot } from '../types';
 import FlightSpotEditDialog, { DIALOG_Z_INDEX } from '../components/FlightSpotEditDialog';
 
@@ -21,16 +22,13 @@ const LONG_PRESS_MS = 600;
 const LONG_PRESS_MOVE_TOLERANCE_PX = 10;
 
 export default function MapSpotSave() {
-  const mapRef = useRef<HTMLDivElement>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const mapInstanceRef = useRef<any>(null);
+  const { containerRef, mapInstanceRef, mapReady, pluginWarnings, dismissPluginWarnings, addWeatherOverlays, syncSpots } = useLeafletMap('fpvMap');
   const contextMenuOpenedAt = useRef<number>(0);
 
   const { uid } = useAuth();
   const { settings } = useSettings();
   const { items: spots, add, update, remove } = useUserCollection<FlightSpot>('FlightSpots');
 
-  const [mapReady, setMapReady] = useState(false);
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSpot, setEditingSpot] = useState<FlightSpot | null>(null);
@@ -69,33 +67,10 @@ export default function MapSpotSave() {
     openContextMenuFromEvent(e.clientX, e.clientY, e.target, e.nativeEvent);
   };
 
-  // Initialize map once
-  useEffect(() => {
-    if (!mapRef.current || mapInstanceRef.current) return;
-
-    let cancelled = false;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    import('../map/mapCore.js').then((mod: any) => {
-      if (cancelled || mapInstanceRef.current) return;
-      const map = mod.createMap('fpvMap');
-      mapInstanceRef.current = map;
-      setMapReady(true);
-    });
-
-    return () => {
-      cancelled = true;
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove();
-        mapInstanceRef.current = null;
-      }
-    };
-  }, []);
-
   // Touch long-press — native pointer listeners scoped to the map div.
   // Re-attached when the map is ready.
   useEffect(() => {
-    const div = mapRef.current;
+    const div = containerRef.current;
     if (!div || !mapReady) return;
 
     let timer: number | null = null;
@@ -146,24 +121,15 @@ export default function MapSpotSave() {
   // Add weather overlays once map is ready and API key is available
   const openWeatherApiKey = settings.apiKeys?.openWeatherApiKey;
   useEffect(() => {
-    if (!mapReady || !mapInstanceRef.current || !openWeatherApiKey) return;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    import('../map/mapCore.js').then((mod: any) => {
-      mod.addWeatherOverlays(mapInstanceRef.current, openWeatherApiKey);
-    });
-  }, [mapReady, openWeatherApiKey]);
+    if (!mapReady || !openWeatherApiKey) return;
+    addWeatherOverlays(openWeatherApiKey);
+  }, [mapReady, openWeatherApiKey, addWeatherOverlays]);
 
-  // Sync spots to map markers
+  // Sync spots to map markers (diff-based — only adds/removes changed spots)
   useEffect(() => {
-    if (!mapReady || !mapInstanceRef.current) return;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    import('../map/mapCore.js').then((mod: any) => {
-      mod.clearMarkers(mapInstanceRef.current);
-      spots.forEach((spot: FlightSpot) => {
-        mod.addMarker(spot, mapInstanceRef.current);
-      });
-    });
-  }, [spots, mapReady]);
+    if (!mapReady) return;
+    syncSpots(spots);
+  }, [spots, mapReady, syncSpots]);
 
   const handleAddSpot = () => {
     if (!contextMenu) return;
@@ -190,16 +156,12 @@ export default function MapSpotSave() {
   };
 
   const handleSaveSpot = async (spotData: Omit<FlightSpot, 'id'>): Promise<void> => {
-    try {
-      if (editingSpot?.id) {
-        await update(editingSpot.id, spotData);
-      } else {
-        await add(spotData);
-      }
-      setDialogOpen(false);
-    } catch (err) {
-      console.error('Failed to save spot:', err);
+    if (editingSpot?.id) {
+      await update(editingSpot.id, spotData);
+    } else {
+      await add(spotData);
     }
+    setDialogOpen(false);
   };
 
   const closeContextMenu = (e: React.MouseEvent) => {
@@ -221,10 +183,15 @@ export default function MapSpotSave() {
   return (
     <Box>
       <Title order={2} p="sm" pb={0}>Flight Spot Saver</Title>
+      {pluginWarnings.length > 0 && (
+        <Alert color="yellow" variant="light" withCloseButton onClose={dismissPluginWarnings} mx="sm" mt="sm">
+          Some map controls failed to load: {pluginWarnings.join(', ')}.
+        </Alert>
+      )}
       <Box style={{ position: 'relative' }} mt="sm">
         <div
           id="fpvMap"
-          ref={mapRef}
+          ref={containerRef}
           style={{ width: '100%', height: '80vh' }}
           onContextMenu={handleContextMenu}
         />

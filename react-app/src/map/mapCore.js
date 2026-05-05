@@ -1,5 +1,5 @@
 import { addPlugins } from './mapPlugins.js';
-import { addMarker, clearMarkers } from './mapMarkers.js';
+import { addMarker, clearMarkers, createMarkerRegistry } from './mapMarkers.js';
 
 /**
  * Create the Leaflet map. Pure rendering — all interaction (click, right-click,
@@ -23,9 +23,12 @@ export function createMap(elementId) {
     const layerControl = L.control.layers(layers, overlayLayers).addTo(map);
     map._layerControl = layerControl;
 
-    addPlugins(map);
+    const pluginFailures = addPlugins(map);
+    map._pluginFailures = pluginFailures;
 
-    fetch('https://api.rainviewer.com/public/weather-maps.json')
+    const rainviewerController = new AbortController();
+    map._rainviewerController = rainviewerController;
+    fetch('https://api.rainviewer.com/public/weather-maps.json', { signal: rainviewerController.signal })
         .then(r => r.json())
         .then(data => {
             const last = data.radar.past.slice(-1)[0];
@@ -34,7 +37,7 @@ export function createMap(elementId) {
             overlayLayers["RainViewer (rain/radar)"] = rvLayer;
             layerControl.addOverlay(rvLayer, "RainViewer (rain/radar)");
         })
-        .catch(console.error);
+        .catch(err => { if (err.name !== 'AbortError') console.error(err); });
 
     map._userLocationMarker = null;
     if (navigator.geolocation) {
@@ -59,4 +62,4 @@ export function addWeatherOverlays(map, apiKey) {
     lc.addOverlay(L.tileLayer(`https://tile.openweathermap.org/map/precipitation/{z}/{x}/{y}.png?appid=${apiKey}`, { attribution: '&copy; OpenWeatherMap', opacity: 1 }), 'Rain');
 }
 
-export { addMarker, clearMarkers };
+export { addMarker, clearMarkers, createMarkerRegistry };

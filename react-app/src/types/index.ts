@@ -34,3 +34,16 @@ export interface UserSettings {
   id?: string;
   apiKeys: UserApiKeys;
 }
+
+export interface LeafletMap {
+  remove(): void;
+  mouseEventToLatLng(e: MouseEvent | PointerEvent): { lat: number; lng: number };
+  eachLayer(fn: (layer: unknown) => void): void;
+  removeLayer(layer: unknown): void;
+  setView(latlng: [number, number], zoom: number): void;
+  _layerControl: unknown;
+  _weatherLayersAdded?: boolean;
+  _userLocationMarker: unknown | null;
+  _rainviewerController?: AbortController;
+  _pluginFailures?: string[];
+}

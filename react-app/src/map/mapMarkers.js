@@ -35,3 +35,30 @@ export function clearMarkers(map) {
     });
     toRemove.forEach(layer => map.removeLayer(layer));
 }
+
+export function createMarkerRegistry() {
+    /** @type {Map<string, object>} spot.id -> L.Marker */
+    const registry = new Map();
+
+    function sync(spots, map) {
+        const incomingIds = new Set(spots.map(s => s.id).filter(Boolean));
+        for (const [id, marker] of registry) {
+            if (!incomingIds.has(id)) {
+                map.removeLayer(marker);
+                registry.delete(id);
+            }
+        }
+        for (const spot of spots) {
+            if (!spot.id || registry.has(spot.id)) continue;
+            const marker = addMarker(spot, map);
+            registry.set(spot.id, marker);
+        }
+    }
+
+    function clear(map) {
+        for (const marker of registry.values()) map.removeLayer(marker);
+        registry.clear();
+    }
+
+    return { sync, clear };
+}

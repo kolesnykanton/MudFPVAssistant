@@ -1,16 +1,18 @@
 // Each plugin is wrapped so that a missing CDN script (network error, blocked
 // host, etc.) only logs a warning instead of throwing — and breaking everything
 // registered after it in createMap.
-function safe(name, fn) {
-    try {
-        fn();
-    } catch (err) {
-        console.warn(`[map] plugin "${name}" failed to initialize:`, err);
-    }
-}
-
 export function addPlugins(map) {
     const L = window.L;
+    const failed = [];
+
+    function safe(name, fn) {
+        try {
+            fn();
+        } catch (err) {
+            console.warn(`[map] plugin "${name}" failed to initialize:`, err);
+            failed.push(name);
+        }
+    }
 
     safe('locate', () => {
         L.control.locate({ position: 'topleft', strings: { title: 'Show me' }, flyTo: true }).addTo(map);
@@ -62,4 +64,6 @@ export function addPlugins(map) {
             }
         }, 100);
     });
+
+    return failed;
 }
