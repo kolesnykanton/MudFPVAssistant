@@ -1,0 +1,10 @@
+{
+  "js/ts.tsdk.path": "react-app/node_modules/typescript/lib",
+  "js/ts.tsdk.promptToUseWorkspaceVersion": true,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.workingDirectories": ["react-app"],
+  "eslint.validate": ["typescript", "typescriptreact", "javascript"]
+}
