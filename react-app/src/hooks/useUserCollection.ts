@@ -15,8 +15,10 @@ export function useUserCollection<T extends { id?: string }>(collectionName: Col
 
   useEffect(() => {
     if (!uid) {
+      /* eslint-disable react-hooks/set-state-in-effect */
       setItems([]);
       setLoading(false);
+      /* eslint-enable react-hooks/set-state-in-effect */
       return;
     }
     setLoading(true);

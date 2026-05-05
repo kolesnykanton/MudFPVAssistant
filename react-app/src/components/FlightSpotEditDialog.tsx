@@ -36,12 +36,14 @@ export default function FlightSpotEditDialog({ open, spot, coords, onSave, onClo
 
   useEffect(() => {
     if (open) {
+      /* eslint-disable react-hooks/set-state-in-effect */
       setName(spot?.name ?? '');
       setComments(spot?.comments ?? '');
       setCategory(spot?.category ?? '');
       setTagsInput(spot?.tags?.join(', ') ?? '');
       setSaving(false);
       setSaveError(null);
+      /* eslint-enable react-hooks/set-state-in-effect */
     }
   }, [open, spot]);
 

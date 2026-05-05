@@ -15,5 +15,5 @@ declare module 'leaflet' {
 }
 
 interface Window {
-  lottie: any;
+  lottie: unknown;
 }

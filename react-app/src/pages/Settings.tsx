@@ -8,8 +8,10 @@ export default function Settings() {
   const [googleMapsKey, setGoogleMapsKey] = useState('');
 
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     setOpenWeatherKey(settings.apiKeys?.openWeatherApiKey || '');
     setGoogleMapsKey(settings.apiKeys?.googleApiKey || '');
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [settings]);
 
   const handleSave = async () => {

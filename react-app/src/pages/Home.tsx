@@ -46,8 +46,10 @@ export default function Home() {
     let cancelled = false;
     const controller = new AbortController();
 
+    /* eslint-disable react-hooks/set-state-in-effect */
     setWeatherLoading(true);
     setWeatherError(null);
+    /* eslint-enable react-hooks/set-state-in-effect */
 
     navigator.geolocation.getCurrentPosition(
       async (pos) => {

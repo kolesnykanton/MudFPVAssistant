@@ -36,13 +36,7 @@ function secondsToMmSs(sec: number): string {
 }
 
 export default function FlightStats({ flights }: FlightStatsProps) {
-  if (flights.length === 0) {
-    return (
-      <Paper withBorder p="lg" radius="md">
-        <Text c="dimmed">No flight data to display charts.</Text>
-      </Paper>
-    );
-  }
+  // All hooks must run unconditionally (Rules of Hooks) — early return is below.
 
   // ── 1. Total mAh per day (last 15 days with data) ──────────────────────────
   const dailyMahData = useMemo(() => {
@@ -103,6 +97,14 @@ export default function FlightStats({ flights }: FlightStatsProps) {
         label: secondsToMmSs(Math.round(times.reduce((s, t) => s + t, 0) / times.length)),
       }));
   }, [flights]);
+
+  if (flights.length === 0) {
+    return (
+      <Paper withBorder p="lg" radius="md">
+        <Text c="dimmed">No flight data to display charts.</Text>
+      </Paper>
+    );
+  }
 
   return (
     <Box>

@@ -26,6 +26,7 @@ export function MapControls() {
     );
 
     safe('fullscreen', () =>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       new (L.Control as any).FullScreen({ position: 'topright', title: 'Fullscreen', titleCancel: 'Exit fullscreen' }).addTo(map)
     );
 
@@ -40,6 +41,7 @@ export function MapControls() {
     );
 
     safe('measure', () =>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (L.control as any).measure({
         position: 'topleft',
         primaryLengthUnit: 'meters',
@@ -50,7 +52,7 @@ export function MapControls() {
     );
 
     return () => {
-      controls.forEach(c => { try { map.removeControl(c); } catch {} });
+      controls.forEach(c => { try { map.removeControl(c); } catch { /* already removed */ } });
     };
   }, [map]);
 
