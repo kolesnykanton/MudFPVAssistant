@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Box, Grid, Paper, Text, Title } from '@mantine/core';
+import { Box, Grid, Paper, Text, Title, VisuallyHidden } from '@mantine/core';
 import {
   LineChart, Line, BarChart, Bar,
   PieChart, Pie, Cell,
@@ -111,12 +111,15 @@ export default function FlightStats({ flights }: FlightStatsProps) {
       <Grid gap="lg">
         {/* Chart 1: mAh per day */}
         <Grid.Col span={{ base: 12 }}>
-          <Paper withBorder p="md" radius="md">
-            <Title order={5} mb="sm">1. Total mAh per Day (last 15 days)</Title>
+          <Paper withBorder p="md" radius="md" component="figure" m={0}>
+            <Title order={5} mb="sm" component="figcaption">1. Total mAh per Day (last 15 days)</Title>
             {dailyMahData.length === 0 ? (
               <Text c="dimmed">No mAh data available.</Text>
             ) : (
               <Box>
+                <VisuallyHidden>
+                  Line chart of total mAh used per day over the last {dailyMahData.length} day(s) with data.
+                </VisuallyHidden>
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={dailyMahData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -141,12 +144,15 @@ export default function FlightStats({ flights }: FlightStatsProps) {
 
         {/* Chart 2: Battery type pie */}
         <Grid.Col span={{ base: 12, md: 6 }}>
-          <Paper withBorder p="md" radius="md">
-            <Title order={5} mb="sm">2. Flights by Battery Type</Title>
+          <Paper withBorder p="md" radius="md" component="figure" m={0}>
+            <Title order={5} mb="sm" component="figcaption">2. Flights by Battery Type</Title>
             {batteryTypeData.length === 0 ? (
               <Text c="dimmed">No data.</Text>
             ) : (
               <Box>
+                <VisuallyHidden>
+                  Pie chart of flight count by battery type. {batteryTypeData.map(d => `${d.name}: ${d.value}`).join(', ')}.
+                </VisuallyHidden>
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Pie
@@ -173,12 +179,15 @@ export default function FlightStats({ flights }: FlightStatsProps) {
 
         {/* Chart 3: Locations pie */}
         <Grid.Col span={{ base: 12, md: 6 }}>
-          <Paper withBorder p="md" radius="md">
-            <Title order={5} mb="sm">3. Top Locations by Flight Count</Title>
+          <Paper withBorder p="md" radius="md" component="figure" m={0}>
+            <Title order={5} mb="sm" component="figcaption">3. Top Locations by Flight Count</Title>
             {locationData.length === 0 ? (
               <Text c="dimmed">No location data.</Text>
             ) : (
               <Box>
+                <VisuallyHidden>
+                  Pie chart of flight counts per location, top 15 with the rest grouped as Other. {locationData.map(d => `${d.name}: ${d.value}`).join(', ')}.
+                </VisuallyHidden>
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Pie
@@ -205,12 +214,15 @@ export default function FlightStats({ flights }: FlightStatsProps) {
 
         {/* Chart 4: Average flight time per drone */}
         <Grid.Col span={{ base: 12 }}>
-          <Paper withBorder p="md" radius="md">
-            <Title order={5} mb="sm">4. Average Flight Time per Drone (mm:ss)</Title>
+          <Paper withBorder p="md" radius="md" component="figure" m={0}>
+            <Title order={5} mb="sm" component="figcaption">4. Average Flight Time per Drone (mm:ss)</Title>
             {droneAvgTimeData.length === 0 ? (
               <Text c="dimmed">No flight time data available.</Text>
             ) : (
               <Box>
+                <VisuallyHidden>
+                  Bar chart of average flight time per drone in mm:ss. {droneAvgTimeData.map(d => `${d.name}: ${d.label}`).join(', ')}.
+                </VisuallyHidden>
                 <ResponsiveContainer width="100%" height={350}>
                   <BarChart
                     data={droneAvgTimeData}
