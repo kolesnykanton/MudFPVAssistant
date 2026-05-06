@@ -6,22 +6,25 @@ import FlightInfo from './pages/FlightInfo';
 import MapSpotSave from './pages/MapSpotSave';
 import Utilities from './pages/Utilities';
 import Settings from './pages/Settings';
+import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <MainLayout>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/flight-info" element={<FlightInfo />} />
-            <Route path="/map-spot-save" element={<MapSpotSave />} />
-            <Route path="/utils" element={<Utilities />} />
-            <Route path="/settings" element={<Settings />} />
-          </Routes>
-        </MainLayout>
-      </AuthProvider>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
+        <AuthProvider>
+          <MainLayout>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/flight-info" element={<FlightInfo />} />
+              <Route path="/map-spot-save" element={<MapSpotSave />} />
+              <Route path="/utils" element={<Utilities />} />
+              <Route path="/settings" element={<Settings />} />
+            </Routes>
+          </MainLayout>
+        </AuthProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }
 

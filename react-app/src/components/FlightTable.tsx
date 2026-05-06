@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { ActionIcon, Paper, ScrollArea, Table, Text, Title } from '@mantine/core';
 import { IconTrash } from '@tabler/icons-react';
 import type { FlightInfo } from '../types';
+import ConfirmDialog from './ConfirmDialog';
 
 interface FlightTableProps {
   flights: FlightInfo[];
@@ -9,6 +11,11 @@ interface FlightTableProps {
 }
 
 export default function FlightTable({ flights, selectedDate, onDelete }: FlightTableProps) {
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const pendingFlight = pendingDeleteId
+    ? flights.find(f => f.id === pendingDeleteId) ?? null
+    : null;
+
   const filtered = selectedDate
     ? flights.filter(f => f.date?.split('T')[0] === selectedDate)
     : flights;
@@ -67,8 +74,9 @@ export default function FlightTable({ flights, selectedDate, onDelete }: FlightT
                       size="sm"
                       color="red"
                       variant="subtle"
-                      onClick={() => flight.id && onDelete(flight.id)}
+                      onClick={() => flight.id && setPendingDeleteId(flight.id)}
                       disabled={!flight.id}
+                      aria-label="Delete flight"
                     >
                       <IconTrash size={14} />
                     </ActionIcon>
@@ -79,6 +87,23 @@ export default function FlightTable({ flights, selectedDate, onDelete }: FlightT
           </Table>
         </ScrollArea>
       )}
+
+      <ConfirmDialog
+        open={pendingDeleteId !== null}
+        title="Delete flight"
+        message={
+          pendingFlight
+            ? `Delete the flight "${pendingFlight.name}"${pendingFlight.date ? ` from ${pendingFlight.date}` : ''}? This cannot be undone.`
+            : 'Delete this flight? This cannot be undone.'
+        }
+        confirmLabel="Delete"
+        danger
+        onConfirm={() => {
+          if (pendingDeleteId) onDelete(pendingDeleteId);
+          setPendingDeleteId(null);
+        }}
+        onClose={() => setPendingDeleteId(null)}
+      />
     </Paper>
   );
 }

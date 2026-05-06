@@ -8,6 +8,7 @@ import type { FlightSpot } from '../types';
 import { FpvMap } from '../components/map/FpvMap';
 import type { ContextMenuState } from '../components/map/FpvMap';
 import FlightSpotEditDialog, { DIALOG_Z_INDEX } from '../components/FlightSpotEditDialog';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 const MENU_WIDTH = 170;
 const MENU_HEIGHT_APPROX = 80;
@@ -22,6 +23,10 @@ export default function MapSpotSave() {
   const [editingSpot, setEditingSpot] = useState<FlightSpot | null>(null);
   const [newSpotCoords, setNewSpotCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [pendingDeleteSpotId, setPendingDeleteSpotId] = useState<string | null>(null);
+  const pendingDeleteSpot = pendingDeleteSpotId
+    ? spots.find(s => s.id === pendingDeleteSpotId) ?? null
+    : null;
   const contextMenuOpenedAt = useRef(0);
 
   const handleContextMenu = useCallback((state: ContextMenuState) => {
@@ -54,11 +59,18 @@ export default function MapSpotSave() {
     setContextMenu(null);
   };
 
-  const handleDeleteSpot = async () => {
+  const handleDeleteSpot = () => {
     if (!contextMenu?.spotId) return;
+    setPendingDeleteSpotId(contextMenu.spotId);
+    setContextMenu(null);
+  };
+
+  const confirmDeleteSpot = async () => {
+    if (!pendingDeleteSpotId) return;
+    const id = pendingDeleteSpotId;
+    setPendingDeleteSpotId(null);
     try {
-      await remove(contextMenu.spotId);
-      setContextMenu(null);
+      await remove(id);
     } catch {
       setDeleteError('Failed to delete spot. Please try again.');
     }
@@ -182,6 +194,20 @@ export default function MapSpotSave() {
         coords={newSpotCoords ?? undefined}
         onSave={handleSaveSpot}
         onClose={() => setDialogOpen(false)}
+      />
+
+      <ConfirmDialog
+        open={pendingDeleteSpotId !== null}
+        title="Delete spot"
+        message={
+          pendingDeleteSpot
+            ? `Delete the spot "${pendingDeleteSpot.name}"? This cannot be undone.`
+            : 'Delete this spot? This cannot be undone.'
+        }
+        confirmLabel="Delete"
+        danger
+        onConfirm={confirmDeleteSpot}
+        onClose={() => setPendingDeleteSpotId(null)}
       />
     </Box>
   );
