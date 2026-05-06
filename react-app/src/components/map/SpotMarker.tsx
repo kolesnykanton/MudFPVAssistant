@@ -18,9 +18,10 @@ const droneIcon = L.icon({
 interface SpotMarkerProps {
   spot: FlightSpot;
   onContextMenu: (state: ContextMenuState) => void;
+  longPressActiveRef: React.RefObject<boolean>;
 }
 
-export function SpotMarker({ spot, onContextMenu }: SpotMarkerProps) {
+export function SpotMarker({ spot, onContextMenu, longPressActiveRef }: SpotMarkerProps) {
   const markerRef = useRef<L.Marker>(null);
 
   useEffect(() => {
@@ -35,6 +36,7 @@ export function SpotMarker({ spot, onContextMenu }: SpotMarkerProps) {
       icon={droneIcon}
       eventHandlers={{
         contextmenu: (e) => {
+          if (longPressActiveRef.current) return;
           L.DomEvent.stopPropagation(e);
           onContextMenu({
             x: e.originalEvent.clientX,

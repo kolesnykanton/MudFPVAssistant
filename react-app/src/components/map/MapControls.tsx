@@ -40,8 +40,7 @@ export function MapControls() {
     );
 
     safe('measure', () =>
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (L.control as any).measure({
+      L.control.measure({
         position: 'topleft',
         primaryLengthUnit: 'meters',
         primaryAreaUnit: 'sqmeters',

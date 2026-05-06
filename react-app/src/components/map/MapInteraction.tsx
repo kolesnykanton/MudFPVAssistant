@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useMap, useMapEvents } from 'react-leaflet';
 import type { ContextMenuState } from './FpvMap';
 
@@ -7,12 +7,11 @@ const LONG_PRESS_MOVE_TOLERANCE_PX = 10;
 
 interface MapInteractionProps {
   onContextMenu: (state: ContextMenuState) => void;
+  longPressActiveRef: React.RefObject<boolean>;
 }
 
-export function MapInteraction({ onContextMenu }: MapInteractionProps) {
+export function MapInteraction({ onContextMenu, longPressActiveRef }: MapInteractionProps) {
   const map = useMap();
-  // Shared between useMapEvents and useEffect — true while a touch hold is active.
-  const longPressActiveRef = useRef(false);
 
   // Desktop right-click. On touch, the OS also fires contextmenu at ~700ms
   // (overlapping our 600ms timer). Skip it when our timer owns the interaction
@@ -109,7 +108,7 @@ export function MapInteraction({ onContextMenu }: MapInteractionProps) {
       container.removeEventListener('selectstart', onSelectStart);
       container.removeEventListener('contextmenu', onContextMenuNative);
     };
-  }, [map, onContextMenu]);
+  }, [map, onContextMenu, longPressActiveRef]);
 
   return null;
 }

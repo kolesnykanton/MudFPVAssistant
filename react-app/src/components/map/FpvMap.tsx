@@ -1,5 +1,5 @@
 import 'leaflet/dist/leaflet.css';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, LayersControl, ZoomControl, useMap } from 'react-leaflet';
 import type { FlightSpot } from '../../types';
 import { MapControls } from './MapControls';
@@ -35,6 +35,7 @@ interface FpvMapProps {
 }
 
 export function FpvMap({ spots, openWeatherApiKey, onContextMenu }: FpvMapProps) {
+  const longPressActiveRef = useRef(false);
   return (
     <MapContainer
       center={[40.4168, -3.7038]}
@@ -75,9 +76,9 @@ export function FpvMap({ spots, openWeatherApiKey, onContextMenu }: FpvMapProps)
       </LayersControl>
       <MapAutoCenter />
       <MapControls />
-      <MapInteraction onContextMenu={onContextMenu} />
+      <MapInteraction onContextMenu={onContextMenu} longPressActiveRef={longPressActiveRef} />
       {spots.map(spot => spot.id && (
-        <SpotMarker key={spot.id} spot={spot} onContextMenu={onContextMenu} />
+        <SpotMarker key={spot.id} spot={spot} onContextMenu={onContextMenu} longPressActiveRef={longPressActiveRef} />
       ))}
     </MapContainer>
   );
