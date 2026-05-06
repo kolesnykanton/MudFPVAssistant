@@ -6,7 +6,7 @@ import {
   IconTool,
   IconSettings,
 } from '@tabler/icons-react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const links = [
   { to: '/', label: 'Dashboard', icon: IconLayoutDashboard, end: true },
@@ -21,7 +21,6 @@ interface NavMenuProps {
 }
 
 export default function NavMenu({ onNavClick }: NavMenuProps) {
-  const navigate = useNavigate();
   const location = useLocation();
 
   return (
@@ -34,13 +33,12 @@ export default function NavMenu({ onNavClick }: NavMenuProps) {
         return (
           <NavLink
             key={to}
+            component={Link}
+            to={to}
             label={label}
             leftSection={<Icon size={18} stroke={1.5} />}
             active={isActive}
-            onClick={() => {
-              navigate(to);
-              onNavClick?.();
-            }}
+            onClick={() => onNavClick?.()}
             styles={{
               root: { borderRadius: 8, color: 'white' },
               label: { color: 'white' },

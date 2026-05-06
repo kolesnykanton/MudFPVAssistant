@@ -24,6 +24,13 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const { user, loading, signIn, signOut } = useAuth();
 
+  const handleSignIn = () => {
+    // Benign cases (popup closed, blocked → redirect) are absorbed inside signIn.
+    // Anything that escapes is genuinely unexpected; surface to console rather
+    // than letting it become an unhandled promise rejection.
+    signIn().catch(err => console.error('[auth] sign-in failed:', err));
+  };
+
   return (
     <AppShell
       header={{ height: 'calc(60px + env(safe-area-inset-top, 0px))' }}
@@ -80,7 +87,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
               ) : (
                 <Tooltip label="Login with Google">
                   <Button
-                    onClick={signIn}
+                    onClick={handleSignIn}
                     variant="subtle"
                     color="white"
                     leftSection={<IconLogin size={16} />}
