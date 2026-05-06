@@ -22,7 +22,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['img/*.png', 'img/*.svg', 'animations/*.json'],
+      includeAssets: ['img/*.png', 'img/*.svg'],
       manifest: {
         name: 'MudFPVAssistant',
         short_name: 'MudFPVAssistant',

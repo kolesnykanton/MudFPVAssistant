@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import type { FlightSpot } from '../types';
 import { FpvMap } from '../components/map/FpvMap';
 import type { ContextMenuState } from '../components/map/FpvMap';
-import FlightSpotEditDialog, { DIALOG_Z_INDEX } from '../components/FlightSpotEditDialog';
+import FlightSpotEditDialog from '../components/FlightSpotEditDialog';
 import ConfirmDialog from '../components/ConfirmDialog';
 
 const MENU_WIDTH = 170;
@@ -127,7 +127,7 @@ export default function MapSpotSave() {
           <>
             <div
               role="presentation"
-              style={{ position: 'fixed', inset: 0, zIndex: DIALOG_Z_INDEX }}
+              style={{ position: 'fixed', inset: 0, zIndex: 1000 }}
               onClick={closeContextMenu}
               onContextMenu={closeContextMenu}
             />
@@ -138,7 +138,7 @@ export default function MapSpotSave() {
                 position: 'fixed',
                 left: menuLeft,
                 top: menuTop,
-                zIndex: DIALOG_Z_INDEX + 1,
+                zIndex: 1001,
                 minWidth: MENU_WIDTH,
                 padding: '4px 0',
                 overflow: 'hidden',

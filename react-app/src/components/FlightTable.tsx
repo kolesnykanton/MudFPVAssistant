@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { ActionIcon, Paper, ScrollArea, Table, Text, Title } from '@mantine/core';
 import { IconTrash } from '@tabler/icons-react';
-import type { FlightInfo } from '../types';
+import type { FlightInfo, WithId } from '../types';
 import ConfirmDialog from './ConfirmDialog';
 
 interface FlightTableProps {
-  flights: FlightInfo[];
+  flights: WithId<FlightInfo>[];
   selectedDate: string | null; // "YYYY-MM-DD" or null
   onDelete: (id: string) => void;
 }
@@ -74,8 +74,7 @@ export default function FlightTable({ flights, selectedDate, onDelete }: FlightT
                       size="sm"
                       color="red"
                       variant="subtle"
-                      onClick={() => flight.id && setPendingDeleteId(flight.id)}
-                      disabled={!flight.id}
+                      onClick={() => setPendingDeleteId(flight.id)}
                       aria-label="Delete flight"
                     >
                       <IconTrash size={14} />
@@ -91,11 +90,7 @@ export default function FlightTable({ flights, selectedDate, onDelete }: FlightT
       <ConfirmDialog
         open={pendingDeleteId !== null}
         title="Delete flight"
-        message={
-          pendingFlight
-            ? `Delete the flight "${pendingFlight.name}"${pendingFlight.date ? ` from ${pendingFlight.date}` : ''}? This cannot be undone.`
-            : 'Delete this flight? This cannot be undone.'
-        }
+        message={`Delete the flight "${pendingFlight?.name ?? ''}"${pendingFlight?.date ? ` from ${pendingFlight.date}` : ''}? This cannot be undone.`}
         confirmLabel="Delete"
         danger
         onConfirm={() => {
