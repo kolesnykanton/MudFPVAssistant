@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Box, Text, Title } from '@mantine/core';
+import { Box, Text, Title } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import classes from './MapSpotSave.module.css';
-import { useUserCollection } from '../hooks/useUserCollection';
+import { useData } from '../context/DataContext';
 import { useSettings } from '../hooks/useSettings';
 import { useAuth } from '../context/AuthContext';
 import type { FlightSpot } from '../types';
@@ -16,13 +17,12 @@ const MENU_WIDTH = 170;
 export default function MapSpotSave() {
   const { uid } = useAuth();
   const { settings } = useSettings();
-  const { items: spots, add, update, remove } = useUserCollection<FlightSpot>('FlightSpots');
+  const { spots, addSpot, updateSpot, deleteSpot } = useData();
 
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSpot, setEditingSpot] = useState<FlightSpot | null>(null);
   const [newSpotCoords, setNewSpotCoords] = useState<{ lat: number; lng: number } | null>(null);
-  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [pendingDeleteSpotId, setPendingDeleteSpotId] = useState<string | null>(null);
   const pendingDeleteSpot = pendingDeleteSpotId
     ? spots.find(s => s.id === pendingDeleteSpotId) ?? null
@@ -31,11 +31,9 @@ export default function MapSpotSave() {
 
   const handleContextMenu = useCallback((state: ContextMenuState) => {
     contextMenuOpenedAt.current = Date.now();
-    setDeleteError(null);
     setContextMenu(state);
   }, []);
 
-  // Dismiss context menu on Escape
   useEffect(() => {
     if (!contextMenu) return;
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setContextMenu(null); };
@@ -71,27 +69,26 @@ export default function MapSpotSave() {
     const id = pendingDeleteSpotId;
     setPendingDeleteSpotId(null);
     try {
-      await remove(id);
+      await deleteSpot(id);
+      notifications.show({ color: 'green', message: 'Spot deleted.' });
     } catch {
-      setDeleteError('Failed to delete spot. Please try again.');
+      notifications.show({ color: 'red', message: 'Failed to delete spot. Please try again.' });
     }
   };
 
   const handleSaveSpot = async (spotData: Omit<FlightSpot, 'id'>): Promise<void> => {
     if (editingSpot?.id) {
-      await update(editingSpot.id, spotData);
+      await updateSpot(editingSpot.id, spotData);
+      notifications.show({ color: 'green', message: 'Spot updated.' });
     } else {
-      await add(spotData);
+      await addSpot(spotData);
+      notifications.show({ color: 'green', message: 'Spot added.' });
     }
     setDialogOpen(false);
   };
 
   const closeContextMenu = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
-    // Guard against the synthetic click/tap browsers fire after a long-press
-    // (~50–300ms post-detection). The backdrop is already in the DOM by then
-    // and would immediately dismiss the menu the user just opened. 300ms covers
-    // all known browser/OS combinations while never blocking deliberate dismissals.
     if (Date.now() - contextMenuOpenedAt.current < 350) return;
     setContextMenu(null);
   }, []);
@@ -106,8 +103,6 @@ export default function MapSpotSave() {
       : [
           { label: 'Add spot', onClick: handleAddSpot },
         ];
-  // handleAddSpot/handleEditSpot/handleDeleteSpot capture contextMenu from
-  // closure; menu only opens after contextMenu is set, so re-derive on change.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contextMenu]);
 
@@ -128,11 +123,6 @@ export default function MapSpotSave() {
   return (
     <Box className={classes.root}>
       <Title order={2} p="sm" pb={0}>Flight Spot Saver</Title>
-      {deleteError && (
-        <Alert color="red" variant="light" withCloseButton onClose={() => setDeleteError(null)} mx="sm" mt="sm">
-          {deleteError}
-        </Alert>
-      )}
       <Box className={classes.mapWrapper}>
         <FpvMap
           spots={spots}

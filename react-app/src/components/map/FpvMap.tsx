@@ -1,16 +1,13 @@
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useRef, memo } from 'react';
 import { MapContainer, TileLayer, LayersControl, ZoomControl, useMap } from 'react-leaflet';
+import L from 'leaflet';
 import type { FlightSpot } from '../../types';
 import { MapControls } from './MapControls';
 import { WeatherLayers } from './WeatherLayers';
 import { SpotMarker } from './SpotMarker';
 import { MapInteraction } from './MapInteraction';
 
-// Re-prompting geolocation on every map mount (every nav back to /map-spot-save)
-// is hostile UX — iOS Safari shows a permission dialog repeatedly in PWA mode,
-// and any pan/zoom the user did before leaving the page would be undone.
-// We auto-centre at most once per browser session.
 const AUTO_CENTER_SESSION_KEY = 'mfa-map-auto-centered';
 
 function MapAutoCenter() {
@@ -20,10 +17,41 @@ function MapAutoCenter() {
     sessionStorage.setItem(AUTO_CENTER_SESSION_KEY, '1');
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => map.setView([coords.latitude, coords.longitude], 13, { animate: false }),
-      () => { /* permission denied — keep the default Madrid fallback */ },
+      () => { /* permission denied — keep default */ },
       { timeout: 8000 },
     );
   }, [map]);
+  return null;
+}
+
+function FitBoundsButton({ spots }: { spots: FlightSpot[] }) {
+  const map = useMap();
+  useEffect(() => {
+    if (spots.length === 0) return;
+    const latlngs = spots.map(s => L.latLng(s.latitude, s.longitude));
+    const bounds = L.latLngBounds(latlngs);
+
+    const FitControl = L.Control.extend({
+      onAdd() {
+        const el = L.DomUtil.create('button', 'leaflet-bar leaflet-control');
+        el.title = 'Fit all spots';
+        el.setAttribute('aria-label', 'Fit all spots');
+        el.style.cssText = 'width:30px;height:30px;font-size:16px;cursor:pointer;background:#fff;border:none;line-height:1;';
+        el.textContent = '⊡';
+        L.DomEvent.on(el, 'click', (e) => {
+          L.DomEvent.stopPropagation(e);
+          map.fitBounds(bounds, { padding: [40, 40], maxZoom: 16 });
+        });
+        return el;
+      },
+    });
+    const btn = new FitControl({ position: 'topleft' });
+    btn.addTo(map);
+    return () => { map.removeControl(btn); };
+  // re-derive when spot positions change
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [map, spots.length]);
+
   return null;
 }
 
@@ -84,6 +112,7 @@ export const FpvMap = memo(function FpvMap({ spots, openWeatherApiKey, onContext
       </LayersControl>
       <MapAutoCenter />
       <MapControls />
+      {spots.length > 0 && <FitBoundsButton spots={spots} />}
       <MapInteraction onContextMenu={onContextMenu} longPressActiveRef={longPressActiveRef} />
       {spots.map(spot => spot.id
         ? <SpotMarker key={spot.id} spot={spot} onContextMenu={onContextMenu} longPressActiveRef={longPressActiveRef} />

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Alert, Box, Button, Group, Paper, PasswordInput, Stack, Text, Title } from '@mantine/core';
+import { Box, Button, Group, Paper, PasswordInput, Stack, Text, Title } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import { useSettings } from '../hooks/useSettings';
 
 export default function Settings() {
@@ -7,8 +8,6 @@ export default function Settings() {
   const [openWeatherKey, setOpenWeatherKey] = useState('');
   const [googleMapsKey, setGoogleMapsKey] = useState('');
   const [saving, setSaving] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
-  const [savedAt, setSavedAt] = useState<number | null>(null);
 
   useEffect(() => {
     /* eslint-disable react-hooks/set-state-in-effect */
@@ -17,16 +16,8 @@ export default function Settings() {
     /* eslint-enable react-hooks/set-state-in-effect */
   }, [settings]);
 
-  // Auto-clear "Saved" badge after 2s
-  useEffect(() => {
-    if (savedAt === null) return;
-    const t = window.setTimeout(() => setSavedAt(null), 2000);
-    return () => window.clearTimeout(t);
-  }, [savedAt]);
-
   const handleSave = async () => {
     setSaving(true);
-    setSaveError(null);
     try {
       await updateSettings({
         apiKeys: {
@@ -34,9 +25,9 @@ export default function Settings() {
           googleApiKey: googleMapsKey.trim(),
         },
       });
-      setSavedAt(Date.now());
+      notifications.show({ color: 'green', message: 'Settings saved.' });
     } catch {
-      setSaveError('Failed to save settings. Please try again.');
+      notifications.show({ color: 'red', message: 'Failed to save settings. Please try again.' });
     } finally {
       setSaving(false);
     }
@@ -68,16 +59,8 @@ export default function Settings() {
             autoComplete="off"
           />
         </Paper>
-
-        {saveError && (
-          <Alert color="red" variant="light" withCloseButton onClose={() => setSaveError(null)}>
-            {saveError}
-          </Alert>
-        )}
-
         <Group>
           <Button variant="filled" onClick={handleSave} loading={saving}>Save</Button>
-          {savedAt !== null && <Text c="green" size="sm">Saved.</Text>}
         </Group>
       </Stack>
     </Box>
