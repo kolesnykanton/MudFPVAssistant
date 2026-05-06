@@ -1,5 +1,5 @@
 import 'leaflet/dist/leaflet.css';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, memo } from 'react';
 import { MapContainer, TileLayer, LayersControl, ZoomControl, useMap } from 'react-leaflet';
 import type { FlightSpot } from '../../types';
 import { MapControls } from './MapControls';
@@ -7,9 +7,17 @@ import { WeatherLayers } from './WeatherLayers';
 import { SpotMarker } from './SpotMarker';
 import { MapInteraction } from './MapInteraction';
 
+// Re-prompting geolocation on every map mount (every nav back to /map-spot-save)
+// is hostile UX — iOS Safari shows a permission dialog repeatedly in PWA mode,
+// and any pan/zoom the user did before leaving the page would be undone.
+// We auto-centre at most once per browser session.
+const AUTO_CENTER_SESSION_KEY = 'mfa-map-auto-centered';
+
 function MapAutoCenter() {
   const map = useMap();
   useEffect(() => {
+    if (sessionStorage.getItem(AUTO_CENTER_SESSION_KEY) === '1') return;
+    sessionStorage.setItem(AUTO_CENTER_SESSION_KEY, '1');
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => map.setView([coords.latitude, coords.longitude], 13, { animate: false }),
       () => { /* permission denied — keep the default Madrid fallback */ },
@@ -34,7 +42,7 @@ interface FpvMapProps {
   onContextMenu: (state: ContextMenuState) => void;
 }
 
-export function FpvMap({ spots, openWeatherApiKey, onContextMenu }: FpvMapProps) {
+export const FpvMap = memo(function FpvMap({ spots, openWeatherApiKey, onContextMenu }: FpvMapProps) {
   const longPressActiveRef = useRef(false);
   return (
     <MapContainer
@@ -77,9 +85,10 @@ export function FpvMap({ spots, openWeatherApiKey, onContextMenu }: FpvMapProps)
       <MapAutoCenter />
       <MapControls />
       <MapInteraction onContextMenu={onContextMenu} longPressActiveRef={longPressActiveRef} />
-      {spots.map(spot => spot.id && (
-        <SpotMarker key={spot.id} spot={spot} onContextMenu={onContextMenu} longPressActiveRef={longPressActiveRef} />
-      ))}
+      {spots.map(spot => spot.id
+        ? <SpotMarker key={spot.id} spot={spot} onContextMenu={onContextMenu} longPressActiveRef={longPressActiveRef} />
+        : null
+      )}
     </MapContainer>
   );
-}
+});

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import type { FlightSpot } from '../../types';
@@ -29,25 +29,27 @@ export function SpotMarker({ spot, onContextMenu, longPressActiveRef }: SpotMark
     if (el && spot.id) el.dataset.spotId = spot.id;
   }, [spot.id]);
 
+  const eventHandlers = useMemo(() => ({
+    contextmenu: (e: L.LeafletMouseEvent) => {
+      if (longPressActiveRef.current) return;
+      L.DomEvent.stopPropagation(e);
+      onContextMenu({
+        x: e.originalEvent.clientX,
+        y: e.originalEvent.clientY,
+        lat: e.latlng.lat,
+        lng: e.latlng.lng,
+        isPoint: true,
+        spotId: spot.id ?? null,
+      });
+    },
+  }), [spot.id, onContextMenu, longPressActiveRef]);
+
   return (
     <Marker
       ref={markerRef}
       position={[spot.latitude, spot.longitude]}
       icon={droneIcon}
-      eventHandlers={{
-        contextmenu: (e) => {
-          if (longPressActiveRef.current) return;
-          L.DomEvent.stopPropagation(e);
-          onContextMenu({
-            x: e.originalEvent.clientX,
-            y: e.originalEvent.clientY,
-            lat: e.latlng.lat,
-            lng: e.latlng.lng,
-            isPoint: true,
-            spotId: spot.id ?? null,
-          });
-        },
-      }}
+      eventHandlers={eventHandlers}
     >
       {spot.name && <Popup><b>{spot.name}</b></Popup>}
     </Marker>
