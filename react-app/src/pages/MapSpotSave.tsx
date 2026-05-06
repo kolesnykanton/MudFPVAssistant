@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, Box, Button, Paper, Stack, Text, Title } from '@mantine/core';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Alert, Box, Text, Title } from '@mantine/core';
 import classes from './MapSpotSave.module.css';
 import { useUserCollection } from '../hooks/useUserCollection';
 import { useSettings } from '../hooks/useSettings';
@@ -9,6 +9,7 @@ import { FpvMap } from '../components/map/FpvMap';
 import type { ContextMenuState } from '../components/map/FpvMap';
 import FlightSpotEditDialog from '../components/FlightSpotEditDialog';
 import ConfirmDialog from '../components/ConfirmDialog';
+import MapContextMenu, { type MapContextMenuItem } from '../components/MapContextMenu';
 
 const MENU_WIDTH = 170;
 
@@ -95,6 +96,21 @@ export default function MapSpotSave() {
     setContextMenu(null);
   }, []);
 
+  const menuItems = useMemo<MapContextMenuItem[]>(() => {
+    if (!contextMenu) return [];
+    return contextMenu.isPoint
+      ? [
+          { label: 'Edit spot',   onClick: handleEditSpot },
+          { label: 'Delete spot', onClick: handleDeleteSpot, danger: true },
+        ]
+      : [
+          { label: 'Add spot', onClick: handleAddSpot },
+        ];
+  // handleAddSpot/handleEditSpot/handleDeleteSpot capture contextMenu from
+  // closure; menu only opens after contextMenu is set, so re-derive on change.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contextMenu]);
+
   const menuHeightApprox = contextMenu?.isPoint ? 80 : 44;
   const menuLeft = contextMenu
     ? Math.min(contextMenu.x + 2, window.innerWidth - MENU_WIDTH)
@@ -132,58 +148,12 @@ export default function MapSpotSave() {
               onClick={closeContextMenu}
               onContextMenu={closeContextMenu}
             />
-            <Paper
-              withBorder
-              shadow="md"
-              style={{
-                position: 'fixed',
-                left: menuLeft,
-                top: menuTop,
-                zIndex: 1001,
-                minWidth: MENU_WIDTH,
-                padding: '4px 0',
-                overflow: 'hidden',
-              }}
-            >
-              <Stack gap={0}>
-                {contextMenu.isPoint ? (
-                  <>
-                    <Button
-                      variant="subtle"
-                      size="sm"
-                      justify="start"
-                      fullWidth
-                      style={{ borderRadius: 0 }}
-                      onClick={handleEditSpot}
-                    >
-                      Edit spot
-                    </Button>
-                    <Button
-                      variant="subtle"
-                      color="red"
-                      size="sm"
-                      justify="start"
-                      fullWidth
-                      style={{ borderRadius: 0 }}
-                      onClick={handleDeleteSpot}
-                    >
-                      Delete spot
-                    </Button>
-                  </>
-                ) : (
-                  <Button
-                    variant="subtle"
-                    size="sm"
-                    justify="start"
-                    fullWidth
-                    style={{ borderRadius: 0 }}
-                    onClick={handleAddSpot}
-                  >
-                    Add spot
-                  </Button>
-                )}
-              </Stack>
-            </Paper>
+            <MapContextMenu
+              left={menuLeft}
+              top={menuTop}
+              width={MENU_WIDTH}
+              items={menuItems}
+            />
           </>
         )}
       </Box>

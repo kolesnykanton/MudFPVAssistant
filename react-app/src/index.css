@@ -6,3 +6,22 @@
 body {
   margin: 0;
 }
+
+/* Skip-to-content link — visually hidden until keyboard-focused.
+   Lets keyboard users jump past the header/nav into the main content. */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 10000;
+  padding: 8px 12px;
+  background: #03173d;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 0 0 6px 0;
+}
+.skip-link:focus {
+  left: 0;
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}

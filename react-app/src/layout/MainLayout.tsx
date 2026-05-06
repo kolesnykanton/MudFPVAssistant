@@ -1,19 +1,23 @@
 import type { ReactNode } from 'react';
 import {
+  Anchor,
   AppShell,
-  Burger,
-  Group,
-  Text,
-  ActionIcon,
   Avatar,
+  Burger,
   Button,
+  Group,
+  ActionIcon,
+  Text,
   Tooltip,
   useMantineColorScheme,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconMoon, IconSun, IconLogin, IconLogout } from '@tabler/icons-react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import NavMenu from './NavMenu';
+
+const MAIN_CONTENT_ID = 'main-content';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -31,44 +35,70 @@ export default function MainLayout({ children }: MainLayoutProps) {
     signIn().catch(err => console.error('[auth] sign-in failed:', err));
   };
 
+  // Hide the navbar entirely when the user is signed out — its links go to
+  // routes that just show "please sign in" anyway.
+  const showNavbar = !!user;
+
   return (
-    <AppShell
-      header={{ height: 'calc(60px + env(safe-area-inset-top, 0px))' }}
-      navbar={{ width: 220, breakpoint: 'sm', collapsed: { mobile: !opened } }}
-      padding="md"
-    >
+    <>
+      <a href={`#${MAIN_CONTENT_ID}`} className="skip-link">Skip to main content</a>
+
+      <AppShell
+        header={{ height: 'calc(60px + env(safe-area-inset-top, 0px))' }}
+        navbar={
+          showNavbar
+            ? { width: 220, breakpoint: 'sm', collapsed: { mobile: !opened } }
+            : undefined
+        }
+        padding="md"
+      >
       <AppShell.Header style={{ background: '#03173d', paddingTop: 'env(safe-area-inset-top, 0px)' }}>
         <Group h="100%" px="md" justify="space-between">
           <Group>
-            <Burger
-              opened={opened}
-              onClick={toggle}
-              hiddenFrom="sm"
-              size="sm"
-              color="white"
-            />
-            <Text fw={700} c="white" size="lg">
+            {showNavbar && (
+              <Burger
+                opened={opened}
+                onClick={toggle}
+                hiddenFrom="sm"
+                size="sm"
+                color="white"
+                aria-label="Toggle navigation"
+              />
+            )}
+            <Anchor
+              component={Link}
+              to="/"
+              underline="never"
+              c="white"
+              fw={700}
+              fz="lg"
+              aria-label="MudFPV Assistant — Dashboard"
+            >
               MudFPV Assistant
-            </Text>
+            </Anchor>
           </Group>
 
           <Group gap="xs" align="center">
             <Tooltip label={colorScheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}>
-              <ActionIcon onClick={() => toggleColorScheme()} variant="subtle" color="white" size="lg">
+              <ActionIcon
+                onClick={() => toggleColorScheme()}
+                variant="subtle"
+                color="white"
+                size="lg"
+                aria-label={colorScheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              >
                 {colorScheme === 'dark' ? <IconSun size={20} /> : <IconMoon size={20} />}
               </ActionIcon>
             </Tooltip>
 
             {!loading && user && (
-              <Tooltip label={user.displayName ?? user.email ?? ''}>
-                <Avatar
-                  src={user.photoURL ?? undefined}
-                  alt={user.displayName ?? ''}
-                  size="sm"
-                  radius="xl"
-                  style={{ cursor: 'default' }}
-                />
-              </Tooltip>
+              <Avatar
+                src={user.photoURL ?? undefined}
+                alt=""
+                size="sm"
+                radius="xl"
+                aria-hidden="true"
+              />
             )}
 
             {!loading && (
@@ -102,11 +132,13 @@ export default function MainLayout({ children }: MainLayoutProps) {
         </Group>
       </AppShell.Header>
 
-      <AppShell.Navbar p="md" style={{ background: '#03173d', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
-        <NavMenu onNavClick={() => { if (opened) toggle(); }} />
-      </AppShell.Navbar>
+      {showNavbar && (
+        <AppShell.Navbar p="md" style={{ background: '#03173d', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+          <NavMenu onNavClick={() => { if (opened) toggle(); }} />
+        </AppShell.Navbar>
+      )}
 
-      <AppShell.Main>
+      <AppShell.Main id={MAIN_CONTENT_ID}>
         {!loading && !user ? (
           <Group justify="center" mt="xl">
             <Text c="dimmed">Please sign in to continue.</Text>
@@ -115,6 +147,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
           children
         )}
       </AppShell.Main>
-    </AppShell>
+      </AppShell>
+    </>
   );
 }
