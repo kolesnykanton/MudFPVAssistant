@@ -5,12 +5,19 @@ import {
 } from 'firebase/firestore';
 import { db } from '../firebase/firebaseConfig';
 import { useAuth } from '../context/AuthContext';
+import type { WithId } from '../types';
 
-export type CollectionName = 'FlightSpots' | 'FlightInfos' | 'settings';
+export const COLLECTIONS = {
+  FlightSpots: 'FlightSpots',
+  FlightInfos: 'FlightInfos',
+  settings:    'settings',
+} as const;
 
-export function useUserCollection<T extends { id?: string }>(collectionName: CollectionName) {
+export type CollectionName = typeof COLLECTIONS[keyof typeof COLLECTIONS];
+
+export function useUserCollection<T extends object>(collectionName: CollectionName) {
   const { uid } = useAuth();
-  const [items, setItems] = useState<T[]>([]);
+  const [items, setItems] = useState<WithId<T>[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,7 +31,7 @@ export function useUserCollection<T extends { id?: string }>(collectionName: Col
     setLoading(true);
     const colRef = collection(db, `users/${uid}/${collectionName}`);
     const unsub = onSnapshot(colRef, snapshot => {
-      setItems(snapshot.docs.map(d => ({ id: d.id, ...d.data() } as T)));
+      setItems(snapshot.docs.map(d => ({ id: d.id, ...d.data() } as WithId<T>)));
       setLoading(false);
     });
     return unsub;

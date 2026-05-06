@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Box } from '@mantine/core';
+import { useMantineColorScheme } from '@mantine/core';
+import lottie from 'lottie-web';
 import animationData from '../assets/RC_Sticks_Animation.json';
 
 const SEGMENTS: Record<string, [number, number]> = {
@@ -19,15 +21,17 @@ interface Props {
 
 export default function StickAnimation({ segment }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const animRef = useRef<any>(null);
+  const animRef = useRef<ReturnType<typeof lottie.loadAnimation> | null>(null);
   const directionRef = useRef(1);
   const segRef = useRef<[number, number]>(SEGMENTS[segment] || [0, 20]);
+  const { colorScheme } = useMantineColorScheme();
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const lottie = (window as any).lottie;
-    if (!containerRef.current || !lottie) return;
+    if (!containerRef.current) return;
+
+    // Replace the animation's white fills with a colour that works in both
+    // light and dark modes. Light: dark grey for contrast; Dark: keep near-white.
+    const replacementColor = colorScheme === 'dark' ? '#d0d0d0' : '#5c5c5c';
 
     const seg = SEGMENTS[segment] || [0, 20];
     segRef.current = seg;
@@ -46,20 +50,20 @@ export default function StickAnimation({ segment }: Props) {
       anim.playSegments(seg, true);
       const svg = containerRef.current?.querySelector('svg');
       if (svg) {
-        svg.querySelectorAll('[fill]').forEach((el: Element) => {
-          const f = (el.getAttribute('fill') || '').trim().toLowerCase();
-          if (f === '#ffffff' || f === 'white') el.setAttribute('fill', '#5c5c5c');
+        svg.querySelectorAll<Element>('[fill]').forEach(el => {
+          const f = el.getAttribute('fill')?.trim().toLowerCase() ?? '';
+          if (f === '#ffffff' || f === 'white') el.setAttribute('fill', replacementColor);
         });
-        svg.querySelectorAll('[stroke]').forEach((el: Element) => {
-          const s = (el.getAttribute('stroke') || '').trim().toLowerCase();
-          if (s === '#ffffff' || s === 'white') el.setAttribute('stroke', '#5c5c5c');
+        svg.querySelectorAll<Element>('[stroke]').forEach(el => {
+          const s = el.getAttribute('stroke')?.trim().toLowerCase() ?? '';
+          if (s === '#ffffff' || s === 'white') el.setAttribute('stroke', replacementColor);
         });
       }
     });
 
     anim.addEventListener('complete', () => {
       directionRef.current *= -1;
-      anim.setDirection(directionRef.current);
+      anim.setDirection(directionRef.current as 1 | -1);
       const nextSeg: [number, number] = directionRef.current > 0
         ? segRef.current
         : [segRef.current[1], segRef.current[0]];
@@ -67,11 +71,13 @@ export default function StickAnimation({ segment }: Props) {
     });
 
     return () => { anim.destroy(); };
-  }, [segment]);
+  }, [segment, colorScheme]);
 
   return (
     <Box
       ref={containerRef}
+      role="img"
+      aria-label={`${segment.replace(/_/g, ' ')} stick movement`}
       style={{ width: '100%', maxWidth: 120, aspectRatio: '1/1' }}
     />
   );

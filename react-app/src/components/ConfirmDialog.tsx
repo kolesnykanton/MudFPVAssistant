@@ -22,7 +22,7 @@ export default function ConfirmDialog({
   onClose,
 }: ConfirmDialogProps) {
   return (
-    <Modal opened={open} onClose={onClose} title={title} centered size="sm" zIndex={10001}>
+    <Modal opened={open} onClose={onClose} title={title} centered size="sm">
       <Text size="sm">{message}</Text>
       <Group justify="flex-end" mt="md">
         <Button variant="subtle" onClick={onClose}>{cancelLabel}</Button>
