@@ -17,9 +17,8 @@ import {
   IconMapPin,
   IconSettings,
 } from '@tabler/icons-react';
-import { useUserCollection } from '../hooks/useUserCollection';
+import { useData } from '../context/DataContext';
 import { useSettings } from '../hooks/useSettings';
-import type { FlightInfo, FlightSpot } from '../types';
 
 interface WeatherData {
   name: string;
@@ -30,8 +29,7 @@ interface WeatherData {
 
 export default function Home() {
   const navigate = useNavigate();
-  const { items: flights, loading: flightsLoading } = useUserCollection<FlightInfo>('FlightInfos');
-  const { items: spots, loading: spotsLoading } = useUserCollection<FlightSpot>('FlightSpots');
+  const { flights, spots, flightsLoading, spotsLoading } = useData();
   const { settings, loading: settingsLoading } = useSettings();
 
   const [weather, setWeather] = useState<WeatherData | null>(null);
@@ -118,7 +116,6 @@ export default function Home() {
         </Group>
       ) : (
         <Grid gap="lg">
-          {/* Stats cards */}
           {statsCards.map((card) => (
             <Grid.Col key={card.title} span={{ base: 12, sm: 6, md: 3 }}>
               <Card withBorder shadow="sm" radius="md" style={{ textAlign: 'center' }} py="lg">
@@ -129,7 +126,6 @@ export default function Home() {
             </Grid.Col>
           ))}
 
-          {/* Flight Spots card */}
           <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
             <Card withBorder shadow="sm" radius="md" style={{ textAlign: 'center' }} py="lg">
               <IconMapPin size={40} color="var(--mantine-color-red-6)" />
@@ -146,52 +142,52 @@ export default function Home() {
             </Card>
           </Grid.Col>
 
-          {/* Weather widget */}
           <Grid.Col span={{ base: 12 }}>
             <Card withBorder shadow="sm" radius="md">
               <Title order={5} mb="sm">Weather</Title>
-
-              {settingsLoading || weatherLoading ? (
-                <Group gap="xs">
-                  <Loader size="xs" />
-                  <Text c="dimmed">Loading weather…</Text>
-                </Group>
-              ) : !apiKey ? (
-                <Group gap="md">
-                  <Text c="dimmed">
-                    Configure OpenWeather API key in Settings to see local weather.
-                  </Text>
-                  <Button
-                    variant="outline"
-                    size="xs"
-                    leftSection={<IconSettings size={14} />}
-                    onClick={() => navigate('/settings')}
-                  >
-                    Settings
-                  </Button>
-                </Group>
-              ) : weatherError ? (
-                <Text c="red">{weatherError}</Text>
-              ) : weather ? (
-                <Group gap="lg">
-                  {weather.weather[0]?.icon && (
-                    <img
-                      src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
-                      alt={weather.weather[0].description}
-                      style={{ width: 64, height: 64 }}
-                    />
-                  )}
-                  <Box>
-                    <Title order={4}>{weather.name}</Title>
-                    <Text style={{ textTransform: 'capitalize' }}>{weather.weather[0]?.description}</Text>
-                    <Text size="sm" c="dimmed">
-                      Temp: {Math.round(weather.main.temp)}°C &nbsp;|&nbsp;
-                      Humidity: {weather.main.humidity}% &nbsp;|&nbsp;
-                      Wind: {weather.wind.speed} m/s
+              <Box mih={80}>
+                {settingsLoading || weatherLoading ? (
+                  <Group gap="xs">
+                    <Loader size="xs" />
+                    <Text c="dimmed">Loading weather…</Text>
+                  </Group>
+                ) : !apiKey ? (
+                  <Group gap="md">
+                    <Text c="dimmed">
+                      Configure OpenWeather API key in Settings to see local weather.
                     </Text>
-                  </Box>
-                </Group>
-              ) : null}
+                    <Button
+                      variant="outline"
+                      size="xs"
+                      leftSection={<IconSettings size={14} />}
+                      onClick={() => navigate('/settings')}
+                    >
+                      Settings
+                    </Button>
+                  </Group>
+                ) : weatherError ? (
+                  <Text c="red">{weatherError}</Text>
+                ) : weather ? (
+                  <Group gap="lg">
+                    {weather.weather[0]?.icon && (
+                      <img
+                        src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
+                        alt={weather.weather[0].description}
+                        style={{ width: 64, height: 64 }}
+                      />
+                    )}
+                    <Box>
+                      <Title order={4}>{weather.name}</Title>
+                      <Text style={{ textTransform: 'capitalize' }}>{weather.weather[0]?.description}</Text>
+                      <Text size="sm" c="dimmed">
+                        Temp: {Math.round(weather.main.temp)}°C &nbsp;|&nbsp;
+                        Humidity: {weather.main.humidity}% &nbsp;|&nbsp;
+                        Wind: {weather.wind.speed} m/s
+                      </Text>
+                    </Box>
+                  </Group>
+                ) : null}
+              </Box>
             </Card>
           </Grid.Col>
         </Grid>

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import {
-  Alert,
   Box,
   Button,
   Grid,
@@ -12,6 +11,7 @@ import {
   Title,
 } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
+import { notifications } from '@mantine/notifications';
 import { IconCirclePlus } from '@tabler/icons-react';
 import type { FlightInfo, BatteryType } from '../types';
 
@@ -33,7 +33,6 @@ export default function AddFlightForm({ onAdd }: AddFlightFormProps) {
   const [date, setDate] = useState<string | null>(new Date().toISOString().split('T')[0]);
   const [submitting, setSubmitting] = useState(false);
   const [timeError, setTimeError] = useState('');
-  const [saveError, setSaveError] = useState<string | null>(null);
 
   const isValid = name.trim().length > 0;
 
@@ -60,9 +59,7 @@ export default function AddFlightForm({ onAdd }: AddFlightFormProps) {
 
     try {
       setSubmitting(true);
-      setSaveError(null);
       await onAdd(flight);
-      // Reset form
       setName('');
       setUsedMah('');
       setBatType('LiPo');
@@ -72,7 +69,7 @@ export default function AddFlightForm({ onAdd }: AddFlightFormProps) {
       setComment('');
       setDate(new Date().toISOString().split('T')[0]);
     } catch {
-      setSaveError('Failed to save flight. Please try again.');
+      notifications.show({ color: 'red', message: 'Failed to save flight. Please try again.' });
     } finally {
       setSubmitting(false);
     }
@@ -164,14 +161,6 @@ export default function AddFlightForm({ onAdd }: AddFlightFormProps) {
               clearable
             />
           </Grid.Col>
-
-          {saveError && (
-            <Grid.Col span={12}>
-              <Alert color="red" variant="light" withCloseButton onClose={() => setSaveError(null)}>
-                {saveError}
-              </Alert>
-            </Grid.Col>
-          )}
 
           <Grid.Col span={12}>
             <Button

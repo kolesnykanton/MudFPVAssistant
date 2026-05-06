@@ -1,17 +1,21 @@
 import { useState } from 'react';
-import { ActionIcon, Paper, ScrollArea, Table, Text, Title } from '@mantine/core';
-import { IconTrash } from '@tabler/icons-react';
+import { ActionIcon, Group, Paper, ScrollArea, Table, Text, Title } from '@mantine/core';
+import { IconEdit, IconTrash } from '@tabler/icons-react';
 import type { FlightInfo, WithId } from '../types';
 import ConfirmDialog from './ConfirmDialog';
+import FlightInfoEditDialog from './FlightInfoEditDialog';
 
 interface FlightTableProps {
   flights: WithId<FlightInfo>[];
-  selectedDate: string | null; // "YYYY-MM-DD" or null
+  selectedDate: string | null;
   onDelete: (id: string) => void;
+  onUpdate: (id: string, data: Partial<Omit<FlightInfo, 'id'>>) => Promise<void>;
 }
 
-export default function FlightTable({ flights, selectedDate, onDelete }: FlightTableProps) {
+export default function FlightTable({ flights, selectedDate, onDelete, onUpdate }: FlightTableProps) {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [editingFlight, setEditingFlight] = useState<WithId<FlightInfo> | null>(null);
+
   const pendingFlight = pendingDeleteId
     ? flights.find(f => f.id === pendingDeleteId) ?? null
     : null;
@@ -20,7 +24,6 @@ export default function FlightTable({ flights, selectedDate, onDelete }: FlightT
     ? flights.filter(f => f.date?.split('T')[0] === selectedDate)
     : flights;
 
-  // Sort by date descending
   const sorted = [...filtered].sort((a, b) => {
     if (!a.date && !b.date) return 0;
     if (!a.date) return 1;
@@ -51,7 +54,7 @@ export default function FlightTable({ flights, selectedDate, onDelete }: FlightT
                 <Table.Th>Cells</Table.Th>
                 <Table.Th>Type</Table.Th>
                 <Table.Th>Comment</Table.Th>
-                <Table.Th>Delete</Table.Th>
+                <Table.Th>Actions</Table.Th>
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
@@ -70,15 +73,25 @@ export default function FlightTable({ flights, selectedDate, onDelete }: FlightT
                     {flight.comment ?? '—'}
                   </Table.Td>
                   <Table.Td>
-                    <ActionIcon
-                      size="sm"
-                      color="red"
-                      variant="subtle"
-                      onClick={() => setPendingDeleteId(flight.id)}
-                      aria-label="Delete flight"
-                    >
-                      <IconTrash size={14} />
-                    </ActionIcon>
+                    <Group gap={4} wrap="nowrap">
+                      <ActionIcon
+                        size="sm"
+                        variant="subtle"
+                        onClick={() => setEditingFlight(flight)}
+                        aria-label="Edit flight"
+                      >
+                        <IconEdit size={14} />
+                      </ActionIcon>
+                      <ActionIcon
+                        size="sm"
+                        color="red"
+                        variant="subtle"
+                        onClick={() => setPendingDeleteId(flight.id)}
+                        aria-label="Delete flight"
+                      >
+                        <IconTrash size={14} />
+                      </ActionIcon>
+                    </Group>
                   </Table.Td>
                 </Table.Tr>
               ))}
@@ -86,6 +99,13 @@ export default function FlightTable({ flights, selectedDate, onDelete }: FlightT
           </Table>
         </ScrollArea>
       )}
+
+      <FlightInfoEditDialog
+        open={editingFlight !== null}
+        flight={editingFlight}
+        onSave={onUpdate}
+        onClose={() => setEditingFlight(null)}
+      />
 
       <ConfirmDialog
         open={pendingDeleteId !== null}

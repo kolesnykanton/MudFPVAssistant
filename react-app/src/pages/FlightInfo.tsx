@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import {
+  ActionIcon,
   Box,
   Grid,
   Text,
@@ -7,30 +8,44 @@ import {
   Group,
   Loader,
   Indicator,
+  Tooltip,
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
-import { useUserCollection } from '../hooks/useUserCollection';
+import { IconCalendar } from '@tabler/icons-react';
+import { notifications } from '@mantine/notifications';
+import { useData } from '../context/DataContext';
 import type { FlightInfo as FlightInfoType } from '../types';
 import AddFlightForm from '../components/AddFlightForm';
 import FlightTable from '../components/FlightTable';
 import FlightStats from '../components/FlightStats';
 
 export default function FlightInfo() {
-  const { items: flights, loading, add, remove } = useUserCollection<FlightInfoType>('FlightInfos');
-  // Mantine 9 DatePicker uses string (ISO date) for value
+  const { flights, flightsLoading, addFlight, updateFlight, deleteFlight } = useData();
   const [selectedDate, setSelectedDate] = useState<string | null>(
     new Date().toISOString().split('T')[0]
   );
 
+  const today = new Date().toISOString().split('T')[0];
+
   const handleAdd = async (flight: Omit<FlightInfoType, 'id'>) => {
-    await add(flight);
+    await addFlight(flight);
+    notifications.show({ color: 'green', message: 'Flight added.' });
   };
 
   const handleDelete = async (id: string) => {
-    await remove(id);
+    try {
+      await deleteFlight(id);
+      notifications.show({ color: 'green', message: 'Flight deleted.' });
+    } catch {
+      notifications.show({ color: 'red', message: 'Failed to delete flight. Please try again.' });
+    }
   };
 
-  // Compute flight counts by date string "YYYY-MM-DD"
+  const handleUpdate = async (id: string, data: Partial<Omit<FlightInfoType, 'id'>>) => {
+    await updateFlight(id, data);
+    notifications.show({ color: 'green', message: 'Flight updated.' });
+  };
+
   const flightCountByDate = useMemo(() => {
     const counts: Record<string, number> = {};
     flights.forEach(f => {
@@ -46,35 +61,27 @@ export default function FlightInfo() {
     <Box>
       <Title order={2} mb="lg">Flight Log</Title>
 
-      {loading ? (
+      {flightsLoading ? (
         <Group justify="center" mt="xl">
           <Loader />
         </Group>
       ) : (
         <Grid gap="lg">
-          {/* Add flight form */}
           <Grid.Col span={{ base: 12, md: 5 }}>
             <AddFlightForm onAdd={handleAdd} />
           </Grid.Col>
 
-          {/* Date filter + table */}
           <Grid.Col span={{ base: 12, md: 7 }}>
             <Box mb="md">
               <DatePicker
                 value={selectedDate}
                 onChange={setSelectedDate}
                 renderDay={(dateStr) => {
-                  // dateStr is an ISO string like "2024-06-15"
                   const key = dateStr.split('T')[0];
                   const count = flightCountByDate[key] ?? 0;
                   const day = new Date(dateStr).getUTCDate();
                   return (
-                    <Indicator
-                      size={6}
-                      color="blue"
-                      offset={-2}
-                      disabled={count === 0}
-                    >
+                    <Indicator size={6} color="blue" offset={-2} disabled={count === 0}>
                       <div>{day}</div>
                     </Indicator>
                   );
@@ -84,6 +91,18 @@ export default function FlightInfo() {
                 <Text size="sm" c="dimmed">
                   {selectedDate ? `Showing flights for ${selectedDate}` : 'Showing all flights'}
                 </Text>
+                {selectedDate !== today && (
+                  <Tooltip label="Jump to today">
+                    <ActionIcon
+                      size="sm"
+                      variant="subtle"
+                      onClick={() => setSelectedDate(today)}
+                      aria-label="Jump to today"
+                    >
+                      <IconCalendar size={16} />
+                    </ActionIcon>
+                  </Tooltip>
+                )}
                 {selectedDate && (
                   <Text
                     size="sm"
@@ -100,10 +119,10 @@ export default function FlightInfo() {
               flights={flights}
               selectedDate={selectedDate}
               onDelete={handleDelete}
+              onUpdate={handleUpdate}
             />
           </Grid.Col>
 
-          {/* Stats charts — visible only when there are flights */}
           {flights.length > 0 && (
             <Grid.Col span={{ base: 12 }}>
               <Title order={4} mb="sm" mt="xs">Statistics</Title>
@@ -111,7 +130,6 @@ export default function FlightInfo() {
             </Grid.Col>
           )}
         </Grid>
-
       )}
     </Box>
   );

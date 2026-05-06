@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Modal,
   TextInput,
@@ -9,7 +9,15 @@ import {
   Group,
   Text,
   Alert,
+  Image,
+  FileButton,
+  ActionIcon,
+  Box,
 } from '@mantine/core';
+import { IconUpload, IconX } from '@tabler/icons-react';
+import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { storage } from '../firebase/firebaseConfig';
+import { useAuth } from '../context/AuthContext';
 import type { FlightSpot } from '../types';
 
 const CATEGORIES = ['Mountain', 'Beach', 'Building', 'Forest', 'Field'];
@@ -23,12 +31,17 @@ interface Props {
 }
 
 export default function FlightSpotEditDialog({ open, spot, coords, onSave, onClose }: Props) {
+  const { uid } = useAuth();
   const [name, setName] = useState('');
   const [comments, setComments] = useState('');
   const [category, setCategory] = useState('');
   const [tagsInput, setTagsInput] = useState('');
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [removeExistingPhoto, setRemoveExistingPhoto] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const resetRef = useRef<() => void>(null);
 
   useEffect(() => {
     if (open) {
@@ -37,24 +50,63 @@ export default function FlightSpotEditDialog({ open, spot, coords, onSave, onClo
       setComments(spot?.comments ?? '');
       setCategory(spot?.category ?? '');
       setTagsInput(spot?.tags?.join(', ') ?? '');
+      setPhotoFile(null);
+      setPhotoPreview(spot?.photoUrl ?? null);
+      setRemoveExistingPhoto(false);
       setSaving(false);
       setSaveError(null);
       /* eslint-enable react-hooks/set-state-in-effect */
     }
   }, [open, spot]);
 
+  const handleFileChange = (file: File | null) => {
+    setPhotoFile(file);
+    if (file) {
+      setPhotoPreview(URL.createObjectURL(file));
+      setRemoveExistingPhoto(false);
+    }
+  };
+
+  const handleRemovePhoto = () => {
+    setPhotoFile(null);
+    setPhotoPreview(null);
+    setRemoveExistingPhoto(true);
+    resetRef.current?.();
+  };
+
   const handleSave = async () => {
     if (!name.trim() || saving) return;
     const latitude = spot?.latitude ?? coords?.lat ?? 0;
     const longitude = spot?.longitude ?? coords?.lng ?? 0;
-    const tags = tagsInput
-      .split(',')
-      .map(t => t.trim())
-      .filter(Boolean);
+    const tags = tagsInput.split(',').map(t => t.trim()).filter(Boolean);
+
     setSaving(true);
     setSaveError(null);
     try {
-      await onSave({ name: name.trim(), comments, category, tags, latitude, longitude });
+      let photoUrl: string | undefined = spot?.photoUrl;
+      let storagePath: string | undefined = spot?.storagePath;
+
+      if (removeExistingPhoto && storagePath) {
+        try { await deleteObject(storageRef(storage, storagePath)); } catch { /* already gone */ }
+        photoUrl = undefined;
+        storagePath = undefined;
+      }
+
+      if (photoFile && uid) {
+        const path = `users/${uid}/spots/${Date.now()}_${photoFile.name}`;
+        const fileRef = storageRef(storage, path);
+        await uploadBytes(fileRef, photoFile);
+        photoUrl = await getDownloadURL(fileRef);
+        if (spot?.storagePath && spot.storagePath !== path) {
+          try { await deleteObject(storageRef(storage, spot.storagePath)); } catch { /* already gone */ }
+        }
+        storagePath = path;
+      }
+
+      await onSave({
+        name: name.trim(), comments, category, tags, latitude, longitude,
+        ...(photoUrl ? { photoUrl, storagePath } : {}),
+      });
     } catch {
       setSaveError('Failed to save spot. Please try again.');
     } finally {
@@ -90,9 +142,7 @@ export default function FlightSpotEditDialog({ open, spot, coords, onSave, onClo
           <Chip.Group value={category} onChange={val => setCategory(typeof val === 'string' ? val : '')}>
             <Group gap="xs">
               {CATEGORIES.map(cat => (
-                <Chip key={cat} value={cat} size="sm">
-                  {cat}
-                </Chip>
+                <Chip key={cat} value={cat} size="sm">{cat}</Chip>
               ))}
             </Group>
           </Chip.Group>
@@ -103,6 +153,41 @@ export default function FlightSpotEditDialog({ open, spot, coords, onSave, onClo
           onChange={e => setTagsInput(e.target.value)}
           size="sm"
         />
+
+        <div>
+          <Text size="sm" fw={500} mb={6}>Photo</Text>
+          {photoPreview ? (
+            <Box pos="relative" style={{ display: 'inline-block' }}>
+              <Image src={photoPreview} radius="sm" maw={200} mah={150} fit="cover" alt="Spot photo" />
+              <ActionIcon
+                size="xs"
+                color="red"
+                variant="filled"
+                pos="absolute"
+                top={4}
+                right={4}
+                onClick={handleRemovePhoto}
+                aria-label="Remove photo"
+              >
+                <IconX size={10} />
+              </ActionIcon>
+            </Box>
+          ) : (
+            <FileButton resetRef={resetRef} onChange={handleFileChange} accept="image/*">
+              {(props) => (
+                <Button
+                  {...props}
+                  variant="light"
+                  size="xs"
+                  leftSection={<IconUpload size={14} />}
+                >
+                  Upload photo
+                </Button>
+              )}
+            </FileButton>
+          )}
+        </div>
+
         {saveError && (
           <Alert color="red" variant="light">{saveError}</Alert>
         )}

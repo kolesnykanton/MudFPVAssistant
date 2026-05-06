@@ -1,29 +1,48 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Loader, Center } from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
+import '@mantine/notifications/styles.css';
 import { AuthProvider } from './context/AuthContext';
+import { DataProvider } from './context/DataContext';
 import MainLayout from './layout/MainLayout';
 import Home from './pages/Home';
-import FlightInfo from './pages/FlightInfo';
-import MapSpotSave from './pages/MapSpotSave';
-import Utilities from './pages/Utilities';
-import Settings from './pages/Settings';
 import ErrorBoundary from './components/ErrorBoundary';
 import PwaPrompts from './components/PwaPrompts';
+
+const FlightInfo  = lazy(() => import('./pages/FlightInfo'));
+const MapSpotSave = lazy(() => import('./pages/MapSpotSave'));
+const Utilities   = lazy(() => import('./pages/Utilities'));
+const Settings    = lazy(() => import('./pages/Settings'));
+
+function PageLoader() {
+  return (
+    <Center h={200}>
+      <Loader />
+    </Center>
+  );
+}
 
 function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter basename={import.meta.env.BASE_URL}>
         <AuthProvider>
-          <MainLayout>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/flight-info" element={<FlightInfo />} />
-              <Route path="/map-spot-save" element={<MapSpotSave />} />
-              <Route path="/utils" element={<Utilities />} />
-              <Route path="/settings" element={<Settings />} />
-            </Routes>
-          </MainLayout>
-          <PwaPrompts />
+          <DataProvider>
+            <Notifications position="top-right" />
+            <MainLayout>
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/flight-info" element={<FlightInfo />} />
+                  <Route path="/map-spot-save" element={<MapSpotSave />} />
+                  <Route path="/utils" element={<Utilities />} />
+                  <Route path="/settings" element={<Settings />} />
+                </Routes>
+              </Suspense>
+            </MainLayout>
+            <PwaPrompts />
+          </DataProvider>
         </AuthProvider>
       </BrowserRouter>
     </ErrorBoundary>
