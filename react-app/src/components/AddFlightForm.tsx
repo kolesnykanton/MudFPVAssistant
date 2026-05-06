@@ -40,11 +40,16 @@ export default function AddFlightForm({ onAdd }: AddFlightFormProps) {
     if (!isValid) return;
 
     // Validate flight time format if provided
-    if (flightTime && !/^\d{2}:\d{2}$/.test(flightTime)) {
-      setTimeError('Please use format mm:ss (e.g. 04:20)');
+    if (flightTime && !/^\d{1,2}:\d{2}$/.test(flightTime)) {
+      setTimeError('Please use format mm:ss (e.g. 4:20)');
       return;
     }
     setTimeError('');
+
+    // Pad single-digit minutes (e.g. "4:20" → "04:20") so storage stays consistent.
+    const normalisedFlightTime = flightTime
+      ? flightTime.split(':').map((p, i) => i === 0 ? p.padStart(2, '0') : p).join(':')
+      : undefined;
 
     const flight: Omit<FlightInfo, 'id'> = {
       name: name.trim(),
@@ -53,7 +58,7 @@ export default function AddFlightForm({ onAdd }: AddFlightFormProps) {
       location: location.trim(),
       comment: comment.trim() || undefined,
       usedMah: usedMah !== '' ? Number(usedMah) : undefined,
-      flightTime: flightTime || undefined,
+      flightTime: normalisedFlightTime,
       date: date ?? undefined,
     };
 

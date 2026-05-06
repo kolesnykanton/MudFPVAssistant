@@ -57,6 +57,8 @@ export function MapInteraction({ onContextMenu, longPressActiveRef }: MapInterac
       timer = window.setTimeout(() => {
         timer = null;
         if (!startEvent) return;
+        // Subtle tactile cue so users know the long-press fired before the menu paints.
+        navigator.vibrate?.(10);
         const latlng = map.mouseEventToLatLng(startEvent);
         const markerEl = (startEvent.target as Element).closest<HTMLElement>('[data-spot-id]');
         const spotId = markerEl?.dataset.spotId ?? null;
