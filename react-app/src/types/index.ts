@@ -1,5 +1,8 @@
 export type BatteryType = 'Unknown' | 'LiPo' | 'LiIon';
 
+/** Adds a mandatory `id` field to a Firestore-backed type. */
+export type WithId<T> = T & { id: string };
+
 export interface FlightInfo {
   id?: string;
   name: string;

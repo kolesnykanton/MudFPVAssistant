@@ -13,7 +13,3 @@ declare module 'leaflet' {
     }): Control;
   }
 }
-
-interface Window {
-  lottie: unknown;
-}

@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  base: './',
+  base: '/MudFPVAssistant/',
   build: {
     rollupOptions: {
       output: {
@@ -22,7 +22,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['img/*.png', 'img/*.svg', 'animations/*.json'],
+      includeAssets: ['img/*.png', 'img/*.svg'],
       manifest: {
         name: 'MudFPVAssistant',
         short_name: 'MudFPVAssistant',

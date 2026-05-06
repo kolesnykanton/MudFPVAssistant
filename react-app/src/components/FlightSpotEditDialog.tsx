@@ -12,10 +12,6 @@ import {
 } from '@mantine/core';
 import type { FlightSpot } from '../types';
 
-// Leaflet panes use z-index 400–700 inside a transform stacking context.
-// Context menu sits at 9999/10000 (MapSpotSave.tsx). Modal must exceed map panes.
-export const DIALOG_Z_INDEX = 9999;
-
 const CATEGORIES = ['Mountain', 'Beach', 'Building', 'Forest', 'Field'];
 
 interface Props {
@@ -73,7 +69,6 @@ export default function FlightSpotEditDialog({ open, spot, coords, onSave, onClo
       title={spot?.id ? 'Edit Flight Spot' : 'Add Flight Spot'}
       centered
       size="sm"
-      zIndex={DIALOG_Z_INDEX}
     >
       <Stack gap="sm">
         <TextInput
