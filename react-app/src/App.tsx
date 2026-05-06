@@ -7,6 +7,7 @@ import MapSpotSave from './pages/MapSpotSave';
 import Utilities from './pages/Utilities';
 import Settings from './pages/Settings';
 import ErrorBoundary from './components/ErrorBoundary';
+import PwaPrompts from './components/PwaPrompts';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
               <Route path="/settings" element={<Settings />} />
             </Routes>
           </MainLayout>
+          <PwaPrompts />
         </AuthProvider>
       </BrowserRouter>
     </ErrorBoundary>
