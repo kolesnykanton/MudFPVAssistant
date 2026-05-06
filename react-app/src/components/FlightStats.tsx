@@ -46,7 +46,7 @@ export default function FlightStats({ flights }: FlightStatsProps) {
       map[f.date] = (map[f.date] ?? 0) + f.usedMah;
     }
     return Object.entries(map)
-      .sort(([a], [b]) => a.localeCompare(b))
+      .sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime())
       .slice(-15)
       .map(([date, mah]) => ({ date, mah }));
   }, [flights]);
@@ -120,7 +120,7 @@ export default function FlightStats({ flights }: FlightStatsProps) {
                 <VisuallyHidden>
                   Line chart of total mAh used per day over the last {dailyMahData.length} day(s) with data.
                 </VisuallyHidden>
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={300} debounce={100}>
                   <LineChart data={dailyMahData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="date" tick={{ fontSize: 11 }} />
@@ -153,7 +153,7 @@ export default function FlightStats({ flights }: FlightStatsProps) {
                 <VisuallyHidden>
                   Pie chart of flight count by battery type. {batteryTypeData.map(d => `${d.name}: ${d.value}`).join(', ')}.
                 </VisuallyHidden>
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={300} debounce={100}>
                   <PieChart>
                     <Pie
                       data={batteryTypeData}
@@ -188,7 +188,7 @@ export default function FlightStats({ flights }: FlightStatsProps) {
                 <VisuallyHidden>
                   Pie chart of flight counts per location, top 15 with the rest grouped as Other. {locationData.map(d => `${d.name}: ${d.value}`).join(', ')}.
                 </VisuallyHidden>
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={300} debounce={100}>
                   <PieChart>
                     <Pie
                       data={locationData}
@@ -223,7 +223,7 @@ export default function FlightStats({ flights }: FlightStatsProps) {
                 <VisuallyHidden>
                   Bar chart of average flight time per drone in mm:ss. {droneAvgTimeData.map(d => `${d.name}: ${d.label}`).join(', ')}.
                 </VisuallyHidden>
-                <ResponsiveContainer width="100%" height={350}>
+                <ResponsiveContainer width="100%" height={350} debounce={100}>
                   <BarChart
                     data={droneAvgTimeData}
                     margin={{ top: 5, right: 30, left: 20, bottom: 60 }}

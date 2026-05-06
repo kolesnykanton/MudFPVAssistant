@@ -31,14 +31,18 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!uid) {
+      /* eslint-disable react-hooks/set-state-in-effect */
       setFlights([]);
       setFlightsLoading(false);
       setSpots([]);
       setSpotsLoading(false);
+      /* eslint-enable react-hooks/set-state-in-effect */
       return;
     }
 
     setFlightsLoading(true);
+    setSpotsLoading(true);
+
     const flightsQ = query(
       collection(db, `users/${uid}/FlightInfos`),
       orderBy('date', 'desc'),
@@ -49,7 +53,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
       setFlightsLoading(false);
     });
 
-    setSpotsLoading(true);
     const unsubSpots = onSnapshot(collection(db, `users/${uid}/FlightSpots`), snap => {
       setSpots(snap.docs.map(d => ({ id: d.id, ...d.data() } as WithId<FlightSpot>)));
       setSpotsLoading(false);
@@ -104,6 +107,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useData(): DataContextValue {
   const ctx = useContext(DataContext);
   if (!ctx) throw new Error('useData must be used within DataProvider');
