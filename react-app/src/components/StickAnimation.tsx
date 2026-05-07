@@ -25,6 +25,7 @@ export default function StickAnimation({ segment }: Props) {
   const directionRef = useRef(1);
   const segRef = useRef<[number, number]>(SEGMENTS[segment] || [0, 20]);
   const { colorScheme } = useMantineColorScheme();
+  const reduceMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -48,6 +49,9 @@ export default function StickAnimation({ segment }: Props) {
       segRef.current = seg;
       directionRef.current = 1;
       anim.playSegments(seg, true);
+      if (reduceMotion) {
+        anim.goToAndStop(seg[1], true);
+      }
       const svg = containerRef.current?.querySelector('svg');
       if (svg) {
         svg.querySelectorAll<Element>('[fill]').forEach(el => {
@@ -62,6 +66,7 @@ export default function StickAnimation({ segment }: Props) {
     });
 
     anim.addEventListener('complete', () => {
+      if (reduceMotion) return;
       directionRef.current *= -1;
       anim.setDirection(directionRef.current as 1 | -1);
       const nextSeg: [number, number] = directionRef.current > 0
@@ -71,14 +76,15 @@ export default function StickAnimation({ segment }: Props) {
     });
 
     return () => { anim.destroy(); };
-  }, [segment, colorScheme]);
+
+  }, [segment, colorScheme, reduceMotion]);
 
   return (
     <Box
       ref={containerRef}
       role="img"
       aria-label={`${segment.replace(/_/g, ' ')} stick movement`}
-      style={{ width: '100%', maxWidth: 120, aspectRatio: '1/1' }}
+      style={{ width: '100%', maxWidth: 'clamp(88px, 16vw, 128px)', aspectRatio: '1 / 1' }}
     />
   );
 }
