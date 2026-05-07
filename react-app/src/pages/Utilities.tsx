@@ -1,4 +1,4 @@
-import { Accordion, Anchor, Grid, Stack } from '@mantine/core';
+import { Accordion, Anchor, Container, SimpleGrid, Stack, Text, Title } from '@mantine/core';
 import OsdCommandPanel from '../components/OsdCommandPanel';
 
 const OSD_COMMANDS = [
@@ -13,22 +13,25 @@ const OSD_COMMANDS = [
 
 export default function Utilities() {
   return (
-    <div style={{ margin: '16px' }}>
+    <Container size="xl" px="md" py="md">
+      <Title order={2} mb="sm">Utilities</Title>
+      <Text size="sm" c="dimmed" mb="md">
+        Stick command reference cards are optimized for mobile and desktop viewing.
+      </Text>
       <Accordion defaultValue="stick-commands">
         <Accordion.Item value="stick-commands">
           <Accordion.Control>Stick Commands</Accordion.Control>
           <Accordion.Panel>
-            <Grid>
+            <SimpleGrid cols={{ base: 1, xs: 2, md: 3, xl: 4 }} spacing="md" verticalSpacing="md">
               {OSD_COMMANDS.map(cmd => (
-                <Grid.Col key={cmd.key} span={{ base: 12, sm: 6, md: 4, lg: 3 }}>
-                  <OsdCommandPanel
-                    command={cmd.label}
-                    leftSegment={cmd.left}
-                    rightSegment={cmd.right}
-                  />
-                </Grid.Col>
+                <OsdCommandPanel
+                  key={cmd.key}
+                  command={cmd.label}
+                  leftSegment={cmd.left}
+                  rightSegment={cmd.right}
+                />
               ))}
-            </Grid>
+            </SimpleGrid>
           </Accordion.Panel>
         </Accordion.Item>
 
@@ -49,6 +52,6 @@ export default function Utilities() {
           </Accordion.Panel>
         </Accordion.Item>
       </Accordion>
-    </div>
+    </Container>
   );
 }

@@ -15,6 +15,12 @@ const SEGMENTS: Record<string, [number, number]> = {
   center_left:  [210, 230],
 };
 
+function getPrefersReducedMotion(): boolean {
+  if (typeof window === 'undefined') return false;
+  if (typeof window.matchMedia !== 'function') return false;
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
 interface Props {
   segment: string;
 }
@@ -28,6 +34,7 @@ export default function StickAnimation({ segment }: Props) {
 
   useEffect(() => {
     if (!containerRef.current) return;
+    const reduceMotion = getPrefersReducedMotion();
 
     // Replace the animation's white fills with a colour that works in both
     // light and dark modes. Light: dark grey for contrast; Dark: keep near-white.
@@ -48,6 +55,9 @@ export default function StickAnimation({ segment }: Props) {
       segRef.current = seg;
       directionRef.current = 1;
       anim.playSegments(seg, true);
+      if (reduceMotion) {
+        anim.goToAndStop(seg[1], true);
+      }
       const svg = containerRef.current?.querySelector('svg');
       if (svg) {
         svg.querySelectorAll<Element>('[fill]').forEach(el => {
@@ -62,6 +72,7 @@ export default function StickAnimation({ segment }: Props) {
     });
 
     anim.addEventListener('complete', () => {
+      if (reduceMotion) return;
       directionRef.current *= -1;
       anim.setDirection(directionRef.current as 1 | -1);
       const nextSeg: [number, number] = directionRef.current > 0
@@ -71,6 +82,7 @@ export default function StickAnimation({ segment }: Props) {
     });
 
     return () => { anim.destroy(); };
+
   }, [segment, colorScheme]);
 
   return (
@@ -78,7 +90,7 @@ export default function StickAnimation({ segment }: Props) {
       ref={containerRef}
       role="img"
       aria-label={`${segment.replace(/_/g, ' ')} stick movement`}
-      style={{ width: '100%', maxWidth: 120, aspectRatio: '1/1' }}
+      style={{ width: '100%', maxWidth: 'clamp(88px, 16vw, 128px)', aspectRatio: '1 / 1' }}
     />
   );
 }
