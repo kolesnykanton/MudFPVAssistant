@@ -28,7 +28,7 @@ export default function MapContextMenu({ left, top, width, items }: MapContextMe
     // Focus the first menu item so keyboard users can navigate immediately.
     const first = containerRef.current?.querySelector<HTMLButtonElement>('[role="menuitem"]');
     first?.focus();
-  }, []);
+  }, [items]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     const buttons = Array.from(

@@ -51,10 +51,16 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const unsubFlights = onSnapshot(flightsQ, snap => {
       setFlights(snap.docs.map(d => ({ id: d.id, ...d.data() } as WithId<FlightInfo>)));
       setFlightsLoading(false);
+    }, err => {
+      console.error('[firestore] flights listener error:', err);
+      setFlightsLoading(false);
     });
 
     const unsubSpots = onSnapshot(collection(db, `users/${uid}/FlightSpots`), snap => {
       setSpots(snap.docs.map(d => ({ id: d.id, ...d.data() } as WithId<FlightSpot>)));
+      setSpotsLoading(false);
+    }, err => {
+      console.error('[firestore] spots listener error:', err);
       setSpotsLoading(false);
     });
 

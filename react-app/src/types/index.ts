@@ -30,7 +30,6 @@ export interface FlightSpot {
 export interface UserApiKeys {
   openWeatherApiKey?: string;
   googleApiKey?: string;
-  weatherApiKey?: string;
 }
 
 export interface UserSettings {

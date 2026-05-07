@@ -53,6 +53,7 @@ export default defineConfig({
         ],
       },
       workbox: {
+        navigateFallback: 'index.html',
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json,woff2}'],
         runtimeCaching: [
           {
