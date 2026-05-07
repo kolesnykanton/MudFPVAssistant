@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { forwardRef, useEffect, useRef } from 'react';
 import { Button, Paper, Stack } from '@mantine/core';
 
 export interface MapContextMenuItem {
@@ -8,8 +8,7 @@ export interface MapContextMenuItem {
 }
 
 interface MapContextMenuProps {
-  left: number;
-  top: number;
+  style: React.CSSProperties;
   width: number;
   items: MapContextMenuItem[];
 }
@@ -20,8 +19,10 @@ interface MapContextMenuProps {
  * Implements the WAI-ARIA Menu pattern: role="menu" with role="menuitem"
  * children, ArrowUp/Down cycling, Home/End jumping, and auto-focus on open.
  * Escape is handled by the parent (also dismisses the menu).
+ * Positioning is delegated to @floating-ui/react (caller passes floatingStyles).
  */
-export default function MapContextMenu({ left, top, width, items }: MapContextMenuProps) {
+const MapContextMenu = forwardRef<HTMLDivElement, MapContextMenuProps>(
+  function MapContextMenu({ style, width, items }, ref) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -61,16 +62,19 @@ export default function MapContextMenu({ left, top, width, items }: MapContextMe
 
   return (
     <Paper
-      ref={containerRef}
+      ref={(node) => {
+        // Merge the internal ref (for focus/keyboard) with the forwarded floating ref.
+        (containerRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+        if (typeof ref === 'function') ref(node);
+        else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+      }}
       withBorder
       shadow="md"
       role="menu"
       aria-orientation="vertical"
       onKeyDown={handleKeyDown}
       style={{
-        position: 'fixed',
-        left,
-        top,
+        ...style,
         zIndex: 1001,
         minWidth: width,
         padding: '4px 0',
@@ -96,4 +100,6 @@ export default function MapContextMenu({ left, top, width, items }: MapContextMe
       </Stack>
     </Paper>
   );
-}
+});
+
+export default MapContextMenu;

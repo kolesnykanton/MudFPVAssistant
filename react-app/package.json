@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@floating-ui/react": "^0.27.19",
     "@mantine/core": "^9.1.1",
     "@mantine/dates": "^9.1.1",
     "@mantine/hooks": "^9.1.1",

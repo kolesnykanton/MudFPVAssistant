@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useFloating, offset, flip, shift } from '@floating-ui/react';
 import { Box, Text, Title } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import classes from './MapSpotSave.module.css';
@@ -20,6 +21,11 @@ export default function MapSpotSave() {
   const { spots, addSpot, updateSpot, deleteSpot } = useData();
 
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
+  const { refs, floatingStyles, update } = useFloating({
+    placement: 'top-start',
+    middleware: [offset(16), flip(), shift({ padding: 8 })],
+  });
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSpot, setEditingSpot] = useState<FlightSpot | null>(null);
   const [newSpotCoords, setNewSpotCoords] = useState<{ lat: number; lng: number } | null>(null);
@@ -40,6 +46,16 @@ export default function MapSpotSave() {
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [contextMenu]);
+
+  useEffect(() => {
+    if (!contextMenu) return;
+    refs.setReference({
+      getBoundingClientRect: () => DOMRect.fromRect({
+        x: contextMenu.x, y: contextMenu.y, width: 0, height: 0,
+      }),
+    });
+    update();
+  }, [contextMenu, refs, update]);
 
   const handleAddSpot = () => {
     if (!contextMenu) return;
@@ -106,14 +122,6 @@ export default function MapSpotSave() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contextMenu]);
 
-  const menuHeightApprox = contextMenu?.isPoint ? 80 : 44;
-  const menuLeft = contextMenu
-    ? Math.min(contextMenu.x + 2, window.innerWidth - MENU_WIDTH)
-    : 0;
-  const menuTop = contextMenu
-    ? Math.min(contextMenu.y + 2, window.innerHeight - menuHeightApprox)
-    : 0;
-
   if (!uid) {
     return <Text p="xl">Please sign in to view flight spots.</Text>;
   }
@@ -139,8 +147,8 @@ export default function MapSpotSave() {
               onContextMenu={closeContextMenu}
             />
             <MapContextMenu
-              left={menuLeft}
-              top={menuTop}
+              ref={refs.setFloating}
+              style={floatingStyles}
               width={MENU_WIDTH}
               items={menuItems}
             />
