@@ -15,6 +15,12 @@ const SEGMENTS: Record<string, [number, number]> = {
   center_left:  [210, 230],
 };
 
+function getPrefersReducedMotion(): boolean {
+  if (typeof window === 'undefined') return false;
+  if (typeof window.matchMedia !== 'function') return false;
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
 interface Props {
   segment: string;
 }
@@ -25,10 +31,10 @@ export default function StickAnimation({ segment }: Props) {
   const directionRef = useRef(1);
   const segRef = useRef<[number, number]>(SEGMENTS[segment] || [0, 20]);
   const { colorScheme } = useMantineColorScheme();
-  const reduceMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   useEffect(() => {
     if (!containerRef.current) return;
+    const reduceMotion = getPrefersReducedMotion();
 
     // Replace the animation's white fills with a colour that works in both
     // light and dark modes. Light: dark grey for contrast; Dark: keep near-white.
@@ -77,7 +83,7 @@ export default function StickAnimation({ segment }: Props) {
 
     return () => { anim.destroy(); };
 
-  }, [segment, colorScheme, reduceMotion]);
+  }, [segment, colorScheme]);
 
   return (
     <Box
