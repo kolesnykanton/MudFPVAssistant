@@ -34,8 +34,6 @@ export default function StickAnimation({ segment }: Props) {
     const replacementColor = colorScheme === 'dark' ? '#d0d0d0' : '#5c5c5c';
 
     const seg = SEGMENTS[segment] || [0, 20];
-    segRef.current = seg;
-    directionRef.current = 1;
 
     const anim = lottie.loadAnimation({
       container: containerRef.current,
@@ -47,6 +45,8 @@ export default function StickAnimation({ segment }: Props) {
     animRef.current = anim;
 
     anim.addEventListener('DOMLoaded', () => {
+      segRef.current = seg;
+      directionRef.current = 1;
       anim.playSegments(seg, true);
       const svg = containerRef.current?.querySelector('svg');
       if (svg) {

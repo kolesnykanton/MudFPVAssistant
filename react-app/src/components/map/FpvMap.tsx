@@ -48,9 +48,7 @@ function FitBoundsButton({ spots }: { spots: FlightSpot[] }) {
     const btn = new FitControl({ position: 'topleft' });
     btn.addTo(map);
     return () => { map.removeControl(btn); };
-  // re-derive when spot positions change
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [map, spots.length]);
+  }, [map, spots]);
 
   return null;
 }
