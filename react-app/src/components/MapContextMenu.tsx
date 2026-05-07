@@ -26,9 +26,11 @@ export default function MapContextMenu({ left, top, width, items }: MapContextMe
 
   useEffect(() => {
     // Focus the first menu item so keyboard users can navigate immediately.
+    // Empty deps: the menu unmounts/remounts on each open, so this runs once per open.
+    // Using [items] would re-focus on every parent render, disrupting keyboard navigation.
     const first = containerRef.current?.querySelector<HTMLButtonElement>('[role="menuitem"]');
     first?.focus();
-  }, [items]);
+  }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     const buttons = Array.from(

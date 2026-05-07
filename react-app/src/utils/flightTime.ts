@@ -16,9 +16,11 @@ export function secondsToMmSs(sec: number): string {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
-/** Pads single-digit minutes: "4:20" → "04:20". Returns undefined for empty input. */
+/** Pads single-digit minutes: "4:20" → "04:20". Returns undefined for empty or malformed input. */
 export function normalizeFlightTime(input: string): string | undefined {
   if (!input) return undefined;
-  const [m, s] = input.split(':');
+  const parts = input.split(':');
+  if (parts.length !== 2) return undefined;
+  const [m, s] = parts;
   return `${m.padStart(2, '0')}:${s}`;
 }
