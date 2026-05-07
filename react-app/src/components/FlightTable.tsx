@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ActionIcon, Group, Pagination, Paper, ScrollArea, Stack, Table, Text, TextInput, Title,
 } from '@mantine/core';
@@ -27,6 +27,9 @@ export default function FlightTable({ flights, selectedDate, onDelete, onUpdate 
   const pendingFlight = pendingDeleteId
     ? flights.find(f => f.id === pendingDeleteId) ?? null
     : null;
+
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { setPage(1); }, [selectedDate, debouncedSearch]);
 
   const filtered = useMemo(() => {
     let rows = selectedDate
@@ -59,7 +62,7 @@ export default function FlightTable({ flights, selectedDate, onDelete, onUpdate 
         </Title>
         <TextInput
           value={search}
-          onChange={e => { setSearch(e.target.value); setPage(1); }}
+          onChange={e => setSearch(e.target.value)}
           placeholder="Search name or location"
           size="xs"
           leftSection={<IconSearch size={14} />}

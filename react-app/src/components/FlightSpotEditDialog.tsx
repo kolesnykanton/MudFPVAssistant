@@ -59,6 +59,13 @@ export default function FlightSpotEditDialog({ open, spot, coords, onSave, onClo
     }
   }, [open, spot]);
 
+  // Revoke any blob URL created by createObjectURL when the preview changes or modal closes.
+  useEffect(() => {
+    return () => {
+      if (photoPreview?.startsWith('blob:')) URL.revokeObjectURL(photoPreview);
+    };
+  }, [photoPreview]);
+
   const handleFileChange = (file: File | null) => {
     setPhotoFile(file);
     if (file) {

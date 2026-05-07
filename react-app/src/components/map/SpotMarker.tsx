@@ -83,7 +83,9 @@ export function SpotMarker({ spot, onContextMenu, longPressActiveRef }: SpotMark
         spotId: spot.id ?? null,
       });
     },
-  }), [spot.id, onContextMenu, longPressActiveRef]);
+  // longPressActiveRef is a stable ref — its identity never changes, only .current does.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [spot.id, onContextMenu]);
 
   return (
     <Marker

@@ -58,6 +58,8 @@ export function MapInteraction({ onContextMenu, longPressActiveRef }: MapInterac
         timer = null;
         if (!startEvent) return;
         // Subtle tactile cue so users know the long-press fired before the menu paints.
+        // navigator.vibrate is W3C Vibration API — supported on Android/Chrome but
+        // not on iOS/WebKit, where it silently does nothing (no web API alternative exists).
         navigator.vibrate?.(10);
         const latlng = map.mouseEventToLatLng(startEvent);
         const markerEl = (startEvent.target as Element).closest<HTMLElement>('[data-spot-id]');

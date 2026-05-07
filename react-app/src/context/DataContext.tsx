@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
   collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc,
   query, orderBy, limit,
@@ -51,10 +51,16 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const unsubFlights = onSnapshot(flightsQ, snap => {
       setFlights(snap.docs.map(d => ({ id: d.id, ...d.data() } as WithId<FlightInfo>)));
       setFlightsLoading(false);
+    }, err => {
+      console.error('[firestore] flights listener error:', err);
+      setFlightsLoading(false);
     });
 
     const unsubSpots = onSnapshot(collection(db, `users/${uid}/FlightSpots`), snap => {
       setSpots(snap.docs.map(d => ({ id: d.id, ...d.data() } as WithId<FlightSpot>)));
+      setSpotsLoading(false);
+    }, err => {
+      console.error('[firestore] spots listener error:', err);
       setSpotsLoading(false);
     });
 
@@ -64,44 +70,46 @@ export function DataProvider({ children }: { children: ReactNode }) {
     };
   }, [uid]);
 
-  const addFlight = async (f: Omit<FlightInfo, 'id'>): Promise<string> => {
+  const addFlight = useCallback(async (f: Omit<FlightInfo, 'id'>): Promise<string> => {
     if (!uid) throw new Error('Not authenticated');
     const ref = await addDoc(collection(db, `users/${uid}/FlightInfos`), f);
     return ref.id;
-  };
+  }, [uid]);
 
-  const updateFlight = async (id: string, data: Partial<Omit<FlightInfo, 'id'>>) => {
+  const updateFlight = useCallback(async (id: string, data: Partial<Omit<FlightInfo, 'id'>>) => {
     if (!uid) throw new Error('Not authenticated');
     await updateDoc(doc(db, `users/${uid}/FlightInfos/${id}`), data as Record<string, unknown>);
-  };
+  }, [uid]);
 
-  const deleteFlight = async (id: string) => {
+  const deleteFlight = useCallback(async (id: string) => {
     if (!uid) throw new Error('Not authenticated');
     await deleteDoc(doc(db, `users/${uid}/FlightInfos/${id}`));
-  };
+  }, [uid]);
 
-  const addSpot = async (s: Omit<FlightSpot, 'id'>): Promise<string> => {
+  const addSpot = useCallback(async (s: Omit<FlightSpot, 'id'>): Promise<string> => {
     if (!uid) throw new Error('Not authenticated');
     const ref = await addDoc(collection(db, `users/${uid}/FlightSpots`), s);
     return ref.id;
-  };
+  }, [uid]);
 
-  const updateSpot = async (id: string, data: Partial<Omit<FlightSpot, 'id'>>) => {
+  const updateSpot = useCallback(async (id: string, data: Partial<Omit<FlightSpot, 'id'>>) => {
     if (!uid) throw new Error('Not authenticated');
     await updateDoc(doc(db, `users/${uid}/FlightSpots/${id}`), data as Record<string, unknown>);
-  };
+  }, [uid]);
 
-  const deleteSpot = async (id: string) => {
+  const deleteSpot = useCallback(async (id: string) => {
     if (!uid) throw new Error('Not authenticated');
     await deleteDoc(doc(db, `users/${uid}/FlightSpots/${id}`));
-  };
+  }, [uid]);
+
+  const value = useMemo(() => ({
+    flights, spots, flightsLoading, spotsLoading,
+    addFlight, updateFlight, deleteFlight,
+    addSpot, updateSpot, deleteSpot,
+  }), [flights, spots, flightsLoading, spotsLoading, addFlight, updateFlight, deleteFlight, addSpot, updateSpot, deleteSpot]);
 
   return (
-    <DataContext.Provider value={{
-      flights, spots, flightsLoading, spotsLoading,
-      addFlight, updateFlight, deleteFlight,
-      addSpot, updateSpot, deleteSpot,
-    }}>
+    <DataContext.Provider value={value}>
       {children}
     </DataContext.Provider>
   );

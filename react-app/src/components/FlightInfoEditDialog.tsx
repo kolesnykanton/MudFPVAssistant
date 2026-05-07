@@ -5,6 +5,7 @@ import {
 } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import type { FlightInfo, BatteryType, WithId } from '../types';
+import { normalizeFlightTime } from '../utils/flightTime';
 
 const BATTERY_TYPES: BatteryType[] = ['Unknown', 'LiPo', 'LiIon'];
 const CELL_COUNTS = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -64,7 +65,7 @@ export default function FlightInfoEditDialog({ open, flight, onSave, onClose }: 
         location: location.trim(),
         comment: comment.trim() || undefined,
         usedMah: usedMah !== '' ? Number(usedMah) : undefined,
-        flightTime: flightTime || undefined,
+        flightTime: normalizeFlightTime(flightTime),
         date: date ?? undefined,
       });
       onClose();

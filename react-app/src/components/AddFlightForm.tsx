@@ -14,6 +14,7 @@ import { DateInput } from '@mantine/dates';
 import { notifications } from '@mantine/notifications';
 import { IconCirclePlus } from '@tabler/icons-react';
 import type { FlightInfo, BatteryType } from '../types';
+import { normalizeFlightTime } from '../utils/flightTime';
 
 interface AddFlightFormProps {
   onAdd: (flight: Omit<FlightInfo, 'id'>) => Promise<void>;
@@ -46,10 +47,7 @@ export default function AddFlightForm({ onAdd }: AddFlightFormProps) {
     }
     setTimeError('');
 
-    // Pad single-digit minutes (e.g. "4:20" → "04:20") so storage stays consistent.
-    const normalisedFlightTime = flightTime
-      ? flightTime.split(':').map((p, i) => i === 0 ? p.padStart(2, '0') : p).join(':')
-      : undefined;
+    const normalisedFlightTime = normalizeFlightTime(flightTime);
 
     const flight: Omit<FlightInfo, 'id'> = {
       name: name.trim(),

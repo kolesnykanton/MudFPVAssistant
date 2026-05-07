@@ -26,6 +26,9 @@ function MapAutoCenter() {
 
 function FitBoundsButton({ spots }: { spots: FlightSpot[] }) {
   const map = useMap();
+  // Primitive key so the effect only fires when actual coordinates change,
+  // not on every parent re-render that produces a new array reference.
+  const boundsKey = spots.map(s => `${s.latitude},${s.longitude}`).join('|');
   useEffect(() => {
     if (spots.length === 0) return;
     const latlngs = spots.map(s => L.latLng(s.latitude, s.longitude));
@@ -48,9 +51,8 @@ function FitBoundsButton({ spots }: { spots: FlightSpot[] }) {
     const btn = new FitControl({ position: 'topleft' });
     btn.addTo(map);
     return () => { map.removeControl(btn); };
-  // re-derive when spot positions change
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [map, spots.length]);
+  }, [map, boundsKey]);
 
   return null;
 }

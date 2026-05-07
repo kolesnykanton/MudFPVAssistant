@@ -6,6 +6,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from 'recharts';
 import type { FlightInfo } from '../types';
+import { parseFlightTimeSeconds, secondsToMmSs } from '../utils/flightTime';
 
 interface FlightStatsProps {
   flights: FlightInfo[];
@@ -16,24 +17,6 @@ const COLORS = [
   '#4db6ac', '#f06292', '#aed581', '#ff8a65', '#90a4ae',
   '#fff176', '#ce93d8', '#80cbc4', '#ef9a9a', '#a5d6a7',
 ];
-
-/** Parse "mm:ss" → seconds, returns null on failure */
-function parseFlightTimeSeconds(ft: string | undefined): number | null {
-  if (!ft) return null;
-  const parts = ft.split(':');
-  if (parts.length !== 2) return null;
-  const mins = parseInt(parts[0], 10);
-  const secs = parseInt(parts[1], 10);
-  if (isNaN(mins) || isNaN(secs)) return null;
-  return mins * 60 + secs;
-}
-
-/** Convert seconds back to mm:ss string */
-function secondsToMmSs(sec: number): string {
-  const m = Math.floor(sec / 60);
-  const s = Math.round(sec % 60);
-  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-}
 
 export default function FlightStats({ flights }: FlightStatsProps) {
   // All hooks must run unconditionally (Rules of Hooks) — early return is below.
