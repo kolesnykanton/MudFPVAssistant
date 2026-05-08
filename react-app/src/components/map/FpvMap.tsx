@@ -39,8 +39,8 @@ function FitBoundsButton({ spots }: { spots: FlightSpot[] }) {
         const el = L.DomUtil.create('button', 'leaflet-bar leaflet-control');
         el.title = 'Fit all spots';
         el.setAttribute('aria-label', 'Fit all spots');
-        el.style.cssText = 'width:30px;height:30px;font-size:16px;cursor:pointer;background:#fff;border:none;line-height:1;';
-        el.textContent = '⊡';
+        el.style.cssText = 'width:30px;height:30px;cursor:pointer;background:#fff;border:none;display:flex;align-items:center;justify-content:center;';
+        el.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/><path d="M4 8v-2a2 2 0 0 1 2 -2h2"/><path d="M4 16v2a2 2 0 0 0 2 2h2"/><path d="M16 4h2a2 2 0 0 1 2 2v2"/><path d="M16 20h2a2 2 0 0 0 2 -2v-2"/></svg>';
         L.DomEvent.on(el, 'click', (e) => {
           L.DomEvent.stopPropagation(e);
           map.fitBounds(bounds, { padding: [40, 40], maxZoom: 16 });
