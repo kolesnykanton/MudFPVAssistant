@@ -15,6 +15,7 @@ import { SpotsListPanel } from '../components/map/SpotsListPanel';
 import FlightSpotEditDialog from '../components/FlightSpotEditDialog';
 import ConfirmDialog from '../components/ConfirmDialog';
 import MapContextMenu, { type MapContextMenuItem } from '../components/MapContextMenu';
+import { QuickPinFab } from '../components/map/QuickPinFab';
 
 const MENU_WIDTH = 170;
 const PANEL_STORAGE_KEY = 'mfa-map-panel-open';
@@ -139,15 +140,18 @@ export default function MapSpotSave() {
     }
   };
 
-  const handleSaveSpot = async (spotData: Omit<FlightSpot, 'id'>): Promise<void> => {
+  const handleSaveSpot = async (spotData: Omit<FlightSpot, 'id'>): Promise<string | undefined> => {
     if (editingSpot?.id) {
       await updateSpot(editingSpot.id, spotData);
       notifications.show({ color: 'green', message: 'Spot updated.' });
+      setDialogOpen(false);
+      return editingSpot.id;
     } else {
-      await addSpot(spotData);
+      const id = await addSpot(spotData);
       notifications.show({ color: 'green', message: 'Spot added.' });
+      setDialogOpen(false);
+      return id;
     }
-    setDialogOpen(false);
   };
 
   const closeContextMenu = useCallback((e: React.MouseEvent) => {
@@ -224,6 +228,8 @@ export default function MapSpotSave() {
               <IconList size={20} />
             </ActionIcon>
           )}
+
+          <QuickPinFab />
 
           {contextMenu && (
             <>

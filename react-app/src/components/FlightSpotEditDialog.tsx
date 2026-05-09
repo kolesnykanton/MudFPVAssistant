@@ -14,10 +14,12 @@ import {
   ActionIcon,
   Box,
 } from '@mantine/core';
-import { IconUpload, IconX } from '@tabler/icons-react';
+import { IconUpload, IconX, IconWifiOff } from '@tabler/icons-react';
 import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { storage } from '../firebase/firebaseConfig';
 import { useAuth } from '../context/AuthContext';
+import { useNetworkStatus } from '../hooks/useNetworkStatus';
+import { pendingPhotoStore } from '../utils/pendingPhotoStore';
 import { resizeImage } from '../utils/imageUtils';
 import type { FlightSpot } from '../types';
 import { SPOT_CATEGORIES } from '../types';
@@ -26,12 +28,13 @@ interface Props {
   open: boolean;
   spot: Partial<FlightSpot> | null;
   coords?: { lat: number; lng: number };
-  onSave: (spot: Omit<FlightSpot, 'id'>) => Promise<void>;
+  onSave: (spot: Omit<FlightSpot, 'id'>) => Promise<string | undefined>;
   onClose: () => void;
 }
 
 export default function FlightSpotEditDialog({ open, spot, coords, onSave, onClose }: Props) {
   const { uid } = useAuth();
+  const { online } = useNetworkStatus();
   const [name, setName] = useState('');
   const [comments, setComments] = useState('');
   const [category, setCategory] = useState('');
@@ -94,12 +97,14 @@ export default function FlightSpotEditDialog({ open, spot, coords, onSave, onClo
       let storagePath: string | undefined = spot?.storagePath;
 
       if (removeExistingPhoto && storagePath) {
-        try { await deleteObject(storageRef(storage, storagePath)); } catch { /* already gone */ }
+        if (online) {
+          try { await deleteObject(storageRef(storage, storagePath)); } catch { /* already gone */ }
+        }
         photoUrl = undefined;
         storagePath = undefined;
       }
 
-      if (photoFile && uid) {
+      if (photoFile && uid && online) {
         const resized = await resizeImage(photoFile);
         const path = `users/${uid}/FlightSpots/${Date.now()}/${photoFile.name}`;
         const fileRef = storageRef(storage, path);
@@ -111,10 +116,23 @@ export default function FlightSpotEditDialog({ open, spot, coords, onSave, onClo
         storagePath = path;
       }
 
-      await onSave({
+      // Always save metadata — Firestore queues it offline automatically
+      const spotId = await onSave({
         name: name.trim(), comments, category, tags, latitude, longitude,
         ...(photoUrl ? { photoUrl, storagePath } : {}),
       });
+
+      // Photo deferred: store blob in IndexedDB, sync on reconnect
+      if (photoFile && uid && !online && spotId) {
+        const resized = await resizeImage(photoFile);
+        await pendingPhotoStore.enqueue({
+          spotId,
+          uid,
+          fileName: photoFile.name,
+          blob: resized,
+          createdAt: Date.now(),
+        });
+      }
     } catch {
       setSaveError('Failed to save spot. Please try again.');
     } finally {
@@ -196,6 +214,11 @@ export default function FlightSpotEditDialog({ open, spot, coords, onSave, onClo
           )}
         </div>
 
+        {!online && photoFile && (
+          <Alert color="orange" variant="light" icon={<IconWifiOff size={16} />}>
+            You're offline. Photo will upload automatically when you reconnect.
+          </Alert>
+        )}
         {saveError && (
           <Alert color="red" variant="light">{saveError}</Alert>
         )}

@@ -9,9 +9,10 @@ import {
   Loader,
   Indicator,
   Tooltip,
+  Button,
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
-import { IconCalendar } from '@tabler/icons-react';
+import { IconCalendar, IconDatabaseImport } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { useData } from '../context/DataContext';
 import type { FlightInfo as FlightInfoType } from '../types';
@@ -19,8 +20,26 @@ import AddFlightForm from '../components/AddFlightForm';
 import FlightTable from '../components/FlightTable';
 import FlightStats from '../components/FlightStats';
 
+const isDev = import.meta.env.DEV;
+
 export default function FlightInfo() {
   const { flights, flightsLoading, addFlight, updateFlight, deleteFlight } = useData();
+  const [seeding, setSeeding] = useState(false);
+
+  const handleSeed = async () => {
+    setSeeding(true);
+    try {
+      const { default: SEED } = await import('../dev/seedFlightData');
+      for (const flight of SEED) {
+        await addFlight(flight);
+      }
+      notifications.show({ color: 'green', message: `${SEED.length} test flights added.` });
+    } catch {
+      notifications.show({ color: 'red', message: 'Seeding failed.' });
+    } finally {
+      setSeeding(false);
+    }
+  };
   const [selectedDate, setSelectedDate] = useState<string | null>(
     new Date().toISOString().split('T')[0]
   );
@@ -59,7 +78,23 @@ export default function FlightInfo() {
 
   return (
     <Box>
-      <Title order={2} mb="lg">Flight Log</Title>
+      <Group justify="space-between" mb="lg">
+        <Title order={2}>Flight Log</Title>
+        {isDev && (
+          <Tooltip label="Adds 15 test flights (dev only)">
+            <Button
+              size="xs"
+              variant="light"
+              color="grape"
+              leftSection={<IconDatabaseImport size={14} />}
+              loading={seeding}
+              onClick={handleSeed}
+            >
+              Seed test data
+            </Button>
+          </Tooltip>
+        )}
+      </Group>
 
       {flightsLoading ? (
         <Group justify="center" mt="xl">

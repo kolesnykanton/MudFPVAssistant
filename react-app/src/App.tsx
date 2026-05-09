@@ -1,6 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { Loader, Center } from '@mantine/core';
+import { Loader, Center, Affix, Badge } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import '@mantine/notifications/styles.css';
 import { AuthProvider } from './context/AuthContext';
@@ -9,6 +9,9 @@ import MainLayout from './layout/MainLayout';
 import Home from './pages/Home';
 import ErrorBoundary from './components/ErrorBoundary';
 import PwaPrompts from './components/PwaPrompts';
+import { useAuth } from './context/AuthContext';
+import { useNetworkStatus } from './hooks/useNetworkStatus';
+import { useOfflineSync } from './hooks/useOfflineSync';
 
 const FlightInfo  = lazy(() => import('./pages/FlightInfo'));
 const MapSpotSave = lazy(() => import('./pages/MapSpotSave'));
@@ -20,6 +23,19 @@ function PageLoader() {
     <Center h={200}>
       <Loader />
     </Center>
+  );
+}
+
+function AppServices() {
+  const { uid } = useAuth();
+  const { online } = useNetworkStatus();
+  useOfflineSync(uid);
+
+  if (online) return null;
+  return (
+    <Affix position={{ bottom: 70, right: 16 }} zIndex={1500}>
+      <Badge color="orange" variant="filled" size="sm">Offline</Badge>
+    </Affix>
   );
 }
 
@@ -42,6 +58,7 @@ function App() {
               </Suspense>
             </MainLayout>
             <PwaPrompts />
+            <AppServices />
           </DataProvider>
         </AuthProvider>
       </BrowserRouter>
