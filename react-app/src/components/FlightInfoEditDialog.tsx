@@ -5,7 +5,7 @@ import {
 } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import type { FlightInfo, BatteryType, WithId } from '../types';
-import { normalizeFlightTime } from '../utils/flightTime';
+import FlightTimeInput from './FlightTimeInput';
 
 const BATTERY_TYPES: BatteryType[] = ['Unknown', 'LiPo', 'LiIon'];
 const CELL_COUNTS = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -22,11 +22,10 @@ export default function FlightInfoEditDialog({ open, flight, onSave, onClose }: 
   const [usedMah, setUsedMah] = useState<number | string>('');
   const [batType, setBatType] = useState<BatteryType>('LiPo');
   const [cellCount, setCellCount] = useState<number>(4);
-  const [flightTime, setFlightTime] = useState('');
+  const [flightTime, setFlightTime] = useState<string | undefined>(undefined);
   const [location, setLocation] = useState('');
   const [comment, setComment] = useState('');
   const [date, setDate] = useState<string | null>(null);
-  const [timeError, setTimeError] = useState('');
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
@@ -37,11 +36,10 @@ export default function FlightInfoEditDialog({ open, flight, onSave, onClose }: 
       setUsedMah(flight.usedMah ?? '');
       setBatType(flight.batType ?? 'LiPo');
       setCellCount(flight.cellCount ?? 4);
-      setFlightTime(flight.flightTime ?? '');
+      setFlightTime(flight.flightTime ?? undefined);
       setLocation(flight.location ?? '');
       setComment(flight.comment ?? '');
       setDate(flight.date ?? null);
-      setTimeError('');
       setSaving(false);
       setSaveError(null);
       /* eslint-enable react-hooks/set-state-in-effect */
@@ -50,11 +48,6 @@ export default function FlightInfoEditDialog({ open, flight, onSave, onClose }: 
 
   const handleSave = async () => {
     if (!flight || !name.trim() || saving) return;
-    if (flightTime && !/^\d{1,2}:\d{2}$/.test(flightTime)) {
-      setTimeError('Use format mm:ss (e.g. 4:20)');
-      return;
-    }
-    setTimeError('');
     setSaving(true);
     setSaveError(null);
     try {
@@ -65,7 +58,7 @@ export default function FlightInfoEditDialog({ open, flight, onSave, onClose }: 
         location: location.trim(),
         comment: comment.trim() || undefined,
         usedMah: usedMah !== '' ? Number(usedMah) : undefined,
-        flightTime: normalizeFlightTime(flightTime),
+        flightTime,
         date: date ?? undefined,
       });
       onClose();
@@ -116,15 +109,7 @@ export default function FlightInfoEditDialog({ open, flight, onSave, onClose }: 
             data={CELL_COUNTS.map(c => ({ value: String(c), label: `${c}S` }))}
             size="sm"
           />
-          <TextInput
-            label="Flight Time"
-            value={flightTime}
-            onChange={e => { setFlightTime(e.target.value); setTimeError(''); }}
-            placeholder="04:20"
-            size="sm"
-            error={timeError || undefined}
-            description={!timeError ? 'Format: mm:ss' : undefined}
-          />
+          <FlightTimeInput value={flightTime} onChange={setFlightTime} size="sm" />
         </Group>
         <TextInput
           label="Location"

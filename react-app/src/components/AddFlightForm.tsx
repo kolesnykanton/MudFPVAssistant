@@ -14,7 +14,7 @@ import { DateInput } from '@mantine/dates';
 import { notifications } from '@mantine/notifications';
 import { IconCirclePlus } from '@tabler/icons-react';
 import type { FlightInfo, BatteryType } from '../types';
-import { normalizeFlightTime } from '../utils/flightTime';
+import FlightTimeInput from './FlightTimeInput';
 
 interface AddFlightFormProps {
   onAdd: (flight: Omit<FlightInfo, 'id'>) => Promise<void>;
@@ -28,26 +28,16 @@ export default function AddFlightForm({ onAdd }: AddFlightFormProps) {
   const [usedMah, setUsedMah] = useState<number | string>('');
   const [batType, setBatType] = useState<BatteryType>('LiPo');
   const [cellCount, setCellCount] = useState<number>(4);
-  const [flightTime, setFlightTime] = useState('');
+  const [flightTime, setFlightTime] = useState<string | undefined>(undefined);
   const [location, setLocation] = useState('');
   const [comment, setComment] = useState('');
   const [date, setDate] = useState<string | null>(new Date().toISOString().split('T')[0]);
   const [submitting, setSubmitting] = useState(false);
-  const [timeError, setTimeError] = useState('');
 
   const isValid = name.trim().length > 0;
 
   const handleSubmit = async () => {
     if (!isValid) return;
-
-    // Validate flight time format if provided
-    if (flightTime && !/^\d{1,2}:\d{2}$/.test(flightTime)) {
-      setTimeError('Please use format mm:ss (e.g. 4:20)');
-      return;
-    }
-    setTimeError('');
-
-    const normalisedFlightTime = normalizeFlightTime(flightTime);
 
     const flight: Omit<FlightInfo, 'id'> = {
       name: name.trim(),
@@ -56,7 +46,7 @@ export default function AddFlightForm({ onAdd }: AddFlightFormProps) {
       location: location.trim(),
       comment: comment.trim() || undefined,
       usedMah: usedMah !== '' ? Number(usedMah) : undefined,
-      flightTime: normalisedFlightTime,
+      flightTime,
       date: date ?? undefined,
     };
 
@@ -67,7 +57,7 @@ export default function AddFlightForm({ onAdd }: AddFlightFormProps) {
       setUsedMah('');
       setBatType('LiPo');
       setCellCount(4);
-      setFlightTime('');
+      setFlightTime(undefined);
       setLocation('');
       setComment('');
       setDate(new Date().toISOString().split('T')[0]);
@@ -125,15 +115,7 @@ export default function AddFlightForm({ onAdd }: AddFlightFormProps) {
           </Grid.Col>
 
           <Grid.Col span={{ base: 12, sm: 6 }}>
-            <TextInput
-              label="Flight Time"
-              value={flightTime}
-              onChange={e => { setFlightTime(e.target.value); setTimeError(''); }}
-              placeholder="04:20"
-              size="sm"
-              error={timeError || undefined}
-              description={!timeError ? 'Format: mm:ss' : undefined}
-            />
+            <FlightTimeInput value={flightTime} onChange={setFlightTime} size="sm" />
           </Grid.Col>
 
           <Grid.Col span={12}>
