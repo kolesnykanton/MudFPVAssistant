@@ -18,6 +18,7 @@ import { IconUpload, IconX } from '@tabler/icons-react';
 import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { storage } from '../firebase/firebaseConfig';
 import { useAuth } from '../context/AuthContext';
+import { resizeImage } from '../utils/imageUtils';
 import type { FlightSpot } from '../types';
 import { SPOT_CATEGORIES } from '../types';
 
@@ -99,9 +100,10 @@ export default function FlightSpotEditDialog({ open, spot, coords, onSave, onClo
       }
 
       if (photoFile && uid) {
-        const path = `users/${uid}/spots/${Date.now()}_${photoFile.name}`;
+        const resized = await resizeImage(photoFile);
+        const path = `users/${uid}/FlightSpots/${Date.now()}/${photoFile.name}`;
         const fileRef = storageRef(storage, path);
-        await uploadBytes(fileRef, photoFile);
+        await uploadBytes(fileRef, resized);
         photoUrl = await getDownloadURL(fileRef);
         if (spot?.storagePath && spot.storagePath !== path) {
           try { await deleteObject(storageRef(storage, spot.storagePath)); } catch { /* already gone */ }
