@@ -1,24 +1,36 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFloating, offset, flip, shift } from '@floating-ui/react';
-import { Box, Text, Title } from '@mantine/core';
+import { Box, Text, Title, Drawer, ActionIcon, Group } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
+import { IconList, IconLayoutSidebarRight } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import classes from './MapSpotSave.module.css';
 import { useData } from '../context/DataContext';
 import { useSettings } from '../hooks/useSettings';
 import { useAuth } from '../context/AuthContext';
-import type { FlightSpot } from '../types';
+import type { FlightSpot, WithId } from '../types';
 import { FpvMap } from '../components/map/FpvMap';
 import type { ContextMenuState } from '../components/map/FpvMap';
+import { SpotsListPanel } from '../components/map/SpotsListPanel';
 import FlightSpotEditDialog from '../components/FlightSpotEditDialog';
 import ConfirmDialog from '../components/ConfirmDialog';
 import MapContextMenu, { type MapContextMenuItem } from '../components/MapContextMenu';
 
 const MENU_WIDTH = 170;
+const PANEL_STORAGE_KEY = 'mfa-map-panel-open';
+
+interface FlyToState {
+  lat: number;
+  lng: number;
+  spotId?: string;
+  nonce: number;
+}
 
 export default function MapSpotSave() {
   const { uid } = useAuth();
   const { settings } = useSettings();
   const { spots, addSpot, updateSpot, deleteSpot } = useData();
+  const isDesktop = useMediaQuery('(min-width: 48em)');
 
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
   const { refs, floatingStyles, update } = useFloating({
@@ -35,9 +47,44 @@ export default function MapSpotSave() {
     : null;
   const contextMenuOpenedAt = useRef(0);
 
+  const [panelOpen, setPanelOpen] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    const stored = localStorage.getItem(PANEL_STORAGE_KEY);
+    return stored === null ? true : stored === 'true';
+  });
+
+  const [flyToState, setFlyToState] = useState<FlyToState | null>(null);
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem(PANEL_STORAGE_KEY, String(panelOpen));
+  }, [panelOpen]);
+
   const handleContextMenu = useCallback((state: ContextMenuState) => {
     contextMenuOpenedAt.current = Date.now();
     setContextMenu(state);
+  }, []);
+
+  const handleLocateFromList = useCallback((spot: WithId<FlightSpot>) => {
+    setFlyToState({
+      lat: spot.latitude,
+      lng: spot.longitude,
+      spotId: spot.id,
+      nonce: Date.now(),
+    });
+    setMobileDrawerOpen(false);
+  }, []);
+
+  const handleEditFromList = useCallback((spot: WithId<FlightSpot>) => {
+    setEditingSpot(spot);
+    setNewSpotCoords(null);
+    setDialogOpen(true);
+    setMobileDrawerOpen(false);
+  }, []);
+
+  const handleDeleteFromList = useCallback((spot: WithId<FlightSpot>) => {
+    setPendingDeleteSpotId(spot.id);
+    setMobileDrawerOpen(false);
   }, []);
 
   useEffect(() => {
@@ -128,33 +175,107 @@ export default function MapSpotSave() {
 
   const openWeatherApiKey = settings.apiKeys?.openWeatherApiKey;
 
+  const typedSpots = spots as WithId<FlightSpot>[];
+
   return (
     <Box className={classes.root}>
-      <Title order={2} p="sm" pb={0}>Flight Spot Saver</Title>
-      <Box className={classes.mapWrapper}>
-        <FpvMap
-          spots={spots}
-          openWeatherApiKey={openWeatherApiKey}
-          onContextMenu={handleContextMenu}
-        />
+      <Box className={classes.titleContainer}>
+        <Group justify="space-between" p="sm" pb={0}>
+          <Title order={2}>Flight Spot Saver</Title>
+          {isDesktop && !panelOpen && (
+            <ActionIcon
+              variant="subtle"
+              color="blue"
+              onClick={() => setPanelOpen(true)}
+              title="Open spots panel"
+            >
+              <IconLayoutSidebarRight size={20} />
+            </ActionIcon>
+          )}
+        </Group>
+      </Box>
 
-        {contextMenu && (
-          <>
-            <div
-              role="presentation"
-              style={{ position: 'fixed', inset: 0, zIndex: 1000 }}
-              onClick={closeContextMenu}
-              onContextMenu={closeContextMenu}
+      <Box className={classes.mainContent}>
+        <Box className={classes.mapWrapper} style={{ position: 'relative' }}>
+          <FpvMap
+            spots={spots}
+            openWeatherApiKey={openWeatherApiKey}
+            onContextMenu={handleContextMenu}
+            flyToTarget={flyToState}
+            panelOpen={isDesktop ? panelOpen : undefined}
+            onTogglePanel={isDesktop ? () => setPanelOpen(!panelOpen) : undefined}
+          />
+
+          {!isDesktop && (
+            <ActionIcon
+              size="lg"
+              radius="md"
+              variant="filled"
+              color="blue"
+              style={{
+                position: 'absolute',
+                bottom: 16,
+                left: 16,
+                zIndex: 999,
+              }}
+              onClick={() => setMobileDrawerOpen(true)}
+              aria-label="Open spots list"
+            >
+              <IconList size={20} />
+            </ActionIcon>
+          )}
+
+          {contextMenu && (
+            <>
+              <div
+                role="presentation"
+                style={{ position: 'fixed', inset: 0, zIndex: 1000 }}
+                onClick={closeContextMenu}
+                onContextMenu={closeContextMenu}
+              />
+              <MapContextMenu
+                // eslint-disable-next-line react-hooks/refs
+                ref={refs.setFloating}
+                style={floatingStyles}
+                width={MENU_WIDTH}
+                items={menuItems}
+              />
+            </>
+          )}
+        </Box>
+
+        {isDesktop && panelOpen && (
+          <Box className={classes.sidePanel}>
+            <SpotsListPanel
+              spots={typedSpots}
+              onLocate={handleLocateFromList}
+              onEdit={handleEditFromList}
+              onDelete={handleDeleteFromList}
+              onClose={() => setPanelOpen(false)}
             />
-            <MapContextMenu
-              ref={refs.setFloating}
-              style={floatingStyles}
-              width={MENU_WIDTH}
-              items={menuItems}
-            />
-          </>
+          </Box>
         )}
       </Box>
+
+      {!isDesktop && (
+        <Drawer
+          opened={mobileDrawerOpen}
+          onClose={() => setMobileDrawerOpen(false)}
+          position="bottom"
+          size="75%"
+          title="Flight Spots"
+        >
+          <Box style={{ height: '100%' }}>
+            <SpotsListPanel
+              spots={typedSpots}
+              onLocate={handleLocateFromList}
+              onEdit={handleEditFromList}
+              onDelete={handleDeleteFromList}
+              onClose={() => setMobileDrawerOpen(false)}
+            />
+          </Box>
+        </Drawer>
+      )}
 
       <FlightSpotEditDialog
         open={dialogOpen}

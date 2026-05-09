@@ -19,8 +19,7 @@ import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'fi
 import { storage } from '../firebase/firebaseConfig';
 import { useAuth } from '../context/AuthContext';
 import type { FlightSpot } from '../types';
-
-const CATEGORIES = ['Mountain', 'Beach', 'Building', 'Forest', 'Field'];
+import { SPOT_CATEGORIES } from '../types';
 
 interface Props {
   open: boolean;
@@ -148,7 +147,7 @@ export default function FlightSpotEditDialog({ open, spot, coords, onSave, onClo
           <Text size="sm" fw={500} mb={6}>Category</Text>
           <Chip.Group value={category} onChange={val => setCategory(typeof val === 'string' ? val : '')}>
             <Group gap="xs">
-              {CATEGORIES.map(cat => (
+              {SPOT_CATEGORIES.map(cat => (
                 <Chip key={cat} value={cat} size="sm">{cat}</Chip>
               ))}
             </Group>

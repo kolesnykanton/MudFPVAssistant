@@ -1,0 +1,160 @@
+import { useState, useMemo } from 'react';
+import {
+  Paper,
+  TextInput,
+  Chip,
+  Group,
+  Stack,
+  ScrollArea,
+  UnstyledButton,
+  Text,
+  Title,
+  ActionIcon,
+} from '@mantine/core';
+import { IconSearch, IconEdit, IconTrash } from '@tabler/icons-react';
+import { useDebouncedValue } from '@mantine/hooks';
+import type { FlightSpot, WithId } from '../../types';
+import { SPOT_CATEGORIES, CATEGORY_COLORS } from '../../types';
+
+interface SpotsListPanelProps {
+  spots: WithId<FlightSpot>[];
+  onLocate: (spot: WithId<FlightSpot>) => void;
+  onEdit: (spot: WithId<FlightSpot>) => void;
+  onDelete: (spot: WithId<FlightSpot>) => void;
+  onClose?: () => void;
+}
+
+export function SpotsListPanel({ spots, onLocate, onEdit, onDelete, onClose }: SpotsListPanelProps) {
+  const [query, setQuery] = useState('');
+  const [debouncedQuery] = useDebouncedValue(query, 200);
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
+
+  const filteredSpots = useMemo(() => {
+    const queryLower = debouncedQuery.toLowerCase();
+    return spots.filter(spot => {
+      const nameMatch = spot.name.toLowerCase().includes(queryLower);
+      const tagsMatch = spot.tags.some(tag => tag.toLowerCase().includes(queryLower));
+      const commentsMatch = spot.comments?.toLowerCase().includes(queryLower) ?? false;
+      const textMatch = nameMatch || tagsMatch || commentsMatch;
+
+      if (!textMatch) return false;
+      if (categoryFilter && spot.category !== categoryFilter) return false;
+      return true;
+    });
+  }, [spots, debouncedQuery, categoryFilter]);
+
+  const formatCoords = (lat: number, lng: number) => `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+
+  return (
+    <Paper p="md" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <Group justify="space-between" mb="md">
+        <Title order={4}>Spots ({filteredSpots.length})</Title>
+        {onClose && (
+          <ActionIcon variant="subtle" color="gray" onClick={onClose} aria-label="Close panel">
+            ✕
+          </ActionIcon>
+        )}
+      </Group>
+
+      <TextInput
+        placeholder="Search spots..."
+        leftSection={<IconSearch size={14} />}
+        value={query}
+        onChange={e => setQuery(e.currentTarget.value)}
+        size="sm"
+        mb="sm"
+      />
+
+      <Group gap="xs" mb="sm">
+        <Chip
+          key="all"
+          value="all"
+          checked={categoryFilter === null}
+          onChange={() => setCategoryFilter(null)}
+          size="xs"
+        >
+          All
+        </Chip>
+        {SPOT_CATEGORIES.map(cat => (
+          <Chip
+            key={cat}
+            value={cat}
+            checked={categoryFilter === cat}
+            onChange={() => setCategoryFilter(categoryFilter === cat ? null : cat)}
+            size="xs"
+          >
+            {cat}
+          </Chip>
+        ))}
+      </Group>
+
+      <ScrollArea flex={1} type="auto">
+        {filteredSpots.length === 0 ? (
+          <Text size="sm" c="dimmed" ta="center" py="lg">
+            {spots.length === 0 ? 'No spots saved yet.' : 'No spots match your search.'}
+          </Text>
+        ) : (
+          <Stack gap="xs">
+            {filteredSpots.map(spot => (
+              <UnstyledButton
+                key={spot.id}
+                onClick={() => onLocate(spot)}
+                p="sm"
+                style={{
+                  borderRadius: 'var(--mantine-radius-sm)',
+                  cursor: 'pointer',
+                  transition: 'background-color 150ms ease',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--mantine-color-gray-1)')}
+                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+              >
+                <Group justify="space-between">
+                  <Group gap="xs" flex={1}>
+                    <div
+                      style={{
+                        width: 12,
+                        height: 12,
+                        borderRadius: '50%',
+                        backgroundColor: spot.category ? CATEGORY_COLORS[spot.category] : '#ccc',
+                        flexShrink: 0,
+                      }}
+                    />
+                    <Stack gap={2} flex={1}>
+                      <Text size="sm" fw={500}>
+                        {spot.name}
+                      </Text>
+                      <Text size="xs" c="dimmed">
+                        {spot.category && `${spot.category} · `}
+                        {formatCoords(spot.latitude, spot.longitude)}
+                      </Text>
+                    </Stack>
+                  </Group>
+                  <Group gap={2} onClick={e => e.stopPropagation()}>
+                    <ActionIcon
+                      size="xs"
+                      variant="subtle"
+                      color="blue"
+                      onClick={() => onEdit(spot)}
+                      aria-label="Edit spot"
+                    >
+                      <IconEdit size={14} />
+                    </ActionIcon>
+                    <ActionIcon
+                      size="xs"
+                      variant="subtle"
+                      color="red"
+                      onClick={() => onDelete(spot)}
+                      aria-label="Delete spot"
+                    >
+                      <IconTrash size={14} />
+                    </ActionIcon>
+                  </Group>
+                </Group>
+              </UnstyledButton>
+            ))}
+          </Stack>
+        )}
+      </ScrollArea>
+    </Paper>
+  );
+}

@@ -8,6 +8,13 @@ import { WeatherLayers } from './WeatherLayers';
 import { SpotMarker } from './SpotMarker';
 import { MapInteraction } from './MapInteraction';
 
+interface FlyToTarget {
+  lat: number;
+  lng: number;
+  spotId?: string;
+  nonce: number;
+}
+
 const AUTO_CENTER_SESSION_KEY = 'mfa-map-auto-centered';
 
 function MapAutoCenter() {
@@ -21,6 +28,19 @@ function MapAutoCenter() {
       { timeout: 8000 },
     );
   }, [map]);
+  return null;
+}
+
+function FlyToTarget({ target, markerRefs }: { target: FlyToTarget | null; markerRefs: React.MutableRefObject<Record<string, L.Marker>> }) {
+  const map = useMap();
+  useEffect(() => {
+    if (!target) return;
+    map.flyTo([target.lat, target.lng], 16, { duration: 0.6 });
+    if (target.spotId && markerRefs.current[target.spotId]) {
+      const marker = markerRefs.current[target.spotId];
+      marker.openPopup();
+    }
+  }, [map, target, markerRefs]);
   return null;
 }
 
@@ -70,10 +90,42 @@ interface FpvMapProps {
   spots: FlightSpot[];
   openWeatherApiKey?: string;
   onContextMenu: (state: ContextMenuState) => void;
+  flyToTarget?: FlyToTarget | null;
+  panelOpen?: boolean;
+  onTogglePanel?: () => void;
 }
 
-export const FpvMap = memo(function FpvMap({ spots, openWeatherApiKey, onContextMenu }: FpvMapProps) {
+function PanelToggleButton({ panelOpen, onToggle }: { panelOpen?: boolean; onToggle?: () => void }) {
+  const map = useMap();
+  useEffect(() => {
+    if (!onToggle || panelOpen === undefined) return;
+
+    const ToggleControl = L.Control.extend({
+      onAdd() {
+        const el = L.DomUtil.create('button', 'leaflet-bar leaflet-control');
+        el.title = 'Toggle spots panel';
+        el.setAttribute('aria-label', 'Toggle spots panel');
+        el.style.cssText = 'width:30px;height:30px;cursor:pointer;background:#fff;border:none;display:flex;align-items:center;justify-content:center;';
+        el.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>';
+        L.DomEvent.on(el, 'click', (e) => {
+          L.DomEvent.stopPropagation(e);
+          onToggle();
+        });
+        return el;
+      },
+    });
+    const btn = new ToggleControl({ position: 'topleft' });
+    btn.addTo(map);
+    return () => { map.removeControl(btn); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [map, onToggle]);
+
+  return null;
+}
+
+export const FpvMap = memo(function FpvMap({ spots, openWeatherApiKey, onContextMenu, flyToTarget, panelOpen, onTogglePanel }: FpvMapProps) {
   const longPressActiveRef = useRef(false);
+  const markerRefsRef = useRef<Record<string, L.Marker>>({});
   return (
     <MapContainer
       center={[40.4168, -3.7038]}
@@ -115,9 +167,11 @@ export const FpvMap = memo(function FpvMap({ spots, openWeatherApiKey, onContext
       <MapAutoCenter />
       <MapControls />
       {spots.length > 0 && <FitBoundsButton spots={spots} />}
+      {onTogglePanel !== undefined && <PanelToggleButton panelOpen={panelOpen} onToggle={onTogglePanel} />}
+      {flyToTarget && <FlyToTarget target={flyToTarget} markerRefs={markerRefsRef} />}
       <MapInteraction onContextMenu={onContextMenu} longPressActiveRef={longPressActiveRef} />
       {spots.map(spot => spot.id
-        ? <SpotMarker key={spot.id} spot={spot} onContextMenu={onContextMenu} longPressActiveRef={longPressActiveRef} />
+        ? <SpotMarker key={spot.id} spot={spot} onContextMenu={onContextMenu} longPressActiveRef={longPressActiveRef} markerRefs={markerRefsRef} />
         : null
       )}
     </MapContainer>

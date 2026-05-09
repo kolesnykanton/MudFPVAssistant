@@ -1,18 +1,12 @@
+/* eslint-disable react-hooks/immutability */
 import { useEffect, useMemo, useRef } from 'react';
 import { Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import type { FlightSpot } from '../../types';
+import { CATEGORY_COLORS } from '../../types';
 import type { ContextMenuState } from './FpvMap';
 import droneIconUrl from '../../assets/drone-icon.svg';
 import markerShadowUrl from 'leaflet/dist/images/marker-shadow.png';
-
-const CATEGORY_COLORS: Record<string, string> = {
-  Mountain: '#8d6e63',
-  Beach:    '#29b6f6',
-  Building: '#7e57c2',
-  Forest:   '#66bb6a',
-  Field:    '#ffb300',
-};
 
 const iconCache = new Map<string, L.DivIcon | L.Icon>();
 
@@ -58,14 +52,28 @@ interface SpotMarkerProps {
   spot: FlightSpot;
   onContextMenu: (state: ContextMenuState) => void;
   longPressActiveRef: React.RefObject<boolean>;
+  markerRefs?: React.MutableRefObject<Record<string, L.Marker>>;
 }
 
-export function SpotMarker({ spot, onContextMenu, longPressActiveRef }: SpotMarkerProps) {
+export function SpotMarker({ spot, onContextMenu, longPressActiveRef, markerRefs }: SpotMarkerProps) {
   const markerRef = useRef<L.Marker>(null);
 
   useEffect(() => {
     const el = markerRef.current?.getElement();
     if (el && spot.id) el.dataset.spotId = spot.id;
+  }, [spot.id]);
+
+  // Register marker in parent's ref map for imperative flyTo access
+  useEffect(() => {
+    if (markerRefs && spot.id && markerRef.current) {
+      const refs = markerRefs.current;
+      const spotId = spot.id as string;
+      refs[spotId] = markerRef.current;
+      return () => {
+        delete refs[spotId];
+      };
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spot.id]);
 
   const icon = useMemo(() => makeIcon(spot.category), [spot.category]);

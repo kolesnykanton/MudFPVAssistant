@@ -9,6 +9,20 @@
   -webkit-user-select: none;
 }
 
+.titleContainer {
+  flex: 0 0 auto;
+  border-bottom: 1px solid var(--mantine-color-gray-2);
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  min-height: 0;
+  gap: var(--mantine-spacing-sm);
+  padding: var(--mantine-spacing-sm);
+}
+
 .mapWrapper {
   flex: 1;
   position: relative;
@@ -18,4 +32,27 @@
   /* Contain Leaflet's internal z-indices (200–700) so the AppShell sidebar
      (z-index ~200 at page level) paints on top of the entire map block */
   isolation: isolate;
+  border-radius: var(--mantine-radius-sm);
+}
+
+.sidePanel {
+  flex: 0 0 320px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+@media (max-width: 48em) {
+  .mainContent {
+    padding: 0;
+    gap: 0;
+  }
+
+  .mapWrapper {
+    border-radius: 0;
+  }
+
+  .sidePanel {
+    display: none;
+  }
 }
