@@ -92,13 +92,23 @@ export default function MainLayout({ children }: MainLayoutProps) {
             </Tooltip>
 
             {!loading && user && (
-              <Avatar
-                src={user.photoURL ?? undefined}
-                alt=""
-                size="sm"
-                radius="xl"
-                aria-hidden="true"
-              />
+              <>
+                <Avatar
+                  src={user.photoURL ?? undefined}
+                  alt={user.displayName ?? ''}
+                  size="sm"
+                  radius="xl"
+                />
+                <Text
+                  c="white"
+                  size="sm"
+                  fw={500}
+                  visibleFrom="sm"
+                  style={{ maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                >
+                  {user.displayName}
+                </Text>
+              </>
             )}
 
             {!loading && (
