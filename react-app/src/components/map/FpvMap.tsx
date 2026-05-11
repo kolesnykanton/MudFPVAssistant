@@ -3,7 +3,7 @@ import { useEffect, useRef, memo } from 'react';
 import { useMediaQuery } from '@mantine/hooks';
 import { MapContainer, TileLayer, LayersControl, ZoomControl, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import type { FlightSpot } from '../../types';
+import type { FlightInfo, FlightSpot, WithId } from '../../types';
 import { MapControls } from './MapControls';
 import { WeatherLayers } from './WeatherLayers';
 import { MarkerCluster } from './MarkerCluster';
@@ -105,6 +105,8 @@ interface FpvMapProps {
   flyToTarget?: FlyToTarget | null;
   panelOpen?: boolean;
   onTogglePanel?: () => void;
+  flightCountBySpot?: Record<string, number>;
+  recentFlightsBySpot?: Record<string, WithId<FlightInfo>[]>;
 }
 
 function PanelToggleButton({ panelOpen, onToggle }: { panelOpen?: boolean; onToggle?: () => void }) {
@@ -135,7 +137,10 @@ function PanelToggleButton({ panelOpen, onToggle }: { panelOpen?: boolean; onTog
   return null;
 }
 
-export const FpvMap = memo(function FpvMap({ spots, openWeatherApiKey, onContextMenu, flyToTarget, panelOpen, onTogglePanel }: FpvMapProps) {
+export const FpvMap = memo(function FpvMap({
+  spots, openWeatherApiKey, onContextMenu, flyToTarget,
+  panelOpen, onTogglePanel, flightCountBySpot, recentFlightsBySpot,
+}: FpvMapProps) {
   const longPressActiveRef = useRef(false);
   const markerRefsRef = useRef<Record<string, L.Marker>>({});
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
@@ -187,7 +192,17 @@ export const FpvMap = memo(function FpvMap({ spots, openWeatherApiKey, onContext
       {onTogglePanel !== undefined && <PanelToggleButton panelOpen={panelOpen} onToggle={onTogglePanel} />}
       {flyToTarget && <FlyToTarget target={flyToTarget} markerRefs={markerRefsRef} clusterGroupRef={clusterGroupRef} />}
       <MapInteraction onContextMenu={onContextMenu} longPressActiveRef={longPressActiveRef} />
-      {spots.length > 0 && <MarkerCluster spots={spots} onContextMenu={onContextMenu} longPressActiveRef={longPressActiveRef} markerRefs={markerRefsRef} clusterGroupRef={clusterGroupRef} />}
+      {spots.length > 0 && (
+        <MarkerCluster
+          spots={spots}
+          onContextMenu={onContextMenu}
+          longPressActiveRef={longPressActiveRef}
+          markerRefs={markerRefsRef}
+          clusterGroupRef={clusterGroupRef}
+          flightCountBySpot={flightCountBySpot ?? {}}
+          recentFlightsBySpot={recentFlightsBySpot ?? {}}
+        />
+      )}
     </MapContainer>
   );
 });

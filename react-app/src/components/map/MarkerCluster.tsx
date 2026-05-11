@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet.markercluster';
-import type { FlightSpot } from '../../types';
+import type { FlightInfo, FlightSpot, WithId } from '../../types';
 import { SpotMarker } from './SpotMarker';
 import type { ContextMenuState } from './FpvMap';
 
@@ -14,14 +14,13 @@ interface MarkerClusterProps {
   longPressActiveRef: React.MutableRefObject<boolean>;
   markerRefs: React.MutableRefObject<Record<string, L.Marker>>;
   clusterGroupRef: React.MutableRefObject<L.MarkerClusterGroup | null>;
+  flightCountBySpot: Record<string, number>;
+  recentFlightsBySpot: Record<string, WithId<FlightInfo>[]>;
 }
 
 export function MarkerCluster({
-  spots,
-  onContextMenu,
-  longPressActiveRef,
-  markerRefs,
-  clusterGroupRef,
+  spots, onContextMenu, longPressActiveRef, markerRefs, clusterGroupRef,
+  flightCountBySpot, recentFlightsBySpot,
 }: MarkerClusterProps) {
   const map = useMap();
 
@@ -68,7 +67,17 @@ export function MarkerCluster({
   return (
     <>
       {spots.map(spot => spot.id
-        ? <SpotMarker key={spot.id} spot={spot} onContextMenu={onContextMenu} longPressActiveRef={longPressActiveRef} markerRefs={markerRefs} />
+        ? (
+          <SpotMarker
+            key={spot.id}
+            spot={spot}
+            onContextMenu={onContextMenu}
+            longPressActiveRef={longPressActiveRef}
+            markerRefs={markerRefs}
+            flightCount={flightCountBySpot[spot.id] ?? 0}
+            recentFlights={recentFlightsBySpot[spot.id] ?? []}
+          />
+        )
         : null
       )}
     </>
