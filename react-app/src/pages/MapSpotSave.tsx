@@ -189,7 +189,7 @@ export default function MapSpotSave() {
           {/* Mobile: list toggle lives in the title bar — no map overlap, standard toolbar pattern */}
           {!isDesktop && (
             <ActionIcon
-              variant="subtle"
+              variant="light"
               color="blue"
               size="lg"
               onClick={() => setMobileDrawerOpen(true)}

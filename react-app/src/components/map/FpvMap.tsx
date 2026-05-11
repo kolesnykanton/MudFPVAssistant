@@ -128,7 +128,8 @@ export const FpvMap = memo(function FpvMap({ spots, openWeatherApiKey, onContext
   const longPressActiveRef = useRef(false);
   const markerRefsRef = useRef<Record<string, L.Marker>>({});
   // Touch devices use pinch-to-zoom; visible zoom buttons are a desktop affordance only.
-  const isMobile = useMediaQuery('(max-width: 48em)');
+  // Default true so zoom never flashes on mobile before the query resolves.
+  const isMobile = useMediaQuery('(max-width: 48em)', true);
   return (
     <MapContainer
       center={[40.4168, -3.7038]}

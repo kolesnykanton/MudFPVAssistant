@@ -4,7 +4,6 @@ import {
   AppShell,
   Avatar,
   Burger,
-  Button,
   Group,
   ActionIcon,
   Text,
@@ -78,7 +77,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
             </Anchor>
           </Group>
 
-          <Group gap="xs" align="center" wrap="nowrap">
+          <Group gap="xs" align="center">
             <Tooltip label={colorScheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}>
               <ActionIcon
                 onClick={() => toggleColorScheme()}
@@ -103,60 +102,29 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
             {!loading && (
               user ? (
-                <>
-                  {/* Icon-only on mobile to prevent header wrapping on narrow screens */}
-                  <Tooltip label="Logout">
-                    <ActionIcon
-                      onClick={signOut}
-                      variant="subtle"
-                      color="orange"
-                      size="lg"
-                      hiddenFrom="sm"
-                      aria-label="Logout"
-                    >
-                      <IconLogout size={18} />
-                    </ActionIcon>
-                  </Tooltip>
-                  <Tooltip label="Logout">
-                    <Button
-                      onClick={signOut}
-                      variant="subtle"
-                      color="orange"
-                      leftSection={<IconLogout size={16} />}
-                      size="sm"
-                      visibleFrom="sm"
-                    >
-                      Logout
-                    </Button>
-                  </Tooltip>
-                </>
+                <Tooltip label="Logout">
+                  <ActionIcon
+                    onClick={signOut}
+                    variant="subtle"
+                    color="orange"
+                    size="lg"
+                    aria-label="Logout"
+                  >
+                    <IconLogout size={18} />
+                  </ActionIcon>
+                </Tooltip>
               ) : (
-                <>
-                  <Tooltip label="Login with Google">
-                    <ActionIcon
-                      onClick={handleSignIn}
-                      variant="subtle"
-                      color="white"
-                      size="lg"
-                      hiddenFrom="sm"
-                      aria-label="Sign in with Google"
-                    >
-                      <IconLogin size={18} />
-                    </ActionIcon>
-                  </Tooltip>
-                  <Tooltip label="Login with Google">
-                    <Button
-                      onClick={handleSignIn}
-                      variant="subtle"
-                      color="white"
-                      leftSection={<IconLogin size={16} />}
-                      size="sm"
-                      visibleFrom="sm"
-                    >
-                      Sign in
-                    </Button>
-                  </Tooltip>
-                </>
+                <Tooltip label="Sign in with Google">
+                  <ActionIcon
+                    onClick={handleSignIn}
+                    variant="subtle"
+                    color="white"
+                    size="lg"
+                    aria-label="Sign in with Google"
+                  >
+                    <IconLogin size={18} />
+                  </ActionIcon>
+                </Tooltip>
               )
             )}
           </Group>
