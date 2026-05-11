@@ -3,10 +3,11 @@ import { useEffect, useRef, memo } from 'react';
 import { useMediaQuery } from '@mantine/hooks';
 import { MapContainer, TileLayer, LayersControl, ZoomControl, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import type { FlightSpot } from '../../types';
+import type { FlightInfo, FlightSpot, WithId } from '../../types';
 import { MapControls } from './MapControls';
 import { WeatherLayers } from './WeatherLayers';
-import { SpotMarker } from './SpotMarker';
+import { MarkerCluster } from './MarkerCluster';
+import { YouAreHereMarker } from './YouAreHereMarker';
 import { MapInteraction } from './MapInteraction';
 
 interface FlyToTarget {
@@ -32,16 +33,26 @@ function MapAutoCenter() {
   return null;
 }
 
-function FlyToTarget({ target, markerRefs }: { target: FlyToTarget | null; markerRefs: React.MutableRefObject<Record<string, L.Marker>> }) {
+function FlyToTarget({ target, markerRefs, clusterGroupRef }: {
+  target: FlyToTarget | null;
+  markerRefs: React.MutableRefObject<Record<string, L.Marker>>;
+  clusterGroupRef: React.MutableRefObject<L.MarkerClusterGroup | null>;
+}) {
   const map = useMap();
   useEffect(() => {
     if (!target) return;
-    map.flyTo([target.lat, target.lng], 16, { duration: 0.6 });
-    if (target.spotId && markerRefs.current[target.spotId]) {
-      const marker = markerRefs.current[target.spotId];
-      marker.openPopup();
+    const marker = target.spotId ? markerRefs.current[target.spotId] : null;
+    const clusterGroup = clusterGroupRef.current;
+
+    if (marker && clusterGroup) {
+      // zoomToShowLayer handles unclustering the marker before opening the popup,
+      // so the popup isn't silently swallowed by a cluster at zoom < disableClusteringAtZoom.
+      clusterGroup.zoomToShowLayer(marker, () => marker.openPopup());
+    } else {
+      map.flyTo([target.lat, target.lng], 16, { duration: 0.6 });
+      if (marker) marker.openPopup();
     }
-  }, [map, target, markerRefs]);
+  }, [map, target, markerRefs, clusterGroupRef]);
   return null;
 }
 
@@ -94,6 +105,8 @@ interface FpvMapProps {
   flyToTarget?: FlyToTarget | null;
   panelOpen?: boolean;
   onTogglePanel?: () => void;
+  flightCountBySpot?: Record<string, number>;
+  recentFlightsBySpot?: Record<string, WithId<FlightInfo>[]>;
 }
 
 function PanelToggleButton({ panelOpen, onToggle }: { panelOpen?: boolean; onToggle?: () => void }) {
@@ -124,9 +137,13 @@ function PanelToggleButton({ panelOpen, onToggle }: { panelOpen?: boolean; onTog
   return null;
 }
 
-export const FpvMap = memo(function FpvMap({ spots, openWeatherApiKey, onContextMenu, flyToTarget, panelOpen, onTogglePanel }: FpvMapProps) {
+export const FpvMap = memo(function FpvMap({
+  spots, openWeatherApiKey, onContextMenu, flyToTarget,
+  panelOpen, onTogglePanel, flightCountBySpot, recentFlightsBySpot,
+}: FpvMapProps) {
   const longPressActiveRef = useRef(false);
   const markerRefsRef = useRef<Record<string, L.Marker>>({});
+  const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
   // Touch devices use pinch-to-zoom; visible zoom buttons are a desktop affordance only.
   // Default true so zoom never flashes on mobile before the query resolves.
   const isMobile = useMediaQuery('(max-width: 48em)', true);
@@ -169,14 +186,22 @@ export const FpvMap = memo(function FpvMap({ spots, openWeatherApiKey, onContext
         <WeatherLayers openWeatherApiKey={openWeatherApiKey} />
       </LayersControl>
       <MapAutoCenter />
+      <YouAreHereMarker />
       <MapControls />
       {spots.length > 0 && <FitBoundsButton spots={spots} />}
       {onTogglePanel !== undefined && <PanelToggleButton panelOpen={panelOpen} onToggle={onTogglePanel} />}
-      {flyToTarget && <FlyToTarget target={flyToTarget} markerRefs={markerRefsRef} />}
+      {flyToTarget && <FlyToTarget target={flyToTarget} markerRefs={markerRefsRef} clusterGroupRef={clusterGroupRef} />}
       <MapInteraction onContextMenu={onContextMenu} longPressActiveRef={longPressActiveRef} />
-      {spots.map(spot => spot.id
-        ? <SpotMarker key={spot.id} spot={spot} onContextMenu={onContextMenu} longPressActiveRef={longPressActiveRef} markerRefs={markerRefsRef} />
-        : null
+      {spots.length > 0 && (
+        <MarkerCluster
+          spots={spots}
+          onContextMenu={onContextMenu}
+          longPressActiveRef={longPressActiveRef}
+          markerRefs={markerRefsRef}
+          clusterGroupRef={clusterGroupRef}
+          flightCountBySpot={flightCountBySpot ?? {}}
+          recentFlightsBySpot={recentFlightsBySpot ?? {}}
+        />
       )}
     </MapContainer>
   );

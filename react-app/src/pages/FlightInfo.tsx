@@ -7,13 +7,14 @@ import {
   Title,
   Group,
   Loader,
-  Indicator,
   Tooltip,
   Button,
+  Alert,
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { IconCalendar, IconDatabaseImport } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
+import { useSearchParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import type { FlightInfo as FlightInfoType } from '../types';
 import AddFlightForm from '../components/AddFlightForm';
@@ -23,17 +24,20 @@ import FlightStats from '../components/FlightStats';
 const isDev = import.meta.env.DEV;
 
 export default function FlightInfo() {
-  const { flights, flightsLoading, addFlight, updateFlight, deleteFlight } = useData();
+  const { flights, spots, flightsLoading, addFlight, updateFlight, deleteFlight } = useData();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const spotFilter = searchParams.get('spotId');
+  const filterSpot = spotFilter ? spots.find(s => s.id === spotFilter) : undefined;
   const [seeding, setSeeding] = useState(false);
 
   const handleSeed = async () => {
     setSeeding(true);
     try {
-      const { default: SEED } = await import('../dev/seedFlightData');
-      for (const flight of SEED) {
-        await addFlight(flight);
+      const { default: flights } = await import('../dev/test-flights.json');
+      for (const flight of flights) {
+        await addFlight(flight as FlightInfoType);
       }
-      notifications.show({ color: 'green', message: `${SEED.length} test flights added.` });
+      notifications.show({ color: 'green', message: `${flights.length} test flights added.` });
     } catch {
       notifications.show({ color: 'red', message: 'Seeding failed.' });
     } finally {
@@ -76,12 +80,16 @@ export default function FlightInfo() {
     return counts;
   }, [flights]);
 
+  const displayedFlights = spotFilter
+    ? flights.filter(f => f.spotId === spotFilter)
+    : flights;
+
   return (
     <Box>
       <Group justify="space-between" mb="lg">
         <Title order={2}>Flight Log</Title>
         {isDev && (
-          <Tooltip label="Adds 15 test flights (dev only)">
+          <Tooltip label="Seeds full test dataset (dev only)">
             <Button
               size="xs"
               variant="light"
@@ -102,6 +110,19 @@ export default function FlightInfo() {
         </Group>
       ) : (
         <Grid gap="lg">
+          {spotFilter && (
+            <Grid.Col span={12}>
+              <Alert
+                color="blue"
+                variant="light"
+                withCloseButton
+                onClose={() => setSearchParams({})}
+                closeButtonLabel="Clear filter"
+              >
+                Showing flights at <strong>{filterSpot?.name ?? spotFilter}</strong>
+              </Alert>
+            </Grid.Col>
+          )}
           <Grid.Col span={{ base: 12, md: 5 }}>
             <AddFlightForm onAdd={handleAdd} />
           </Grid.Col>
@@ -115,10 +136,21 @@ export default function FlightInfo() {
                   const key = dateStr.split('T')[0];
                   const count = flightCountByDate[key] ?? 0;
                   const day = new Date(dateStr).getUTCDate();
+                  const bg =
+                    count === 0 ? 'transparent'
+                    : count === 1 ? 'rgba(34, 139, 230, 0.20)'
+                    : count === 2 ? 'rgba(34, 139, 230, 0.45)'
+                    :               'rgba(34, 139, 230, 0.72)';
                   return (
-                    <Indicator size={6} color="blue" offset={-2} disabled={count === 0}>
-                      <div>{day}</div>
-                    </Indicator>
+                    <Tooltip
+                      label={`${count} flight${count !== 1 ? 's' : ''}`}
+                      disabled={count === 0}
+                      withArrow
+                    >
+                      <div style={{ width: '100%', height: '100%', borderRadius: 4, backgroundColor: bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {day}
+                      </div>
+                    </Tooltip>
                   );
                 }}
               />
@@ -151,7 +183,7 @@ export default function FlightInfo() {
               </Group>
             </Box>
             <FlightTable
-              flights={flights}
+              flights={displayedFlights}
               selectedDate={selectedDate}
               onDelete={handleDelete}
               onUpdate={handleUpdate}

@@ -1,20 +1,13 @@
 import { useState } from 'react';
 import {
-  Box,
-  Button,
-  Grid,
-  NumberInput,
-  Paper,
-  Select,
-  Textarea,
-  TextInput,
-  Title,
+  Box, Button, Grid, NumberInput, Paper, Select, Textarea, TextInput, Title,
 } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { notifications } from '@mantine/notifications';
 import { IconCirclePlus } from '@tabler/icons-react';
 import type { FlightInfo, BatteryType } from '../types';
 import FlightTimeInput from './FlightTimeInput';
+import SpotLocationPicker from './SpotLocationPicker';
 
 interface AddFlightFormProps {
   onAdd: (flight: Omit<FlightInfo, 'id'>) => Promise<void>;
@@ -29,6 +22,7 @@ export default function AddFlightForm({ onAdd }: AddFlightFormProps) {
   const [batType, setBatType] = useState<BatteryType>('LiPo');
   const [cellCount, setCellCount] = useState<number>(4);
   const [flightTime, setFlightTime] = useState<string | undefined>(undefined);
+  const [spotId, setSpotId] = useState<string | undefined>(undefined);
   const [location, setLocation] = useState('');
   const [comment, setComment] = useState('');
   const [date, setDate] = useState<string | null>(new Date().toISOString().split('T')[0]);
@@ -44,6 +38,7 @@ export default function AddFlightForm({ onAdd }: AddFlightFormProps) {
       batType,
       cellCount,
       location: location.trim(),
+      spotId: spotId ?? undefined,
       comment: comment.trim() || undefined,
       usedMah: usedMah !== '' ? Number(usedMah) : undefined,
       flightTime,
@@ -58,6 +53,7 @@ export default function AddFlightForm({ onAdd }: AddFlightFormProps) {
       setBatType('LiPo');
       setCellCount(4);
       setFlightTime(undefined);
+      setSpotId(undefined);
       setLocation('');
       setComment('');
       setDate(new Date().toISOString().split('T')[0]);
@@ -119,10 +115,10 @@ export default function AddFlightForm({ onAdd }: AddFlightFormProps) {
           </Grid.Col>
 
           <Grid.Col span={12}>
-            <TextInput
-              label="Location"
-              value={location}
-              onChange={e => setLocation(e.target.value)}
+            <SpotLocationPicker
+              spotId={spotId}
+              location={location}
+              onChange={(sid, loc) => { setSpotId(sid); setLocation(loc); }}
               size="sm"
             />
           </Grid.Col>

@@ -1,10 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
-  ActionIcon, Group, Pagination, Paper, ScrollArea, Stack, Table, Text, TextInput, Title,
+  ActionIcon, Anchor, Badge, Group, Pagination, Paper,
+  ScrollArea, Stack, Table, Text, TextInput, Title,
 } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
 import { IconEdit, IconSearch, IconTrash } from '@tabler/icons-react';
+import { useNavigate } from 'react-router-dom';
+import { useData } from '../context/DataContext';
 import type { FlightInfo, WithId } from '../types';
+import { CATEGORY_COLORS } from '../types';
 import ConfirmDialog from './ConfirmDialog';
 import FlightInfoEditDialog from './FlightInfoEditDialog';
 
@@ -18,6 +22,8 @@ interface FlightTableProps {
 }
 
 export default function FlightTable({ flights, selectedDate, onDelete, onUpdate }: FlightTableProps) {
+  const { spots } = useData();
+  const navigate = useNavigate();
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [editingFlight, setEditingFlight] = useState<WithId<FlightInfo> | null>(null);
   const [search, setSearch] = useState('');
@@ -53,6 +59,37 @@ export default function FlightTable({ flights, selectedDate, onDelete, onUpdate 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
   const pageRows = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+
+  function renderLocation(flight: WithId<FlightInfo>) {
+    if (!flight.spotId) {
+      return <Text size="sm" c="dimmed" fs="italic">{flight.location || '—'}</Text>;
+    }
+    const spot = spots.find(s => s.id === flight.spotId);
+    if (!spot) {
+      // spotId set but spot was deleted — graceful fallback
+      return <Text size="sm" c="dimmed" fs="italic">{flight.location || '—'}</Text>;
+    }
+    const color = spot.category ? (CATEGORY_COLORS[spot.category] ?? undefined) : undefined;
+    return (
+      <Group gap={4} wrap="nowrap">
+        <Anchor
+          size="sm"
+          onClick={() => navigate(`/map-spot-save?highlight=${flight.spotId}`)}
+          style={{ cursor: 'pointer' }}
+        >
+          {spot.name}
+        </Anchor>
+        {spot.category && (
+          <Badge
+            size="xs"
+            style={{ background: color, color: 'white', flexShrink: 0 }}
+          >
+            {spot.category}
+          </Badge>
+        )}
+      </Group>
+    );
+  }
 
   return (
     <Paper withBorder p="md" radius="md">
@@ -97,7 +134,7 @@ export default function FlightTable({ flights, selectedDate, onDelete, onUpdate 
                   <Table.Tr key={flight.id}>
                     <Table.Td>{flight.date ?? '—'}</Table.Td>
                     <Table.Td>{flight.name}</Table.Td>
-                    <Table.Td>{flight.location}</Table.Td>
+                    <Table.Td>{renderLocation(flight)}</Table.Td>
                     <Table.Td>{flight.flightTime ?? '—'}</Table.Td>
                     <Table.Td>{flight.usedMah ?? '—'}</Table.Td>
                     <Table.Td>{flight.cellCount}S</Table.Td>
@@ -138,12 +175,7 @@ export default function FlightTable({ flights, selectedDate, onDelete, onUpdate 
               <Text size="xs" c="dimmed">
                 Showing {(safePage - 1) * PAGE_SIZE + 1}–{Math.min(safePage * PAGE_SIZE, filtered.length)} of {filtered.length}
               </Text>
-              <Pagination
-                value={safePage}
-                onChange={setPage}
-                total={totalPages}
-                size="sm"
-              />
+              <Pagination value={safePage} onChange={setPage} total={totalPages} size="sm" />
             </Group>
           )}
         </Stack>

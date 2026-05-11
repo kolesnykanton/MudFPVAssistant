@@ -23,6 +23,7 @@ export interface FlightInfo {
   flightTime?: string; // "mm:ss"
   batType: BatteryType;
   cellCount: number;
+  spotId?: string;
 }
 
 export interface FlightSpot {

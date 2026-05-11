@@ -4,11 +4,12 @@ import { Box, Text, Title, Drawer, ActionIcon, Group } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { IconList, IconLayoutSidebarRight } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
+import { useSearchParams } from 'react-router-dom';
 import classes from './MapSpotSave.module.css';
 import { useData } from '../context/DataContext';
+import type { FlightInfo, FlightSpot, WithId } from '../types';
 import { useSettings } from '../hooks/useSettings';
 import { useAuth } from '../context/AuthContext';
-import type { FlightSpot, WithId } from '../types';
 import { FpvMap } from '../components/map/FpvMap';
 import type { ContextMenuState } from '../components/map/FpvMap';
 import { SpotsListPanel } from '../components/map/SpotsListPanel';
@@ -30,7 +31,8 @@ interface FlyToState {
 export default function MapSpotSave() {
   const { uid } = useAuth();
   const { settings } = useSettings();
-  const { spots, addSpot, updateSpot, deleteSpot } = useData();
+  const { spots, flights, spotsLoading, addSpot, updateSpot, deleteSpot } = useData();
+  const [searchParams] = useSearchParams();
   const isDesktop = useMediaQuery('(min-width: 48em)');
 
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
@@ -56,6 +58,34 @@ export default function MapSpotSave() {
 
   const [flyToState, setFlyToState] = useState<FlyToState | null>(null);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+
+  const flightCountBySpot = useMemo(() =>
+    flights.reduce((acc, f) => {
+      if (f.spotId) acc[f.spotId] = (acc[f.spotId] ?? 0) + 1;
+      return acc;
+    }, {} as Record<string, number>)
+  , [flights]);
+
+  const recentFlightsBySpot = useMemo(() => {
+    const result: Record<string, WithId<FlightInfo>[]> = {};
+    for (const spot of spots) {
+      if (!spot.id) continue;
+      result[spot.id] = flights
+        .filter(f => f.spotId === spot.id)
+        .slice(0, 3);
+    }
+    return result;
+  }, [flights, spots]);
+
+  useEffect(() => {
+    if (spotsLoading) return;
+    const highlightId = searchParams.get('highlight');
+    if (!highlightId) return;
+    const spot = spots.find(s => s.id === highlightId);
+    if (!spot) return;
+    setFlyToState({ lat: spot.latitude, lng: spot.longitude, spotId: highlightId, nonce: Date.now() });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [spotsLoading]);
 
   useEffect(() => {
     localStorage.setItem(PANEL_STORAGE_KEY, String(panelOpen));
@@ -220,6 +250,8 @@ export default function MapSpotSave() {
             flyToTarget={flyToState}
             panelOpen={isDesktop ? panelOpen : undefined}
             onTogglePanel={isDesktop ? () => setPanelOpen(!panelOpen) : undefined}
+            flightCountBySpot={flightCountBySpot}
+            recentFlightsBySpot={recentFlightsBySpot}
           />
 
           <QuickPinFab />
