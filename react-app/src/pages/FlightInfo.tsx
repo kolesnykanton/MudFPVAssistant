@@ -29,11 +29,11 @@ export default function FlightInfo() {
   const handleSeed = async () => {
     setSeeding(true);
     try {
-      const { default: SEED } = await import('../dev/seedFlightData');
-      for (const flight of SEED) {
-        await addFlight(flight);
+      const { default: flights } = await import('../dev/test-flights.json');
+      for (const flight of flights) {
+        await addFlight(flight as FlightInfoType);
       }
-      notifications.show({ color: 'green', message: `${SEED.length} test flights added.` });
+      notifications.show({ color: 'green', message: `${flights.length} test flights added.` });
     } catch {
       notifications.show({ color: 'red', message: 'Seeding failed.' });
     } finally {
@@ -81,7 +81,7 @@ export default function FlightInfo() {
       <Group justify="space-between" mb="lg">
         <Title order={2}>Flight Log</Title>
         {isDev && (
-          <Tooltip label="Adds 15 test flights (dev only)">
+          <Tooltip label="Seeds full test dataset (dev only)">
             <Button
               size="xs"
               variant="light"
