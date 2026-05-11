@@ -23,6 +23,7 @@ export default function SpotLocationPicker({
   const [inputValue, setInputValue] = useState(location);
 
   // Sync input when parent resets the value (e.g. dialog re-opens with different flight)
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setInputValue(location); }, [location]);
 
   const flightCountBySpot = useMemo(() =>
