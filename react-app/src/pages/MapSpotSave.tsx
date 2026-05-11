@@ -186,6 +186,18 @@ export default function MapSpotSave() {
       <Box className={classes.titleContainer}>
         <Group justify="space-between" p="sm" pb={0}>
           <Title order={2}>Flight Spot Saver</Title>
+          {/* Mobile: list toggle lives in the title bar — no map overlap, standard toolbar pattern */}
+          {!isDesktop && (
+            <ActionIcon
+              variant="light"
+              color="blue"
+              size="lg"
+              onClick={() => setMobileDrawerOpen(true)}
+              aria-label="Open spots list"
+            >
+              <IconList size={20} />
+            </ActionIcon>
+          )}
           {isDesktop && !panelOpen && (
             <ActionIcon
               variant="subtle"
@@ -209,25 +221,6 @@ export default function MapSpotSave() {
             panelOpen={isDesktop ? panelOpen : undefined}
             onTogglePanel={isDesktop ? () => setPanelOpen(!panelOpen) : undefined}
           />
-
-          {!isDesktop && (
-            <ActionIcon
-              size="lg"
-              radius="md"
-              variant="filled"
-              color="blue"
-              style={{
-                position: 'absolute',
-                bottom: 16,
-                left: 16,
-                zIndex: 999,
-              }}
-              onClick={() => setMobileDrawerOpen(true)}
-              aria-label="Open spots list"
-            >
-              <IconList size={20} />
-            </ActionIcon>
-          )}
 
           <QuickPinFab />
 

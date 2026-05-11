@@ -1,5 +1,6 @@
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useRef, memo } from 'react';
+import { useMediaQuery } from '@mantine/hooks';
 import { MapContainer, TileLayer, LayersControl, ZoomControl, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import type { FlightSpot } from '../../types';
@@ -126,6 +127,9 @@ function PanelToggleButton({ panelOpen, onToggle }: { panelOpen?: boolean; onTog
 export const FpvMap = memo(function FpvMap({ spots, openWeatherApiKey, onContextMenu, flyToTarget, panelOpen, onTogglePanel }: FpvMapProps) {
   const longPressActiveRef = useRef(false);
   const markerRefsRef = useRef<Record<string, L.Marker>>({});
+  // Touch devices use pinch-to-zoom; visible zoom buttons are a desktop affordance only.
+  // Default true so zoom never flashes on mobile before the query resolves.
+  const isMobile = useMediaQuery('(max-width: 48em)', true);
   return (
     <MapContainer
       center={[40.4168, -3.7038]}
@@ -139,7 +143,7 @@ export const FpvMap = memo(function FpvMap({ spots, openWeatherApiKey, onContext
       } as React.CSSProperties}
       zoomControl={false}
     >
-      <ZoomControl position="bottomright" />
+      {!isMobile && <ZoomControl position="bottomright" />}
       <LayersControl position="topright">
         <LayersControl.BaseLayer checked name="OSM Standard">
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="&copy; OSM" />

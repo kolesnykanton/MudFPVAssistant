@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ActionIcon, Tooltip, Loader } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { IconCurrentLocation } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { useData } from '../../context/DataContext';
@@ -7,6 +8,10 @@ import { useData } from '../../context/DataContext';
 export function QuickPinFab() {
   const { addSpot } = useData();
   const [loading, setLoading] = useState(false);
+  // On desktop the zoom control occupies the bottom-right (~10–75 px from map edge),
+  // so the FAB needs more clearance. On mobile zoom is hidden; 16 px is the standard
+  // safe-area FAB margin per iOS HIG / Material Design.
+  const isMobile = useMediaQuery('(max-width: 48em)', true);
 
   const handlePin = () => {
     if (loading || !navigator.geolocation) return;
@@ -52,7 +57,7 @@ export function QuickPinFab() {
         color="teal"
         style={{
           position: 'absolute',
-          bottom: 60,
+          bottom: isMobile ? 'calc(16px + env(safe-area-inset-bottom, 0px))' : 90,
           right: 16,
           zIndex: 999,
           boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
