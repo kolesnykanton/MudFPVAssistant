@@ -17,6 +17,7 @@ import FlightSpotEditDialog from '../components/FlightSpotEditDialog';
 import ConfirmDialog from '../components/ConfirmDialog';
 import MapContextMenu, { type MapContextMenuItem } from '../components/MapContextMenu';
 import { QuickPinFab } from '../components/map/QuickPinFab';
+import { openGoogleMaps, openAppleMaps } from '../utils/navigation';
 
 const MENU_WIDTH = 170;
 const PANEL_STORAGE_KEY = 'mfa-map-panel-open';
@@ -158,6 +159,18 @@ export default function MapSpotSave() {
     setContextMenu(null);
   };
 
+  const handleNavigateGoogleMaps = () => {
+    if (!contextMenu) return;
+    setContextMenu(null);
+    openGoogleMaps(contextMenu.lat, contextMenu.lng);
+  };
+
+  const handleNavigateAppleMaps = () => {
+    if (!contextMenu) return;
+    setContextMenu(null);
+    openAppleMaps(contextMenu.lat, contextMenu.lng);
+  };
+
   const confirmDeleteSpot = async () => {
     if (!pendingDeleteSpotId) return;
     const id = pendingDeleteSpotId;
@@ -194,11 +207,15 @@ export default function MapSpotSave() {
     if (!contextMenu) return [];
     return contextMenu.isPoint
       ? [
-          { label: 'Edit spot',   onClick: handleEditSpot },
-          { label: 'Delete spot', onClick: handleDeleteSpot, danger: true },
+          { label: 'Edit spot',        onClick: handleEditSpot },
+          { label: 'Delete spot',      onClick: handleDeleteSpot, danger: true },
+          { label: 'Google Maps ↗',   onClick: handleNavigateGoogleMaps },
+          { label: 'Apple Maps ↗',    onClick: handleNavigateAppleMaps },
         ]
       : [
-          { label: 'Add spot', onClick: handleAddSpot },
+          { label: 'Add spot',         onClick: handleAddSpot },
+          { label: 'Google Maps ↗',   onClick: handleNavigateGoogleMaps },
+          { label: 'Apple Maps ↗',    onClick: handleNavigateAppleMaps },
         ];
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contextMenu]);
