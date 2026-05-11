@@ -42,6 +42,11 @@
   min-height: 0;
 }
 
+/* Lift Leaflet's bottom-anchored controls (scale bar, zoom) above the iOS home indicator in PWA mode */
+.mapWrapper :global(.leaflet-bottom) {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
 @media (max-width: 48em) {
   .mainContent {
     padding: 0;

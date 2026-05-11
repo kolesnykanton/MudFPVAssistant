@@ -52,7 +52,7 @@ export function QuickPinFab() {
         color="teal"
         style={{
           position: 'absolute',
-          bottom: 60,
+          bottom: 'calc(16px + env(safe-area-inset-bottom, 0px))',
           right: 16,
           zIndex: 999,
           boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
