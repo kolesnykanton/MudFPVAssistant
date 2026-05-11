@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -9,6 +9,10 @@ import {
   Title,
   Group,
   Loader,
+  FileButton,
+  Stack,
+  Progress,
+  Alert,
 } from '@mantine/core';
 import {
   IconPlaneTilt,
@@ -16,9 +20,14 @@ import {
   IconPlane,
   IconMapPin,
   IconSettings,
+  IconUpload,
+  IconCheck,
+  IconAlertCircle,
 } from '@tabler/icons-react';
+import { notifications } from '@mantine/notifications';
 import { useData } from '../context/DataContext';
 import { useSettings } from '../hooks/useSettings';
+import type { FlightInfo } from '../types';
 
 interface WeatherData {
   name: string;
@@ -29,14 +38,75 @@ interface WeatherData {
 
 export default function Home() {
   const navigate = useNavigate();
-  const { flights, spots, flightsLoading, spotsLoading } = useData();
+  const { flights, spots, flightsLoading, spotsLoading, addFlight } = useData();
   const { settings, loading: settingsLoading } = useSettings();
+  const fileResetRef = useRef<() => void>(null);
 
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [weatherError, setWeatherError] = useState<string | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(false);
 
+  const [importing, setImporting] = useState(false);
+  const [importProgress, setImportProgress] = useState(0);
+  const [importError, setImportError] = useState<string | null>(null);
+  const [importSuccess, setImportSuccess] = useState<number | null>(null);
+
   const apiKey = settings.apiKeys?.openWeatherApiKey;
+
+  const handleImportFlights = async (file: File | null) => {
+    if (!file) return;
+    setImportError(null);
+    setImportSuccess(null);
+    setImporting(true);
+    setImportProgress(0);
+
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      const flightsToImport = Array.isArray(data) ? data : [data];
+
+      let successCount = 0;
+      for (let i = 0; i < flightsToImport.length; i += 1) {
+        const flight = flightsToImport[i];
+        try {
+          await addFlight({
+            name: flight.name ?? 'Unnamed',
+            date: flight.date,
+            usedMah: flight.usedMah,
+            flightTime: flight.flightTime,
+            location: flight.location,
+            comment: flight.comment,
+            batType: flight.batType ?? 'LiPo',
+            cellCount: flight.cellCount ?? 1,
+          } as FlightInfo);
+          successCount += 1;
+          setImportProgress(Math.round((i + 1) / flightsToImport.length * 100));
+        } catch (err) {
+          console.error(`Failed to import flight ${i}:`, err);
+        }
+      }
+
+      setImportSuccess(successCount);
+      fileResetRef.current?.();
+      notifications.show({
+        color: 'green',
+        icon: <IconCheck size={16} />,
+        title: 'Import successful',
+        message: `Added ${successCount} flight(s).`,
+      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Invalid file format';
+      setImportError(msg);
+      notifications.show({
+        color: 'red',
+        icon: <IconAlertCircle size={16} />,
+        title: 'Import failed',
+        message: msg,
+      });
+    } finally {
+      setImporting(false);
+    }
+  };
 
   useEffect(() => {
     if (!apiKey || settingsLoading) return;
@@ -142,10 +212,50 @@ export default function Home() {
             </Card>
           </Grid.Col>
 
-          <Grid.Col span={{ base: 12 }}>
+          <Grid.Col span={{ base: 12, md: 6 }}>
+            <Card withBorder shadow="sm" radius="md">
+              <Title order={5} mb="sm">Batch Import Flights</Title>
+              <Stack gap="sm">
+                <Text size="sm" c="dimmed">
+                  Upload a JSON file with flight data to add multiple flights at once.
+                </Text>
+                <FileButton
+                  resetRef={fileResetRef}
+                  accept="application/json"
+                  onChange={handleImportFlights}
+                  disabled={importing}
+                >
+                  {(props) => (
+                    <Button
+                      {...props}
+                      variant="light"
+                      size="sm"
+                      leftSection={<IconUpload size={14} />}
+                      loading={importing}
+                    >
+                      {importing ? 'Importing...' : 'Choose JSON file'}
+                    </Button>
+                  )}
+                </FileButton>
+                {importing && <Progress value={importProgress} size="sm" />}
+                {importSuccess !== null && (
+                  <Alert icon={<IconCheck size={14} />} color="green" variant="light">
+                    Successfully imported {importSuccess} flight(s).
+                  </Alert>
+                )}
+                {importError && (
+                  <Alert icon={<IconAlertCircle size={14} />} color="red" variant="light">
+                    {importError}
+                  </Alert>
+                )}
+              </Stack>
+            </Card>
+          </Grid.Col>
+
+          <Grid.Col span={{ base: 12, md: 6 }}>
             <Card withBorder shadow="sm" radius="md">
               <Title order={5} mb="sm">Weather</Title>
-              <Box mih={80}>
+              <Box mih={140}>
                 {settingsLoading || weatherLoading ? (
                   <Group gap="xs">
                     <Loader size="xs" />

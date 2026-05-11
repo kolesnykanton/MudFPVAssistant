@@ -6,7 +6,8 @@ import L from 'leaflet';
 import type { FlightSpot } from '../../types';
 import { MapControls } from './MapControls';
 import { WeatherLayers } from './WeatherLayers';
-import { SpotMarker } from './SpotMarker';
+import { MarkerCluster } from './MarkerCluster';
+import { YouAreHereMarker } from './YouAreHereMarker';
 import { MapInteraction } from './MapInteraction';
 
 interface FlyToTarget {
@@ -169,15 +170,13 @@ export const FpvMap = memo(function FpvMap({ spots, openWeatherApiKey, onContext
         <WeatherLayers openWeatherApiKey={openWeatherApiKey} />
       </LayersControl>
       <MapAutoCenter />
+      <YouAreHereMarker />
       <MapControls />
       {spots.length > 0 && <FitBoundsButton spots={spots} />}
       {onTogglePanel !== undefined && <PanelToggleButton panelOpen={panelOpen} onToggle={onTogglePanel} />}
       {flyToTarget && <FlyToTarget target={flyToTarget} markerRefs={markerRefsRef} />}
       <MapInteraction onContextMenu={onContextMenu} longPressActiveRef={longPressActiveRef} />
-      {spots.map(spot => spot.id
-        ? <SpotMarker key={spot.id} spot={spot} onContextMenu={onContextMenu} longPressActiveRef={longPressActiveRef} markerRefs={markerRefsRef} />
-        : null
-      )}
+      {spots.length > 0 && <MarkerCluster spots={spots} onContextMenu={onContextMenu} longPressActiveRef={longPressActiveRef} markerRefs={markerRefsRef} />}
     </MapContainer>
   );
 });

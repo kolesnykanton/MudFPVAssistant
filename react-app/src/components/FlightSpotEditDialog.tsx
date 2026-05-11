@@ -156,6 +156,22 @@ export default function FlightSpotEditDialog({ open, spot, coords, onSave, onClo
           required
           size="sm"
         />
+        <Group grow>
+          <TextInput
+            label="Latitude"
+            value={(spot?.latitude ?? coords?.lat ?? 0).toFixed(6)}
+            readOnly
+            disabled
+            size="sm"
+          />
+          <TextInput
+            label="Longitude"
+            value={(spot?.longitude ?? coords?.lng ?? 0).toFixed(6)}
+            readOnly
+            disabled
+            size="sm"
+          />
+        </Group>
         <Textarea
           label="Comments"
           value={comments}
