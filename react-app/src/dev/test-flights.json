@@ -1,0 +1,2689 @@
+[
+  {
+    "name": "DJI FPV",
+    "date": "2025-04-13",
+    "usedMah": 2372,
+    "flightTime": "17:22",
+    "location": "Mountain Ridge",
+    "batType": "LiIon",
+    "cellCount": 6
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2026-04-18",
+    "usedMah": 2206,
+    "flightTime": "12:07",
+    "location": "Coastal Cliffs",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "OSD data looked perfect"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-11-08",
+    "usedMah": 1147,
+    "flightTime": "06:41",
+    "location": "Local Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Beginner-friendly session"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-10-17",
+    "usedMah": 1939,
+    "flightTime": "04:46",
+    "location": "Quarry",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Motor 3 getting hot"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-06-01",
+    "usedMah": 1127,
+    "flightTime": "09:14",
+    "location": "Parking Lot",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Beginner-friendly session"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-11-23",
+    "usedMah": 1807,
+    "flightTime": "04:35",
+    "location": "Industrial Zone",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Smooth freestyle run"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-09-22",
+    "usedMah": 1021,
+    "flightTime": "06:49",
+    "location": "Backyard",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Wind picking up, called it early"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-03-19",
+    "usedMah": 1586,
+    "flightTime": "07:18",
+    "location": "Industrial Zone",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Motor 3 getting hot"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2026-02-02",
+    "usedMah": 974,
+    "flightTime": "05:48",
+    "location": "Parking Lot",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Clean flight, great visibility"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-11-09",
+    "usedMah": 2179,
+    "flightTime": "05:26",
+    "location": "Abandoned Factory",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Tried new tune, needs PIDs"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-02-02",
+    "usedMah": 890,
+    "flightTime": "11:11",
+    "location": "Parking Lot",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Wind picking up, called it early"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-10-30",
+    "usedMah": 747,
+    "flightTime": "07:33",
+    "location": "Local Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Clean flight, great visibility"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-02-23",
+    "usedMah": 1570,
+    "flightTime": "08:02",
+    "location": "Skate Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Nearly clipped the wall"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2026-04-18",
+    "usedMah": 2392,
+    "flightTime": "21:08",
+    "location": "City Skyline",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "GPS signal weak near tower"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-03-22",
+    "usedMah": 1289,
+    "flightTime": "06:46",
+    "location": "Quarry",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": ""
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-04-09",
+    "usedMah": 2432,
+    "flightTime": "16:40",
+    "location": "City Skyline",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": ""
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2026-02-21",
+    "usedMah": 2444,
+    "flightTime": "13:16",
+    "location": "National Park",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "Manual mode only, great run"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-01-16",
+    "usedMah": 1190,
+    "flightTime": "08:33",
+    "location": "Skate Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Rolls and flips session"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-11-13",
+    "usedMah": 1074,
+    "flightTime": "07:31",
+    "location": "Rooftop",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Props out of balance — changed"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-04-13",
+    "usedMah": 2754,
+    "flightTime": "13:03",
+    "location": "National Park",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "GPS signal weak near tower"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-08-14",
+    "usedMah": 1659,
+    "flightTime": "08:20",
+    "location": "Dirt Track",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Nearly clipped the wall"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-04-27",
+    "usedMah": 2759,
+    "flightTime": "14:17",
+    "location": "Mountain Ridge",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "Manual mode only, great run"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-04-12",
+    "usedMah": 2038,
+    "flightTime": "03:58",
+    "location": "Industrial Zone",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Props hit trees, minor damage"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-09-03",
+    "usedMah": 1327,
+    "flightTime": "09:08",
+    "location": "Dirt Track",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "HD footage came out crisp"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-12-22",
+    "usedMah": 2472,
+    "flightTime": "16:56",
+    "location": "Forest Trail",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "Manual mode only, great run"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-02-23",
+    "usedMah": 1653,
+    "flightTime": "09:46",
+    "location": "Rooftop",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "HD footage came out crisp"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-11-16",
+    "usedMah": 1687,
+    "flightTime": "05:19",
+    "location": "Industrial Zone",
+    "batType": "LiPo",
+    "cellCount": 6
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-07-27",
+    "usedMah": 2135,
+    "flightTime": "06:37",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Motor 3 getting hot"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2026-05-02",
+    "usedMah": 978,
+    "flightTime": "08:14",
+    "location": "School Field",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": ""
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-11-08",
+    "usedMah": 1117,
+    "flightTime": "08:09",
+    "location": "Backyard",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Practiced hovering and circuits"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-08-31",
+    "usedMah": 1139,
+    "flightTime": "05:44",
+    "location": "School Field",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": ""
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2026-01-09",
+    "usedMah": 1776,
+    "flightTime": "04:33",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Motor 3 getting hot"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-08-17",
+    "usedMah": 2307,
+    "flightTime": "17:31",
+    "location": "Coastal Cliffs",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "Manual mode only, great run"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2026-04-04",
+    "usedMah": 2592,
+    "flightTime": "12:55",
+    "location": "Forest Trail",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "Cinematic cruise, zero issues"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-09-27",
+    "usedMah": 1229,
+    "flightTime": "10:18",
+    "location": "Local Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Wind picking up, called it early"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-11-11",
+    "usedMah": 1697,
+    "flightTime": "08:43",
+    "location": "Abandoned Factory",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Props hit trees, minor damage"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-11-19",
+    "usedMah": 1710,
+    "flightTime": "06:29",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Great conditions, minimal wind"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-06-01",
+    "usedMah": 1826,
+    "flightTime": "06:44",
+    "location": "Quarry",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Motor 3 getting hot"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-08-14",
+    "usedMah": 1664,
+    "flightTime": "08:56",
+    "location": "Dirt Track",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Props out of balance — changed"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-03-01",
+    "usedMah": 1462,
+    "flightTime": "10:33",
+    "location": "Skate Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Nearly clipped the wall"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-03-12",
+    "usedMah": 1609,
+    "flightTime": "04:48",
+    "location": "Abandoned Factory",
+    "batType": "LiPo",
+    "cellCount": 6
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-07-13",
+    "usedMah": 2311,
+    "flightTime": "08:45",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Props hit trees, minor damage"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-09-22",
+    "usedMah": 1292,
+    "flightTime": "10:35",
+    "location": "Parking Lot",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Wind picking up, called it early"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-11-08",
+    "usedMah": 1949,
+    "flightTime": "05:49",
+    "location": "Quarry",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Tried new tune, needs PIDs"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-05-11",
+    "usedMah": 2116,
+    "flightTime": "17:05",
+    "location": "City Skyline",
+    "batType": "LiIon",
+    "cellCount": 6
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-06-13",
+    "usedMah": 1401,
+    "flightTime": "08:54",
+    "location": "Beach Access Road",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Rolls and flips session"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-09-14",
+    "usedMah": 1684,
+    "flightTime": "04:08",
+    "location": "Quarry",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Props hit trees, minor damage"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-09-22",
+    "usedMah": 979,
+    "flightTime": "10:06",
+    "location": "Parking Lot",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Clean flight, great visibility"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-08-27",
+    "usedMah": 1450,
+    "flightTime": "07:32",
+    "location": "Beach Access Road",
+    "batType": "LiPo",
+    "cellCount": 4
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-12-21",
+    "usedMah": 1450,
+    "flightTime": "07:57",
+    "location": "Rooftop",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "HD footage came out crisp"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-08-13",
+    "usedMah": 2306,
+    "flightTime": "18:41",
+    "location": "Coastal Cliffs",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "Cinematic cruise, zero issues"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-10-30",
+    "usedMah": 1225,
+    "flightTime": "10:16",
+    "location": "Rooftop",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Rolls and flips session"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-05-29",
+    "usedMah": 2630,
+    "flightTime": "20:11",
+    "location": "Forest Trail",
+    "batType": "LiIon",
+    "cellCount": 6
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-04-26",
+    "usedMah": 1139,
+    "flightTime": "09:01",
+    "location": "Skate Park",
+    "batType": "LiPo",
+    "cellCount": 4
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-01-16",
+    "usedMah": 1413,
+    "flightTime": "07:28",
+    "location": "Rooftop",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": ""
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-09-14",
+    "usedMah": 850,
+    "flightTime": "11:09",
+    "location": "Parking Lot",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Wind picking up, called it early"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-05-21",
+    "usedMah": 1832,
+    "flightTime": "08:43",
+    "location": "Industrial Zone",
+    "batType": "LiPo",
+    "cellCount": 6
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2026-05-10",
+    "usedMah": 2614,
+    "flightTime": "18:00",
+    "location": "National Park",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "OSD data looked perfect"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-12-22",
+    "usedMah": 2391,
+    "flightTime": "10:43",
+    "location": "National Park",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "Cinematic cruise, zero issues"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2026-04-20",
+    "usedMah": 1593,
+    "flightTime": "04:28",
+    "location": "Skate Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Full punch-out test"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-06-13",
+    "usedMah": 1114,
+    "flightTime": "06:39",
+    "location": "Skate Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Full punch-out test"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2026-02-03",
+    "usedMah": 1720,
+    "flightTime": "07:45",
+    "location": "Beach Access Road",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Nearly clipped the wall"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-07-09",
+    "usedMah": 1708,
+    "flightTime": "06:27",
+    "location": "Abandoned Factory",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Props hit trees, minor damage"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-09-03",
+    "usedMah": 1031,
+    "flightTime": "06:38",
+    "location": "School Field",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": ""
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2026-04-18",
+    "usedMah": 2350,
+    "flightTime": "20:18",
+    "location": "Forest Trail",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "Captured sunset footage"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2026-01-04",
+    "usedMah": 885,
+    "flightTime": "08:04",
+    "location": "Backyard",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Clean flight, great visibility"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2026-01-11",
+    "usedMah": 1988,
+    "flightTime": "05:14",
+    "location": "Industrial Zone",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Tried new tune, needs PIDs"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-08-31",
+    "usedMah": 1411,
+    "flightTime": "08:50",
+    "location": "Beach Access Road",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Rolls and flips session"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-06-05",
+    "usedMah": 1342,
+    "flightTime": "10:46",
+    "location": "Beach Access Road",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Nearly clipped the wall"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-11-08",
+    "usedMah": 1546,
+    "flightTime": "08:45",
+    "location": "Industrial Zone",
+    "batType": "LiPo",
+    "cellCount": 6
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-09-03",
+    "usedMah": 1115,
+    "flightTime": "08:14",
+    "location": "Skate Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "HD footage came out crisp"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-12-06",
+    "usedMah": 1216,
+    "flightTime": "05:43",
+    "location": "Rooftop",
+    "batType": "LiPo",
+    "cellCount": 4
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-04-16",
+    "usedMah": 1091,
+    "flightTime": "07:27",
+    "location": "Backyard",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Beginner-friendly session"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-01-16",
+    "usedMah": 1590,
+    "flightTime": "05:20",
+    "location": "Rooftop",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "HD footage came out crisp"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-03-05",
+    "usedMah": 808,
+    "flightTime": "06:56",
+    "location": "Backyard",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Tried FPV goggles for the first time"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-05-23",
+    "usedMah": 1243,
+    "flightTime": "10:24",
+    "location": "Dirt Track",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Nearly clipped the wall"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-05-11",
+    "usedMah": 1678,
+    "flightTime": "07:39",
+    "location": "Abandoned Factory",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Great conditions, minimal wind"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-08-02",
+    "usedMah": 1255,
+    "flightTime": "07:33",
+    "location": "School Field",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Beginner-friendly session"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-06-01",
+    "usedMah": 1159,
+    "flightTime": "07:34",
+    "location": "Local Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Beginner-friendly session"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2026-04-20",
+    "usedMah": 1378,
+    "flightTime": "10:17",
+    "location": "Beach Access Road",
+    "batType": "LiPo",
+    "cellCount": 4
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-08-30",
+    "usedMah": 791,
+    "flightTime": "08:45",
+    "location": "Local Park",
+    "batType": "LiPo",
+    "cellCount": 4
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2026-01-09",
+    "usedMah": 1489,
+    "flightTime": "03:48",
+    "location": "Industrial Zone",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Great conditions, minimal wind"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2026-05-10",
+    "usedMah": 1813,
+    "flightTime": "06:15",
+    "location": "Quarry",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Props hit trees, minor damage"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2026-02-08",
+    "usedMah": 1777,
+    "flightTime": "08:39",
+    "location": "Dirt Track",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Rolls and flips session"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2026-05-10",
+    "usedMah": 1993,
+    "flightTime": "05:02",
+    "location": "Quarry",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Smooth freestyle run"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-07-20",
+    "usedMah": 2737,
+    "flightTime": "14:33",
+    "location": "Forest Trail",
+    "batType": "LiIon",
+    "cellCount": 6
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-06-01",
+    "usedMah": 2110,
+    "flightTime": "05:30",
+    "location": "Industrial Zone",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Great conditions, minimal wind"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2026-02-25",
+    "usedMah": 874,
+    "flightTime": "11:42",
+    "location": "Backyard",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Beginner-friendly session"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-11-08",
+    "usedMah": 2090,
+    "flightTime": "03:32",
+    "location": "Industrial Zone",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Motor 3 getting hot"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-08-31",
+    "usedMah": 1673,
+    "flightTime": "06:48",
+    "location": "Rooftop",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "HD footage came out crisp"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2026-03-01",
+    "usedMah": 2376,
+    "flightTime": "16:45",
+    "location": "Forest Trail",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": ""
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-06-08",
+    "usedMah": 2366,
+    "flightTime": "15:30",
+    "location": "Forest Trail",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "Cinematic cruise, zero issues"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2026-03-15",
+    "usedMah": 1117,
+    "flightTime": "07:54",
+    "location": "Local Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Tried FPV goggles for the first time"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2026-04-03",
+    "usedMah": 1062,
+    "flightTime": "06:58",
+    "location": "Backyard",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Clean flight, great visibility"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-06-21",
+    "usedMah": 1244,
+    "flightTime": "06:31",
+    "location": "Backyard",
+    "batType": "LiPo",
+    "cellCount": 4
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-08-10",
+    "usedMah": 1247,
+    "flightTime": "11:00",
+    "location": "Local Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": ""
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2026-05-03",
+    "usedMah": 1294,
+    "flightTime": "10:01",
+    "location": "Parking Lot",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Beginner-friendly session"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-09-07",
+    "usedMah": 1868,
+    "flightTime": "07:51",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Great conditions, minimal wind"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2026-04-12",
+    "usedMah": 2147,
+    "flightTime": "07:30",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Smooth freestyle run"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-07-20",
+    "usedMah": 2165,
+    "flightTime": "13:51",
+    "location": "City Skyline",
+    "batType": "LiIon",
+    "cellCount": 6
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-06-08",
+    "usedMah": 2180,
+    "flightTime": "17:15",
+    "location": "Coastal Cliffs",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "Captured sunset footage"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2026-02-25",
+    "usedMah": 1156,
+    "flightTime": "06:04",
+    "location": "School Field",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Tried FPV goggles for the first time"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-11-09",
+    "usedMah": 1123,
+    "flightTime": "06:59",
+    "location": "Beach Access Road",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": ""
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-09-07",
+    "usedMah": 1492,
+    "flightTime": "05:33",
+    "location": "Dirt Track",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "HD footage came out crisp"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-04-04",
+    "usedMah": 1787,
+    "flightTime": "03:39",
+    "location": "Industrial Zone",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Smooth freestyle run"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-07-09",
+    "usedMah": 1127,
+    "flightTime": "09:25",
+    "location": "Beach Access Road",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Props out of balance — changed"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-11-19",
+    "usedMah": 1530,
+    "flightTime": "04:34",
+    "location": "Quarry",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Great conditions, minimal wind"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-10-16",
+    "usedMah": 2771,
+    "flightTime": "13:20",
+    "location": "Forest Trail",
+    "batType": "LiIon",
+    "cellCount": 6
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-07-12",
+    "usedMah": 2010,
+    "flightTime": "04:57",
+    "location": "Abandoned Factory",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Smooth freestyle run"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-09-14",
+    "usedMah": 1657,
+    "flightTime": "05:56",
+    "location": "Abandoned Factory",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": ""
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-09-21",
+    "usedMah": 1160,
+    "flightTime": "08:53",
+    "location": "Parking Lot",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": ""
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-10-17",
+    "usedMah": 1710,
+    "flightTime": "05:09",
+    "location": "Abandoned Factory",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Tried new tune, needs PIDs"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-04-26",
+    "usedMah": 962,
+    "flightTime": "10:56",
+    "location": "School Field",
+    "batType": "LiPo",
+    "cellCount": 4
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-08-10",
+    "usedMah": 2120,
+    "flightTime": "16:24",
+    "location": "Coastal Cliffs",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": ""
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2026-02-08",
+    "usedMah": 1485,
+    "flightTime": "05:18",
+    "location": "Skate Park",
+    "batType": "LiPo",
+    "cellCount": 4
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-12-21",
+    "usedMah": 1609,
+    "flightTime": "08:32",
+    "location": "Rooftop",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Rolls and flips session"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-04-15",
+    "usedMah": 2282,
+    "flightTime": "12:11",
+    "location": "Forest Trail",
+    "batType": "LiIon",
+    "cellCount": 6
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-12-21",
+    "usedMah": 1234,
+    "flightTime": "07:45",
+    "location": "Skate Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Rolls and flips session"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2026-04-11",
+    "usedMah": 1015,
+    "flightTime": "10:08",
+    "location": "Local Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Practiced hovering and circuits"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-10-01",
+    "usedMah": 2306,
+    "flightTime": "05:55",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-10-17",
+    "usedMah": 1937,
+    "flightTime": "07:08",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": ""
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-03-02",
+    "usedMah": 1442,
+    "flightTime": "09:04",
+    "location": "Skate Park",
+    "batType": "LiPo",
+    "cellCount": 4
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2026-04-19",
+    "usedMah": 1319,
+    "flightTime": "09:50",
+    "location": "Beach Access Road",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Full punch-out test"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-04-26",
+    "usedMah": 861,
+    "flightTime": "08:00",
+    "location": "Parking Lot",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Practiced hovering and circuits"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-05-03",
+    "usedMah": 2141,
+    "flightTime": "05:50",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Motor 3 getting hot"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-11-01",
+    "usedMah": 1553,
+    "flightTime": "06:22",
+    "location": "Industrial Zone",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Motor 3 getting hot"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-03-01",
+    "usedMah": 1537,
+    "flightTime": "08:25",
+    "location": "Skate Park",
+    "batType": "LiPo",
+    "cellCount": 4
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-04-09",
+    "usedMah": 1903,
+    "flightTime": "07:20",
+    "location": "Industrial Zone",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": ""
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2026-02-03",
+    "usedMah": 1286,
+    "flightTime": "08:03",
+    "location": "Rooftop",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "HD footage came out crisp"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-05-20",
+    "usedMah": 1724,
+    "flightTime": "04:29",
+    "location": "Abandoned Factory",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": ""
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-07-27",
+    "usedMah": 1105,
+    "flightTime": "10:47",
+    "location": "Parking Lot",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Tried FPV goggles for the first time"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-12-06",
+    "usedMah": 1438,
+    "flightTime": "06:32",
+    "location": "Skate Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Full punch-out test"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-10-16",
+    "usedMah": 2614,
+    "flightTime": "18:28",
+    "location": "Forest Trail",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "OSD data looked perfect"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-01-12",
+    "usedMah": 2079,
+    "flightTime": "03:33",
+    "location": "Abandoned Factory",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Smooth freestyle run"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2026-02-01",
+    "usedMah": 1999,
+    "flightTime": "06:51",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Motor 3 getting hot"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-11-13",
+    "usedMah": 1652,
+    "flightTime": "06:18",
+    "location": "Beach Access Road",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Nearly clipped the wall"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-08-23",
+    "usedMah": 1245,
+    "flightTime": "09:55",
+    "location": "Local Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Beginner-friendly session"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-06-01",
+    "usedMah": 1504,
+    "flightTime": "06:53",
+    "location": "Quarry",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Smooth freestyle run"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-03-29",
+    "usedMah": 1258,
+    "flightTime": "06:54",
+    "location": "Rooftop",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Full punch-out test"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2026-01-04",
+    "usedMah": 1804,
+    "flightTime": "04:18",
+    "location": "Quarry",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Tried new tune, needs PIDs"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2026-04-12",
+    "usedMah": 1637,
+    "flightTime": "06:17",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Tried new tune, needs PIDs"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2026-03-06",
+    "usedMah": 1221,
+    "flightTime": "08:19",
+    "location": "Local Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Practiced hovering and circuits"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-07-30",
+    "usedMah": 1633,
+    "flightTime": "06:52",
+    "location": "Beach Access Road",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Rolls and flips session"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-02-23",
+    "usedMah": 1251,
+    "flightTime": "04:56",
+    "location": "Skate Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Nearly clipped the wall"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2026-02-03",
+    "usedMah": 1660,
+    "flightTime": "06:03",
+    "location": "Skate Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Rolls and flips session"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-06-11",
+    "usedMah": 1261,
+    "flightTime": "09:39",
+    "location": "Dirt Track",
+    "batType": "LiPo",
+    "cellCount": 4
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2026-01-04",
+    "usedMah": 1117,
+    "flightTime": "06:38",
+    "location": "Parking Lot",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Clean flight, great visibility"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-09-03",
+    "usedMah": 1036,
+    "flightTime": "09:36",
+    "location": "Backyard",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": ""
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-08-10",
+    "usedMah": 1001,
+    "flightTime": "07:37",
+    "location": "Local Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Beginner-friendly session"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-09-26",
+    "usedMah": 1622,
+    "flightTime": "03:58",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Great conditions, minimal wind"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2026-03-29",
+    "usedMah": 1552,
+    "flightTime": "05:37",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Great conditions, minimal wind"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-04-12",
+    "usedMah": 1452,
+    "flightTime": "08:16",
+    "location": "Quarry",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Smooth freestyle run"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2026-05-10",
+    "usedMah": 920,
+    "flightTime": "10:59",
+    "location": "Local Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": ""
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-04-13",
+    "usedMah": 1814,
+    "flightTime": "05:21",
+    "location": "Skate Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Props out of balance — changed"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-05-29",
+    "usedMah": 1627,
+    "flightTime": "04:00",
+    "location": "Abandoned Factory",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Tried new tune, needs PIDs"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-06-24",
+    "usedMah": 2318,
+    "flightTime": "15:46",
+    "location": "Mountain Ridge",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "Captured sunset footage"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-07-16",
+    "usedMah": 1210,
+    "flightTime": "07:11",
+    "location": "Local Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Practiced hovering and circuits"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-07-27",
+    "usedMah": 2141,
+    "flightTime": "05:52",
+    "location": "Abandoned Factory",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Great conditions, minimal wind"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-04-12",
+    "usedMah": 1179,
+    "flightTime": "09:12",
+    "location": "Backyard",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Clean flight, great visibility"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-05-29",
+    "usedMah": 2413,
+    "flightTime": "12:01",
+    "location": "Mountain Ridge",
+    "batType": "LiIon",
+    "cellCount": 6
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2026-04-12",
+    "usedMah": 1718,
+    "flightTime": "07:37",
+    "location": "Abandoned Factory",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Tried new tune, needs PIDs"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-08-09",
+    "usedMah": 2284,
+    "flightTime": "11:06",
+    "location": "Coastal Cliffs",
+    "batType": "LiIon",
+    "cellCount": 6
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2026-04-19",
+    "usedMah": 1555,
+    "flightTime": "04:52",
+    "location": "Quarry",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": ""
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-02-09",
+    "usedMah": 944,
+    "flightTime": "08:55",
+    "location": "Local Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Wind picking up, called it early"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-07-27",
+    "usedMah": 2042,
+    "flightTime": "03:40",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Tried new tune, needs PIDs"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-05-17",
+    "usedMah": 1698,
+    "flightTime": "07:01",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-11-08",
+    "usedMah": 2163,
+    "flightTime": "08:28",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Tried new tune, needs PIDs"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-05-20",
+    "usedMah": 2101,
+    "flightTime": "07:16",
+    "location": "Abandoned Factory",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Smooth freestyle run"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-10-16",
+    "usedMah": 2811,
+    "flightTime": "21:00",
+    "location": "City Skyline",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "GPS signal weak near tower"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-05-21",
+    "usedMah": 2203,
+    "flightTime": "05:42",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": ""
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2026-04-18",
+    "usedMah": 2298,
+    "flightTime": "20:54",
+    "location": "Mountain Ridge",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "Manual mode only, great run"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2026-01-23",
+    "usedMah": 2640,
+    "flightTime": "16:48",
+    "location": "City Skyline",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "GPS signal weak near tower"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-08-23",
+    "usedMah": 1201,
+    "flightTime": "08:51",
+    "location": "School Field",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Tried FPV goggles for the first time"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-12-21",
+    "usedMah": 1517,
+    "flightTime": "08:01",
+    "location": "Dirt Track",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": ""
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-04-13",
+    "usedMah": 1790,
+    "flightTime": "06:09",
+    "location": "Industrial Zone",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Motor 3 getting hot"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-06-26",
+    "usedMah": 1587,
+    "flightTime": "06:45",
+    "location": "Abandoned Factory",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Smooth freestyle run"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2026-01-11",
+    "usedMah": 1982,
+    "flightTime": "04:29",
+    "location": "Industrial Zone",
+    "batType": "LiPo",
+    "cellCount": 6
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-06-07",
+    "usedMah": 1801,
+    "flightTime": "08:35",
+    "location": "Skate Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": ""
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-03-19",
+    "usedMah": 2179,
+    "flightTime": "05:32",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-05-04",
+    "usedMah": 2170,
+    "flightTime": "15:51",
+    "location": "Mountain Ridge",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": ""
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-04-26",
+    "usedMah": 1606,
+    "flightTime": "08:58",
+    "location": "Beach Access Road",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Props out of balance — changed"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-02-02",
+    "usedMah": 1091,
+    "flightTime": "11:46",
+    "location": "Parking Lot",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Tried FPV goggles for the first time"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2026-03-06",
+    "usedMah": 1207,
+    "flightTime": "06:47",
+    "location": "Backyard",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Clean flight, great visibility"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2026-05-03",
+    "usedMah": 1053,
+    "flightTime": "11:10",
+    "location": "Backyard",
+    "batType": "LiPo",
+    "cellCount": 4
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2026-05-03",
+    "usedMah": 900,
+    "flightTime": "09:35",
+    "location": "Parking Lot",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Wind picking up, called it early"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-04-19",
+    "usedMah": 1728,
+    "flightTime": "07:13",
+    "location": "Beach Access Road",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Props out of balance — changed"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2026-03-06",
+    "usedMah": 995,
+    "flightTime": "08:56",
+    "location": "Backyard",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Clean flight, great visibility"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-06-01",
+    "usedMah": 1134,
+    "flightTime": "07:23",
+    "location": "Backyard",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Practiced hovering and circuits"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-09-28",
+    "usedMah": 2539,
+    "flightTime": "20:02",
+    "location": "Coastal Cliffs",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": ""
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-06-05",
+    "usedMah": 1389,
+    "flightTime": "09:36",
+    "location": "Dirt Track",
+    "batType": "LiPo",
+    "cellCount": 4
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-08-10",
+    "usedMah": 1681,
+    "flightTime": "05:07",
+    "location": "Quarry",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Smooth freestyle run"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-09-03",
+    "usedMah": 856,
+    "flightTime": "08:39",
+    "location": "Parking Lot",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Wind picking up, called it early"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-04-13",
+    "usedMah": 2163,
+    "flightTime": "13:09",
+    "location": "National Park",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "Manual mode only, great run"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-04-27",
+    "usedMah": 1852,
+    "flightTime": "04:52",
+    "location": "Quarry",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Tried new tune, needs PIDs"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-12-22",
+    "usedMah": 2615,
+    "flightTime": "10:53",
+    "location": "National Park",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "GPS signal weak near tower"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-05-29",
+    "usedMah": 2651,
+    "flightTime": "19:26",
+    "location": "Coastal Cliffs",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "Cinematic cruise, zero issues"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-06-14",
+    "usedMah": 1841,
+    "flightTime": "07:32",
+    "location": "Abandoned Factory",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Props hit trees, minor damage"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2026-02-21",
+    "usedMah": 1715,
+    "flightTime": "03:44",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Great conditions, minimal wind"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-04-16",
+    "usedMah": 986,
+    "flightTime": "10:40",
+    "location": "School Field",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Clean flight, great visibility"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2026-03-29",
+    "usedMah": 2079,
+    "flightTime": "04:29",
+    "location": "Quarry",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Motor 3 getting hot"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-06-01",
+    "usedMah": 1804,
+    "flightTime": "06:18",
+    "location": "Abandoned Factory",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Props hit trees, minor damage"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-07-16",
+    "usedMah": 753,
+    "flightTime": "06:47",
+    "location": "School Field",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Beginner-friendly session"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2026-01-11",
+    "usedMah": 1710,
+    "flightTime": "05:59",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Great conditions, minimal wind"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-12-06",
+    "usedMah": 1636,
+    "flightTime": "06:32",
+    "location": "Rooftop",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": ""
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-08-10",
+    "usedMah": 946,
+    "flightTime": "08:00",
+    "location": "School Field",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Practiced hovering and circuits"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2026-04-03",
+    "usedMah": 1110,
+    "flightTime": "06:41",
+    "location": "Backyard",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Wind picking up, called it early"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-02-23",
+    "usedMah": 2497,
+    "flightTime": "11:15",
+    "location": "Forest Trail",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "GPS signal weak near tower"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-07-05",
+    "usedMah": 2258,
+    "flightTime": "22:41",
+    "location": "City Skyline",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "GPS signal weak near tower"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-01-12",
+    "usedMah": 1333,
+    "flightTime": "05:53",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-04-09",
+    "usedMah": 1463,
+    "flightTime": "06:25",
+    "location": "Abandoned Factory",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": ""
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-08-30",
+    "usedMah": 1170,
+    "flightTime": "10:54",
+    "location": "School Field",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Beginner-friendly session"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-03-01",
+    "usedMah": 1677,
+    "flightTime": "09:08",
+    "location": "Beach Access Road",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Full punch-out test"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-04-15",
+    "usedMah": 2130,
+    "flightTime": "18:54",
+    "location": "Coastal Cliffs",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "Captured sunset footage"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2026-01-09",
+    "usedMah": 1778,
+    "flightTime": "07:39",
+    "location": "Quarry",
+    "batType": "LiPo",
+    "cellCount": 6
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2026-01-09",
+    "usedMah": 1976,
+    "flightTime": "07:01",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Props hit trees, minor damage"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-04-12",
+    "usedMah": 1726,
+    "flightTime": "06:47",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Great conditions, minimal wind"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-09-29",
+    "usedMah": 2185,
+    "flightTime": "19:03",
+    "location": "Forest Trail",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "Manual mode only, great run"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-12-01",
+    "usedMah": 1314,
+    "flightTime": "08:01",
+    "location": "Industrial Zone",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Smooth freestyle run"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-09-03",
+    "usedMah": 1449,
+    "flightTime": "09:02",
+    "location": "Dirt Track",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Full punch-out test"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2026-01-24",
+    "usedMah": 1539,
+    "flightTime": "06:58",
+    "location": "Abandoned Factory",
+    "batType": "LiPo",
+    "cellCount": 6
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-03-12",
+    "usedMah": 1319,
+    "flightTime": "04:24",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Motor 3 getting hot"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-08-10",
+    "usedMah": 1692,
+    "flightTime": "04:26",
+    "location": "Industrial Zone",
+    "batType": "LiPo",
+    "cellCount": 6
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-07-21",
+    "usedMah": 2516,
+    "flightTime": "19:32",
+    "location": "City Skyline",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": ""
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2026-03-02",
+    "usedMah": 1308,
+    "flightTime": "08:00",
+    "location": "School Field",
+    "batType": "LiPo",
+    "cellCount": 4
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-02-23",
+    "usedMah": 1834,
+    "flightTime": "09:07",
+    "location": "Beach Access Road",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Rolls and flips session"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-12-01",
+    "usedMah": 1628,
+    "flightTime": "04:45",
+    "location": "Industrial Zone",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": ""
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-12-26",
+    "usedMah": 1623,
+    "flightTime": "06:16",
+    "location": "Quarry",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Smooth freestyle run"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-08-31",
+    "usedMah": 943,
+    "flightTime": "10:27",
+    "location": "Local Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Beginner-friendly session"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2026-01-05",
+    "usedMah": 1293,
+    "flightTime": "07:06",
+    "location": "Local Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": ""
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-08-24",
+    "usedMah": 840,
+    "flightTime": "07:34",
+    "location": "Backyard",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Clean flight, great visibility"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2026-01-11",
+    "usedMah": 1573,
+    "flightTime": "06:33",
+    "location": "Abandoned Factory",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Props hit trees, minor damage"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-05-20",
+    "usedMah": 1628,
+    "flightTime": "05:39",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": ""
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-08-10",
+    "usedMah": 1535,
+    "flightTime": "04:52",
+    "location": "Quarry",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": ""
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-07-12",
+    "usedMah": 1531,
+    "flightTime": "03:17",
+    "location": "Industrial Zone",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Tried new tune, needs PIDs"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-08-04",
+    "usedMah": 1978,
+    "flightTime": "05:28",
+    "location": "Abandoned Factory",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Smooth freestyle run"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-09-03",
+    "usedMah": 1195,
+    "flightTime": "10:07",
+    "location": "Backyard",
+    "batType": "LiPo",
+    "cellCount": 4
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-08-31",
+    "usedMah": 1576,
+    "flightTime": "07:51",
+    "location": "Dirt Track",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Rolls and flips session"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-07-16",
+    "usedMah": 1126,
+    "flightTime": "05:50",
+    "location": "Parking Lot",
+    "batType": "LiPo",
+    "cellCount": 4
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2026-01-17",
+    "usedMah": 1137,
+    "flightTime": "09:29",
+    "location": "Dirt Track",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Rolls and flips session"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-05-17",
+    "usedMah": 1415,
+    "flightTime": "06:49",
+    "location": "Industrial Zone",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": ""
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-11-11",
+    "usedMah": 2031,
+    "flightTime": "05:26",
+    "location": "Abandoned Factory",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": ""
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2026-04-11",
+    "usedMah": 1409,
+    "flightTime": "07:29",
+    "location": "Backyard",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Beginner-friendly session"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-06-21",
+    "usedMah": 1322,
+    "flightTime": "07:15",
+    "location": "School Field",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": ""
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-07-09",
+    "usedMah": 1915,
+    "flightTime": "04:46",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": ""
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2026-01-17",
+    "usedMah": 1285,
+    "flightTime": "09:41",
+    "location": "Rooftop",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Props out of balance — changed"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-11-13",
+    "usedMah": 1591,
+    "flightTime": "09:04",
+    "location": "Dirt Track",
+    "batType": "LiPo",
+    "cellCount": 4
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-08-31",
+    "usedMah": 1186,
+    "flightTime": "05:53",
+    "location": "Rooftop",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Rolls and flips session"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-02-01",
+    "usedMah": 1436,
+    "flightTime": "06:01",
+    "location": "Skate Park",
+    "batType": "LiPo",
+    "cellCount": 4
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-11-09",
+    "usedMah": 1692,
+    "flightTime": "07:00",
+    "location": "Beach Access Road",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Nearly clipped the wall"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-04-15",
+    "usedMah": 2785,
+    "flightTime": "21:07",
+    "location": "Mountain Ridge",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "Captured sunset footage"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-11-08",
+    "usedMah": 1054,
+    "flightTime": "12:26",
+    "location": "Local Park",
+    "batType": "LiPo",
+    "cellCount": 4
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-01-16",
+    "usedMah": 1573,
+    "flightTime": "06:52",
+    "location": "Skate Park",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Props out of balance — changed"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2026-01-26",
+    "usedMah": 2271,
+    "flightTime": "14:20",
+    "location": "City Skyline",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "Captured sunset footage"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-05-04",
+    "usedMah": 1268,
+    "flightTime": "08:21",
+    "location": "Dirt Track",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Props out of balance — changed"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-12-28",
+    "usedMah": 2618,
+    "flightTime": "12:03",
+    "location": "Mountain Ridge",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": ""
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-04-26",
+    "usedMah": 1416,
+    "flightTime": "08:14",
+    "location": "Rooftop",
+    "batType": "LiPo",
+    "cellCount": 4
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-01-12",
+    "usedMah": 1577,
+    "flightTime": "08:34",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Tried new tune, needs PIDs"
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2026-04-11",
+    "usedMah": 2590,
+    "flightTime": "11:27",
+    "location": "National Park",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": "OSD data looked perfect"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-05-11",
+    "usedMah": 1851,
+    "flightTime": "05:06",
+    "location": "Abandoned Factory",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Props hit trees, minor damage"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-05-20",
+    "usedMah": 1989,
+    "flightTime": "04:11",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Props hit trees, minor damage"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-04-12",
+    "usedMah": 1396,
+    "flightTime": "06:51",
+    "location": "Quarry",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Tried new tune, needs PIDs"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-02-01",
+    "usedMah": 1734,
+    "flightTime": "06:49",
+    "location": "Rooftop",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "HD footage came out crisp"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-06-21",
+    "usedMah": 1879,
+    "flightTime": "05:20",
+    "location": "Quarry",
+    "batType": "LiPo",
+    "cellCount": 6
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-02-09",
+    "usedMah": 1111,
+    "flightTime": "07:59",
+    "location": "Backyard",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Wind picking up, called it early"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-10-17",
+    "usedMah": 2010,
+    "flightTime": "06:30",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Great conditions, minimal wind"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-08-27",
+    "usedMah": 1378,
+    "flightTime": "08:59",
+    "location": "Dirt Track",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Full punch-out test"
+  },
+  {
+    "name": "Geprc Mark5 HD",
+    "date": "2025-04-26",
+    "usedMah": 1130,
+    "flightTime": "08:03",
+    "location": "Beach Access Road",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": ""
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2025-05-11",
+    "usedMah": 1681,
+    "flightTime": "06:52",
+    "location": "Quarry",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Great conditions, minimal wind"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2026-05-10",
+    "usedMah": 1262,
+    "flightTime": "08:17",
+    "location": "Parking Lot",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Clean flight, great visibility"
+  },
+  {
+    "name": "iFlight Nazgul 5",
+    "date": "2026-02-21",
+    "usedMah": 1457,
+    "flightTime": "04:24",
+    "location": "Race Circuit",
+    "batType": "LiPo",
+    "cellCount": 6,
+    "comment": "Props hit trees, minor damage"
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-08-10",
+    "usedMah": 1090,
+    "flightTime": "08:33",
+    "location": "School Field",
+    "batType": "LiPo",
+    "cellCount": 4
+  },
+  {
+    "name": "DJI FPV",
+    "date": "2025-06-08",
+    "usedMah": 2429,
+    "flightTime": "12:24",
+    "location": "National Park",
+    "batType": "LiIon",
+    "cellCount": 6,
+    "comment": ""
+  },
+  {
+    "name": "BetaFPV Cetus X",
+    "date": "2025-03-05",
+    "usedMah": 858,
+    "flightTime": "06:25",
+    "location": "Backyard",
+    "batType": "LiPo",
+    "cellCount": 4,
+    "comment": "Beginner-friendly session"
+  }
+]
