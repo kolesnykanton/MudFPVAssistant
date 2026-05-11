@@ -66,6 +66,7 @@ export default function Home() {
       const flightsToImport = Array.isArray(data) ? data : [data];
 
       let successCount = 0;
+      let failureCount = 0;
       for (let i = 0; i < flightsToImport.length; i += 1) {
         const flight = flightsToImport[i];
         try {
@@ -82,18 +83,27 @@ export default function Home() {
           successCount += 1;
           setImportProgress(Math.round((i + 1) / flightsToImport.length * 100));
         } catch (err) {
+          failureCount += 1;
           console.error(`Failed to import flight ${i}:`, err);
         }
       }
 
       setImportSuccess(successCount);
       fileResetRef.current?.();
-      notifications.show({
-        color: 'green',
-        icon: <IconCheck size={16} />,
-        title: 'Import successful',
-        message: `Added ${successCount} flight(s).`,
-      });
+
+      if (successCount === 0) {
+        const msg = `All ${failureCount} flight(s) failed to save.`;
+        setImportError(msg);
+        notifications.show({ color: 'red', icon: <IconAlertCircle size={16} />, title: 'Import failed', message: msg });
+      } else if (failureCount > 0) {
+        notifications.show({
+          color: 'yellow', icon: <IconAlertCircle size={16} />,
+          title: 'Partial import',
+          message: `Added ${successCount}, failed ${failureCount}.`,
+        });
+      } else {
+        notifications.show({ color: 'green', icon: <IconCheck size={16} />, title: 'Import successful', message: `Added ${successCount} flight(s).` });
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Invalid file format';
       setImportError(msg);

@@ -33,16 +33,26 @@ function MapAutoCenter() {
   return null;
 }
 
-function FlyToTarget({ target, markerRefs }: { target: FlyToTarget | null; markerRefs: React.MutableRefObject<Record<string, L.Marker>> }) {
+function FlyToTarget({ target, markerRefs, clusterGroupRef }: {
+  target: FlyToTarget | null;
+  markerRefs: React.MutableRefObject<Record<string, L.Marker>>;
+  clusterGroupRef: React.MutableRefObject<L.MarkerClusterGroup | null>;
+}) {
   const map = useMap();
   useEffect(() => {
     if (!target) return;
-    map.flyTo([target.lat, target.lng], 16, { duration: 0.6 });
-    if (target.spotId && markerRefs.current[target.spotId]) {
-      const marker = markerRefs.current[target.spotId];
-      marker.openPopup();
+    const marker = target.spotId ? markerRefs.current[target.spotId] : null;
+    const clusterGroup = clusterGroupRef.current;
+
+    if (marker && clusterGroup) {
+      // zoomToShowLayer handles unclustering the marker before opening the popup,
+      // so the popup isn't silently swallowed by a cluster at zoom < disableClusteringAtZoom.
+      clusterGroup.zoomToShowLayer(marker, () => marker.openPopup());
+    } else {
+      map.flyTo([target.lat, target.lng], 16, { duration: 0.6 });
+      if (marker) marker.openPopup();
     }
-  }, [map, target, markerRefs]);
+  }, [map, target, markerRefs, clusterGroupRef]);
   return null;
 }
 
@@ -128,6 +138,7 @@ function PanelToggleButton({ panelOpen, onToggle }: { panelOpen?: boolean; onTog
 export const FpvMap = memo(function FpvMap({ spots, openWeatherApiKey, onContextMenu, flyToTarget, panelOpen, onTogglePanel }: FpvMapProps) {
   const longPressActiveRef = useRef(false);
   const markerRefsRef = useRef<Record<string, L.Marker>>({});
+  const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
   // Touch devices use pinch-to-zoom; visible zoom buttons are a desktop affordance only.
   // Default true so zoom never flashes on mobile before the query resolves.
   const isMobile = useMediaQuery('(max-width: 48em)', true);
@@ -174,9 +185,9 @@ export const FpvMap = memo(function FpvMap({ spots, openWeatherApiKey, onContext
       <MapControls />
       {spots.length > 0 && <FitBoundsButton spots={spots} />}
       {onTogglePanel !== undefined && <PanelToggleButton panelOpen={panelOpen} onToggle={onTogglePanel} />}
-      {flyToTarget && <FlyToTarget target={flyToTarget} markerRefs={markerRefsRef} />}
+      {flyToTarget && <FlyToTarget target={flyToTarget} markerRefs={markerRefsRef} clusterGroupRef={clusterGroupRef} />}
       <MapInteraction onContextMenu={onContextMenu} longPressActiveRef={longPressActiveRef} />
-      {spots.length > 0 && <MarkerCluster spots={spots} onContextMenu={onContextMenu} longPressActiveRef={longPressActiveRef} markerRefs={markerRefsRef} />}
+      {spots.length > 0 && <MarkerCluster spots={spots} onContextMenu={onContextMenu} longPressActiveRef={longPressActiveRef} markerRefs={markerRefsRef} clusterGroupRef={clusterGroupRef} />}
     </MapContainer>
   );
 });

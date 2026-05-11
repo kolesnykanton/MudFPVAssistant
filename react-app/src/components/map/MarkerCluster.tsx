@@ -1,6 +1,6 @@
 import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet.markercluster';
@@ -13,6 +13,7 @@ interface MarkerClusterProps {
   onContextMenu: (state: ContextMenuState) => void;
   longPressActiveRef: React.MutableRefObject<boolean>;
   markerRefs: React.MutableRefObject<Record<string, L.Marker>>;
+  clusterGroupRef: React.MutableRefObject<L.MarkerClusterGroup | null>;
 }
 
 export function MarkerCluster({
@@ -20,9 +21,9 @@ export function MarkerCluster({
   onContextMenu,
   longPressActiveRef,
   markerRefs,
+  clusterGroupRef,
 }: MarkerClusterProps) {
   const map = useMap();
-  const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
 
   useEffect(() => {
     if (!map || spots.length === 0) return;
@@ -50,7 +51,7 @@ export function MarkerCluster({
 
       if (markerGroup.getLayers().length > 0) {
         markerGroup.addTo(map);
-        clusterGroupRef.current = markerGroup;
+        clusterGroupRef.current = markerGroup;  // expose to FlyToTarget
       }
     }, 0);
 
