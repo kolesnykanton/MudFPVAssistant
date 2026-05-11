@@ -2,13 +2,31 @@ import 'leaflet/dist/leaflet.css';
 import { useEffect, useRef, memo } from 'react';
 import { useMediaQuery } from '@mantine/hooks';
 import { MapContainer, TileLayer, LayersControl, ZoomControl, useMap } from 'react-leaflet';
+import { useWeatherAnimation } from '../../hooks/useWeatherAnimation';
 import L from 'leaflet';
 import type { FlightInfo, FlightSpot, WithId } from '../../types';
 import { MapControls } from './MapControls';
 import { WeatherLayers } from './WeatherLayers';
+import { WeatherAnimationControl } from './WeatherAnimationControl';
+import { WeatherPanel } from './WeatherPanel';
 import { MarkerCluster } from './MarkerCluster';
 import { YouAreHereMarker } from './YouAreHereMarker';
 import { MapInteraction } from './MapInteraction';
+
+function WeatherAnimationControlWrapper() {
+  const { frames, currentFrameIndex, isPlaying, setCurrentFrameIndex, setIsPlaying } = useWeatherAnimation();
+
+  return (
+    <WeatherAnimationControl
+      frames={frames}
+      currentIndex={currentFrameIndex}
+      isPlaying={isPlaying}
+      onPrev={() => setCurrentFrameIndex(i => Math.max(0, i - 1))}
+      onNext={() => setCurrentFrameIndex(i => Math.min(frames.length - 1, i + 1))}
+      onTogglePlay={() => setIsPlaying(p => !p)}
+    />
+  );
+}
 
 interface FlyToTarget {
   lat: number;
@@ -188,6 +206,8 @@ export const FpvMap = memo(function FpvMap({
       <MapAutoCenter />
       <YouAreHereMarker />
       <MapControls />
+      <WeatherPanel />
+      <WeatherAnimationControlWrapper />
       {spots.length > 0 && <FitBoundsButton spots={spots} />}
       {onTogglePanel !== undefined && <PanelToggleButton panelOpen={panelOpen} onToggle={onTogglePanel} />}
       {flyToTarget && <FlyToTarget target={flyToTarget} markerRefs={markerRefsRef} clusterGroupRef={clusterGroupRef} />}
