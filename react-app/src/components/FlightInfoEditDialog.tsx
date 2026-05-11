@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import {
-  Modal, TextInput, Textarea, Button, Select, NumberInput,
-  Stack, Group, Alert,
+  Modal, Textarea, Button, Select, NumberInput,
+  Stack, Group, Alert, TextInput,
 } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import type { FlightInfo, BatteryType, WithId } from '../types';
 import FlightTimeInput from './FlightTimeInput';
+import SpotLocationPicker from './SpotLocationPicker';
 
 const BATTERY_TYPES: BatteryType[] = ['Unknown', 'LiPo', 'LiIon'];
 const CELL_COUNTS = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -23,6 +24,7 @@ export default function FlightInfoEditDialog({ open, flight, onSave, onClose }: 
   const [batType, setBatType] = useState<BatteryType>('LiPo');
   const [cellCount, setCellCount] = useState<number>(4);
   const [flightTime, setFlightTime] = useState<string | undefined>(undefined);
+  const [spotId, setSpotId] = useState<string | undefined>(undefined);
   const [location, setLocation] = useState('');
   const [comment, setComment] = useState('');
   const [date, setDate] = useState<string | null>(null);
@@ -37,6 +39,7 @@ export default function FlightInfoEditDialog({ open, flight, onSave, onClose }: 
       setBatType(flight.batType ?? 'LiPo');
       setCellCount(flight.cellCount ?? 4);
       setFlightTime(flight.flightTime ?? undefined);
+      setSpotId(flight.spotId ?? undefined);
       setLocation(flight.location ?? '');
       setComment(flight.comment ?? '');
       setDate(flight.date ?? null);
@@ -56,6 +59,7 @@ export default function FlightInfoEditDialog({ open, flight, onSave, onClose }: 
         batType,
         cellCount,
         location: location.trim(),
+        spotId: spotId ?? undefined,
         comment: comment.trim() || undefined,
         usedMah: usedMah !== '' ? Number(usedMah) : undefined,
         flightTime,
@@ -70,13 +74,7 @@ export default function FlightInfoEditDialog({ open, flight, onSave, onClose }: 
   };
 
   return (
-    <Modal
-      opened={open}
-      onClose={onClose}
-      title="Edit Flight"
-      centered
-      size="md"
-    >
+    <Modal opened={open} onClose={onClose} title="Edit Flight" centered size="md">
       <Stack gap="sm">
         <TextInput
           label="Name"
@@ -111,10 +109,10 @@ export default function FlightInfoEditDialog({ open, flight, onSave, onClose }: 
           />
           <FlightTimeInput value={flightTime} onChange={setFlightTime} size="sm" />
         </Group>
-        <TextInput
-          label="Location"
-          value={location}
-          onChange={e => setLocation(e.target.value)}
+        <SpotLocationPicker
+          spotId={spotId}
+          location={location}
+          onChange={(sid, loc) => { setSpotId(sid); setLocation(loc); }}
           size="sm"
         />
         <Textarea
@@ -131,9 +129,7 @@ export default function FlightInfoEditDialog({ open, flight, onSave, onClose }: 
           size="sm"
           clearable
         />
-        {saveError && (
-          <Alert color="red" variant="light">{saveError}</Alert>
-        )}
+        {saveError && <Alert color="red" variant="light">{saveError}</Alert>}
         <Group justify="flex-end" mt="xs">
           <Button variant="subtle" onClick={onClose} disabled={saving}>Cancel</Button>
           <Button onClick={handleSave} disabled={!name.trim() || saving} loading={saving}>Save</Button>
