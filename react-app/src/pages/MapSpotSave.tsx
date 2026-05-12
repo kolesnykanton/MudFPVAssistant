@@ -10,6 +10,7 @@ import { useData } from '../context/DataContext';
 import type { FlightInfo, FlightSpot, WithId } from '../types';
 import { useSettings } from '../hooks/useSettings';
 import { useAuth } from '../context/AuthContext';
+import { WeatherAnimationProvider } from '../context/WeatherAnimationContext';
 import { FpvMap } from '../components/map/FpvMap';
 import type { ContextMenuState } from '../components/map/FpvMap';
 import { SpotsListPanel } from '../components/map/SpotsListPanel';
@@ -260,18 +261,20 @@ export default function MapSpotSave() {
 
       <Box className={classes.mainContent}>
         <Box className={classes.mapWrapper} style={{ position: 'relative' }}>
-          <FpvMap
-            spots={spots}
-            openWeatherApiKey={openWeatherApiKey}
-            onContextMenu={handleContextMenu}
-            flyToTarget={flyToState}
-            panelOpen={isDesktop ? panelOpen : undefined}
-            onTogglePanel={isDesktop ? () => setPanelOpen(!panelOpen) : undefined}
-            flightCountBySpot={flightCountBySpot}
-            recentFlightsBySpot={recentFlightsBySpot}
-          />
+          <WeatherAnimationProvider>
+            <FpvMap
+              spots={spots}
+              openWeatherApiKey={openWeatherApiKey}
+              onContextMenu={handleContextMenu}
+              flyToTarget={flyToState}
+              panelOpen={isDesktop ? panelOpen : undefined}
+              onTogglePanel={isDesktop ? () => setPanelOpen(!panelOpen) : undefined}
+              flightCountBySpot={flightCountBySpot}
+              recentFlightsBySpot={recentFlightsBySpot}
+            />
 
-          <QuickPinFab />
+            <QuickPinFab />
+          </WeatherAnimationProvider>
 
           {contextMenu && (
             <>

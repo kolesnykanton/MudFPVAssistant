@@ -2,7 +2,7 @@ import 'leaflet/dist/leaflet.css';
 import { useEffect, useRef, memo } from 'react';
 import { useMediaQuery } from '@mantine/hooks';
 import { MapContainer, TileLayer, LayersControl, ZoomControl, useMap } from 'react-leaflet';
-import { useWeatherAnimation } from '../../hooks/useWeatherAnimation';
+import { useWeatherAnimation } from '../../context/WeatherAnimationContext';
 import L from 'leaflet';
 import type { FlightInfo, FlightSpot, WithId } from '../../types';
 import { MapControls } from './MapControls';
@@ -21,9 +21,9 @@ function WeatherAnimationControlWrapper() {
       frames={frames}
       currentIndex={currentFrameIndex}
       isPlaying={isPlaying}
-      onPrev={() => setCurrentFrameIndex(i => Math.max(0, i - 1))}
-      onNext={() => setCurrentFrameIndex(i => Math.min(frames.length - 1, i + 1))}
-      onTogglePlay={() => setIsPlaying(p => !p)}
+      onPrev={() => setCurrentFrameIndex(Math.max(0, currentFrameIndex - 1))}
+      onNext={() => setCurrentFrameIndex(Math.min(frames.length - 1, currentFrameIndex + 1))}
+      onTogglePlay={() => setIsPlaying(!isPlaying)}
     />
   );
 }

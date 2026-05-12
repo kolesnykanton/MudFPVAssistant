@@ -37,9 +37,12 @@ export const useWeatherRadar = (): WeatherRadarData => {
         }
 
         const json = await response.json();
+        const pastFrames = json.radar?.past || [];
+        const nowcastFrames = json.radar?.nowcast || [];
+        const allFrames = [...pastFrames, ...nowcastFrames].sort((a, b) => a.time - b.time);
         setData({
           host: json.host || 'https://tilecache.rainviewer.com',
-          frames: json.radar?.past || [],
+          frames: allFrames,
           loading: false,
           error: null,
         });

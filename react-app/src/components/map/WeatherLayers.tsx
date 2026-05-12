@@ -1,5 +1,5 @@
 import { TileLayer, LayersControl } from 'react-leaflet';
-import { useWeatherAnimation } from '../../hooks/useWeatherAnimation';
+import { useWeatherAnimation } from '../../context/WeatherAnimationContext';
 
 interface WeatherLayersProps {
   openWeatherApiKey?: string;
