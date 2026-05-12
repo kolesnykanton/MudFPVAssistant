@@ -97,19 +97,27 @@ export function SpotsListPanel({ spots, onLocate, onEdit, onDelete, onClose }: S
         ) : (
           <Stack gap="xs">
             {filteredSpots.map(spot => (
-              <UnstyledButton
+              <div
                 key={spot.id}
-                onClick={() => onLocate(spot)}
-                p="sm"
                 style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
                   borderRadius: 'var(--mantine-radius-sm)',
-                  cursor: 'pointer',
+                  padding: 'var(--mantine-spacing-sm)',
                   transition: 'background-color 150ms ease',
                 }}
                 onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--mantine-color-gray-1)')}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
               >
-                <Group justify="space-between">
+                <UnstyledButton
+                  onClick={() => onLocate(spot)}
+                  style={{
+                    flex: 1,
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                  }}
+                >
                   <Group gap="xs" flex={1}>
                     <div
                       style={{
@@ -130,38 +138,38 @@ export function SpotsListPanel({ spots, onLocate, onEdit, onDelete, onClose }: S
                       </Text>
                     </Stack>
                   </Group>
-                  <Group gap={2} onClick={e => e.stopPropagation()}>
-                    <ActionIcon
-                      size="xs"
-                      variant="subtle"
-                      color="teal"
-                      onClick={() => openGoogleMaps(spot.latitude, spot.longitude)}
-                      aria-label="Navigate to spot"
-                      title="Navigate via Google Maps"
-                    >
-                      <IconNavigation size={14} />
-                    </ActionIcon>
-                    <ActionIcon
-                      size="xs"
-                      variant="subtle"
-                      color="blue"
-                      onClick={() => onEdit(spot)}
-                      aria-label="Edit spot"
-                    >
-                      <IconEdit size={14} />
-                    </ActionIcon>
-                    <ActionIcon
-                      size="xs"
-                      variant="subtle"
-                      color="red"
-                      onClick={() => onDelete(spot)}
-                      aria-label="Delete spot"
-                    >
-                      <IconTrash size={14} />
-                    </ActionIcon>
-                  </Group>
+                </UnstyledButton>
+                <Group gap={2} style={{ flexShrink: 0 }}>
+                  <ActionIcon
+                    size="xs"
+                    variant="subtle"
+                    color="teal"
+                    onClick={() => openGoogleMaps(spot.latitude, spot.longitude)}
+                    aria-label="Navigate to spot"
+                    title="Navigate via Google Maps"
+                  >
+                    <IconNavigation size={14} />
+                  </ActionIcon>
+                  <ActionIcon
+                    size="xs"
+                    variant="subtle"
+                    color="blue"
+                    onClick={() => onEdit(spot)}
+                    aria-label="Edit spot"
+                  >
+                    <IconEdit size={14} />
+                  </ActionIcon>
+                  <ActionIcon
+                    size="xs"
+                    variant="subtle"
+                    color="red"
+                    onClick={() => onDelete(spot)}
+                    aria-label="Delete spot"
+                  >
+                    <IconTrash size={14} />
+                  </ActionIcon>
                 </Group>
-              </UnstyledButton>
+              </div>
             ))}
           </Stack>
         )}

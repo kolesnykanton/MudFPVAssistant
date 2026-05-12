@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Alert, Button, FileButton, Modal, Progress, Stack, Text, Title } from '@mantine/core';
+import { Alert, Button, FileButton, Modal, Progress, Stack, Text } from '@mantine/core';
 import { IconAlertCircle, IconCheck, IconUpload } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { useData } from '../../context/DataContext';
@@ -78,7 +78,7 @@ export default function BatchImportModal({ opened, onClose }: Props) {
   };
 
   return (
-    <Modal opened={opened} onClose={onClose} title={<Title order={5}>Batch Import Flights</Title>} size="md">
+    <Modal opened={opened} onClose={onClose} title="Batch Import Flights" size="md">
       <Stack gap="sm">
         <Text size="sm" c="dimmed">
           Upload a JSON file with flight data to add multiple flights at once.

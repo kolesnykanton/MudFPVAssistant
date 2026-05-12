@@ -1,4 +1,4 @@
-import { Drawer, Modal, Title } from '@mantine/core';
+import { Drawer, Modal } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import type { FlightInfo } from '../../types';
 import AddFlightForm from '../AddFlightForm';
@@ -19,7 +19,7 @@ export default function AddFlightModal({ opened, onClose, onAdd }: Props) {
         onClose={onClose}
         position="bottom"
         size="92%"
-        title={<Title order={5}>Log Flight</Title>}
+        title="Log Flight"
         styles={{ body: { paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 16px)', overflowY: 'auto' } }}
       >
         <AddFlightForm onAdd={onAdd} />
@@ -31,7 +31,7 @@ export default function AddFlightModal({ opened, onClose, onAdd }: Props) {
     <Modal
       opened={opened}
       onClose={onClose}
-      title={<Title order={5}>Log Flight</Title>}
+      title="Log Flight"
       size="lg"
     >
       <AddFlightForm onAdd={onAdd} />
