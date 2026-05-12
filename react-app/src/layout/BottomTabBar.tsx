@@ -61,7 +61,7 @@ export default function BottomTabBar() {
                 }
               />
               <Text
-                size="10px"
+                size="xs"
                 style={{
                   color: isActive
                     ? 'var(--mantine-color-blue-filled)'

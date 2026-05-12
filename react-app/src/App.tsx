@@ -51,7 +51,9 @@ function App() {
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/flight-info" element={<FlightInfo />} />
+                  <Route path="/flights" element={<FlightInfo />} />
                   <Route path="/map-spot-save" element={<MapSpotSave />} />
+                  <Route path="/spots" element={<MapSpotSave />} />
                   <Route path="/utils" element={<Utilities />} />
                   <Route path="/settings" element={<Settings />} />
                 </Routes>

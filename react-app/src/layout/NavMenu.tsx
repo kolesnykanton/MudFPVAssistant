@@ -23,24 +23,15 @@ interface NavMenuProps {
   onNavClick?: () => void;
 }
 
-function NavItem({
-  to,
-  label,
-  icon: Icon,
-  end,
-  onNavClick,
-}: {
+interface NavItemProps {
   to: string;
   label: string;
-  icon: typeof IconLayoutDashboard;
-  end?: boolean;
+  icon: React.ComponentType<{ size?: number; stroke?: number }>;
+  isActive: boolean;
   onNavClick?: () => void;
-}) {
-  const location = useLocation();
-  const isActive = end
-    ? location.pathname === to
-    : location.pathname.startsWith(to);
+}
 
+function NavItem({ to, label, icon: Icon, isActive, onNavClick }: NavItemProps) {
   return (
     <NavLink
       component={Link}
@@ -58,17 +49,33 @@ function NavItem({
 }
 
 export default function NavMenu({ onNavClick }: NavMenuProps) {
+  const { pathname } = useLocation();
+
   return (
     <Box style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Stack gap={4}>
         {primaryLinks.map(({ to, label, icon, end }) => (
-          <NavItem key={to} to={to} label={label} icon={icon} end={end} onNavClick={onNavClick} />
+          <NavItem
+            key={to}
+            to={to}
+            label={label}
+            icon={icon}
+            isActive={end ? pathname === to : pathname.startsWith(to)}
+            onNavClick={onNavClick}
+          />
         ))}
       </Stack>
 
       <Stack gap={4} mt="auto">
         {secondaryLinks.map(({ to, label, icon }) => (
-          <NavItem key={to} to={to} label={label} icon={icon} onNavClick={onNavClick} />
+          <NavItem
+            key={to}
+            to={to}
+            label={label}
+            icon={icon}
+            isActive={pathname.startsWith(to)}
+            onNavClick={onNavClick}
+          />
         ))}
       </Stack>
     </Box>

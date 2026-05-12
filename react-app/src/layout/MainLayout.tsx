@@ -27,7 +27,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const { user, loading, signIn, signOut } = useAuth();
   // undefined on first render — treat as desktop to avoid layout flicker
-  const isMobile = useMediaQuery('(max-width: 767px)');
+  const isMobile = useMediaQuery('(max-width: 767px)') ?? false;
 
   const handleSignIn = () => {
     // Benign cases (popup closed, blocked → redirect) are absorbed inside signIn.
