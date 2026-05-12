@@ -21,10 +21,9 @@ export const WeatherAnimationControl = ({
 }: WeatherAnimationControlProps) => {
   if (frames.length === 0) return null;
 
-  const minutesOffset = Math.round(
-    (frames[currentIndex]?.time - frames[frames.length - 1]?.time) / 60
-  );
-  const timeLabel = minutesOffset === 0 ? 'now' : `${minutesOffset < 0 ? '' : '+'}${minutesOffset}m`;
+  const nowTs = Date.now() / 1000;
+  const minutesOffset = Math.round((frames[currentIndex]?.time - nowTs) / 60);
+  const timeLabel = Math.abs(minutesOffset) < 5 ? 'now' : `${minutesOffset > 0 ? '+' : ''}${minutesOffset}m`;
 
   return (
     <Group
@@ -69,8 +68,13 @@ export const WeatherAnimationControl = ({
       </Button>
 
       <Stack gap={2} ml={8}>
-        <Text size="xs" fw={600} style={{ fontFamily: 'monospace', minWidth: '40px' }}>
-          {timeLabel}
+        <Text
+          size="xs"
+          fw={600}
+          c={minutesOffset > 0 ? 'blue' : 'dark'}
+          style={{ fontFamily: 'monospace', minWidth: '40px' }}
+        >
+          {minutesOffset > 0 ? '▶ ' : ''}{timeLabel}
         </Text>
         <Text size="xs" c="dimmed" style={{ fontSize: '10px' }}>
           {currentIndex + 1}/{frames.length}
