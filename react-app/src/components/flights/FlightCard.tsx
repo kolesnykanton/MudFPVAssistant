@@ -8,9 +8,10 @@ interface FlightCardProps {
   spot?: WithId<FlightSpot>;
   onEdit: (flight: WithId<FlightInfo>) => void;
   onDelete: (id: string) => void;
+  readOnly?: boolean;
 }
 
-export default function FlightCard({ flight, spot, onEdit, onDelete }: FlightCardProps) {
+export default function FlightCard({ flight, spot, onEdit, onDelete, readOnly = false }: FlightCardProps) {
   const dateLabel = flight.date
     ? new Date(flight.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
     : '—';
@@ -49,21 +50,23 @@ export default function FlightCard({ flight, spot, onEdit, onDelete }: FlightCar
           </div>
         </Group>
 
-        <Menu position="bottom-end" withinPortal>
-          <Menu.Target>
-            <ActionIcon variant="subtle" size="sm" aria-label="Flight actions">
-              <IconDotsVertical size={16} />
-            </ActionIcon>
-          </Menu.Target>
-          <Menu.Dropdown>
-            <Menu.Item leftSection={<IconEdit size={14} />} onClick={() => onEdit(flight)}>
-              Edit
-            </Menu.Item>
-            <Menu.Item leftSection={<IconTrash size={14} />} color="red" onClick={() => onDelete(flight.id)}>
-              Delete
-            </Menu.Item>
-          </Menu.Dropdown>
-        </Menu>
+        {!readOnly && (
+          <Menu position="bottom-end" withinPortal>
+            <Menu.Target>
+              <ActionIcon variant="subtle" size="sm" aria-label="Flight actions">
+                <IconDotsVertical size={16} />
+              </ActionIcon>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item leftSection={<IconEdit size={14} />} onClick={() => onEdit(flight)}>
+                Edit
+              </Menu.Item>
+              <Menu.Item leftSection={<IconTrash size={14} />} color="red" onClick={() => onDelete(flight.id)}>
+                Delete
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+        )}
       </Group>
     </Paper>
   );

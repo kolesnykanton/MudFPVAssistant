@@ -155,8 +155,9 @@ export default function Home() {
                       key={f.id}
                       flight={f}
                       spot={spots.find(s => s.id === f.spotId)}
-                      onEdit={() => navigate('/flights')}
-                      onDelete={() => navigate('/flights')}
+                      onEdit={() => {}}
+                      onDelete={() => {}}
+                      readOnly
                     />
                   ))}
                 </Stack>

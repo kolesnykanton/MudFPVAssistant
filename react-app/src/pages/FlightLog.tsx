@@ -57,6 +57,7 @@ export default function FlightLog() {
   const handleAdd = async (flight: Omit<FlightInfoType, 'id'>) => {
     await addFlight(flight);
     notifications.show({ color: 'green', message: 'Flight added.' });
+    setAddModalOpen(false);
   };
 
   const handleUpdate = async (id: string, data: Partial<Omit<FlightInfoType, 'id'>>) => {
