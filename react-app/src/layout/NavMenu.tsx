@@ -1,4 +1,4 @@
-import { NavLink, Stack } from '@mantine/core';
+import { Box, NavLink, Stack } from '@mantine/core';
 import {
   IconLayoutDashboard,
   IconPlaneTilt,
@@ -8,10 +8,13 @@ import {
 } from '@tabler/icons-react';
 import { Link, useLocation } from 'react-router-dom';
 
-const links = [
+const primaryLinks = [
   { to: '/', label: 'Dashboard', icon: IconLayoutDashboard, end: true },
-  { to: '/flight-info', label: 'Flights', icon: IconPlaneTilt },
-  { to: '/map-spot-save', label: 'Flight Spots', icon: IconMap },
+  { to: '/flights', label: 'Flights', icon: IconPlaneTilt },
+  { to: '/spots', label: 'Flight Spots', icon: IconMap },
+];
+
+const secondaryLinks = [
   { to: '/utils', label: 'Utilities', icon: IconTool },
   { to: '/settings', label: 'Settings', icon: IconSettings },
 ];
@@ -20,32 +23,54 @@ interface NavMenuProps {
   onNavClick?: () => void;
 }
 
-export default function NavMenu({ onNavClick }: NavMenuProps) {
+function NavItem({
+  to,
+  label,
+  icon: Icon,
+  end,
+  onNavClick,
+}: {
+  to: string;
+  label: string;
+  icon: typeof IconLayoutDashboard;
+  end?: boolean;
+  onNavClick?: () => void;
+}) {
   const location = useLocation();
+  const isActive = end
+    ? location.pathname === to
+    : location.pathname.startsWith(to);
 
   return (
-    <Stack gap={4}>
-      {links.map(({ to, label, icon: Icon, end }) => {
-        const isActive = end
-          ? location.pathname === to
-          : location.pathname.startsWith(to);
+    <NavLink
+      component={Link}
+      to={to}
+      label={label}
+      leftSection={<Icon size={18} stroke={1.5} />}
+      active={isActive}
+      onClick={() => onNavClick?.()}
+      styles={{
+        root: { borderRadius: 8, color: 'white' },
+        label: { color: 'white' },
+      }}
+    />
+  );
+}
 
-        return (
-          <NavLink
-            key={to}
-            component={Link}
-            to={to}
-            label={label}
-            leftSection={<Icon size={18} stroke={1.5} />}
-            active={isActive}
-            onClick={() => onNavClick?.()}
-            styles={{
-              root: { borderRadius: 8, color: 'white' },
-              label: { color: 'white' },
-            }}
-          />
-        );
-      })}
-    </Stack>
+export default function NavMenu({ onNavClick }: NavMenuProps) {
+  return (
+    <Box style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <Stack gap={4}>
+        {primaryLinks.map(({ to, label, icon, end }) => (
+          <NavItem key={to} to={to} label={label} icon={icon} end={end} onNavClick={onNavClick} />
+        ))}
+      </Stack>
+
+      <Stack gap={4} mt="auto">
+        {secondaryLinks.map(({ to, label, icon }) => (
+          <NavItem key={to} to={to} label={label} icon={icon} onNavClick={onNavClick} />
+        ))}
+      </Stack>
+    </Box>
   );
 }

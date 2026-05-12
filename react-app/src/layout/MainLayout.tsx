@@ -3,7 +3,6 @@ import {
   Anchor,
   AppShell,
   Avatar,
-  Burger,
   Button,
   Group,
   ActionIcon,
@@ -11,11 +10,12 @@ import {
   Tooltip,
   useMantineColorScheme,
 } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { useMediaQuery } from '@mantine/hooks';
 import { IconMoon, IconSun, IconLogin, IconLogout } from '@tabler/icons-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import NavMenu from './NavMenu';
+import BottomTabBar from './BottomTabBar';
 
 const MAIN_CONTENT_ID = 'main-content';
 
@@ -24,9 +24,10 @@ interface MainLayoutProps {
 }
 
 export default function MainLayout({ children }: MainLayoutProps) {
-  const [opened, { toggle }] = useDisclosure();
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const { user, loading, signIn, signOut } = useAuth();
+  // undefined on first render — treat as desktop to avoid layout flicker
+  const isMobile = useMediaQuery('(max-width: 767px)');
 
   const handleSignIn = () => {
     // Benign cases (popup closed, blocked → redirect) are absorbed inside signIn.
@@ -47,7 +48,12 @@ export default function MainLayout({ children }: MainLayoutProps) {
         header={{ height: 'calc(60px + env(safe-area-inset-top, 0px))' }}
         navbar={
           showNavbar
-            ? { width: 220, breakpoint: 'sm', collapsed: { mobile: !opened } }
+            ? { width: 220, breakpoint: 'sm', collapsed: { mobile: true } }
+            : undefined
+        }
+        footer={
+          showNavbar && isMobile
+            ? { height: 'calc(56px + env(safe-area-inset-bottom, 0px))' }
             : undefined
         }
         padding="md"
@@ -55,16 +61,6 @@ export default function MainLayout({ children }: MainLayoutProps) {
       <AppShell.Header style={{ background: '#03173d', paddingTop: 'env(safe-area-inset-top, 0px)' }}>
         <Group h="100%" px="md" justify="space-between" wrap="nowrap">
           <Group>
-            {showNavbar && (
-              <Burger
-                opened={opened}
-                onClick={toggle}
-                hiddenFrom="sm"
-                size="sm"
-                color="white"
-                aria-label="Toggle navigation"
-              />
-            )}
             <Anchor
               component={Link}
               to="/"
@@ -174,8 +170,14 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
       {showNavbar && (
         <AppShell.Navbar p="md" style={{ background: '#03173d', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
-          <NavMenu onNavClick={() => { if (opened) toggle(); }} />
+          <NavMenu />
         </AppShell.Navbar>
+      )}
+
+      {showNavbar && (
+        <AppShell.Footer hiddenFrom="sm" style={{ background: '#03173d' }}>
+          <BottomTabBar />
+        </AppShell.Footer>
       )}
 
       <AppShell.Main id={MAIN_CONTENT_ID}>
