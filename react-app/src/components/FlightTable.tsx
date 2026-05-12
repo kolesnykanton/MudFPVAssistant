@@ -74,7 +74,7 @@ export default function FlightTable({ flights, selectedDate, onDelete, onUpdate 
       <Group gap={4} wrap="nowrap">
         <Anchor
           size="sm"
-          onClick={() => navigate(`/map-spot-save?highlight=${flight.spotId}`)}
+          onClick={() => navigate(`/spots?highlight=${flight.spotId}`)}
           style={{ cursor: 'pointer' }}
         >
           {spot.name}
