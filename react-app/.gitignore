@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 
 .superpowers/
+
+# Dev seeding data — not for production bundle
+src/dev/test-flights.json

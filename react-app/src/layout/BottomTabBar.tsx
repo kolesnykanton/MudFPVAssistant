@@ -34,13 +34,14 @@ export default function BottomTabBar() {
       {tabs.map(({ to, label, icon: Icon, end }) => {
         const isActive = end
           ? location.pathname === to
-          : location.pathname.startsWith(to);
+          : location.pathname === to || location.pathname.startsWith(to + '/');
 
         return (
           <UnstyledButton
             key={to}
             component={Link}
             to={to}
+            aria-current={isActive ? 'page' : undefined}
             style={{
               flex: 1,
               display: 'flex',
