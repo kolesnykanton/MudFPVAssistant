@@ -25,3 +25,26 @@ body {
   outline: 2px solid #fff;
   outline-offset: 2px;
 }
+
+/* Recharts: suppress mouse-click focus rings on all chart elements.
+   :focus-visible preserves keyboard outlines for accessibility. */
+.recharts-wrapper:focus:not(:focus-visible),
+.recharts-wrapper *:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Activity calendar heatmap — light mode (default) */
+.react-calendar-heatmap .color-empty  { fill: #ebedf0 !important; }
+.react-calendar-heatmap .color-scale-1 { fill: #b6d4f7 !important; }
+.react-calendar-heatmap .color-scale-2 { fill: #74aef0 !important; }
+.react-calendar-heatmap .color-scale-3 { fill: #3b82d6 !important; }
+.react-calendar-heatmap .color-scale-4 { fill: #1a56b0 !important; }
+.react-calendar-heatmap text { fill: #868e96; font-size: 9px; }
+
+/* Dark mode overrides — Mantine sets data-mantine-color-scheme on <html> */
+[data-mantine-color-scheme="dark"] .react-calendar-heatmap .color-empty  { fill: rgba(255,255,255,0.07) !important; }
+[data-mantine-color-scheme="dark"] .react-calendar-heatmap .color-scale-1 { fill: #1c3a5e !important; }
+[data-mantine-color-scheme="dark"] .react-calendar-heatmap .color-scale-2 { fill: #1a5fa8 !important; }
+[data-mantine-color-scheme="dark"] .react-calendar-heatmap .color-scale-3 { fill: #3b8fd6 !important; }
+[data-mantine-color-scheme="dark"] .react-calendar-heatmap .color-scale-4 { fill: #74c0fc !important; }
+[data-mantine-color-scheme="dark"] .react-calendar-heatmap text { fill: #868e96; }

@@ -10,6 +10,7 @@ import {
   Text,
   Title,
   ActionIcon,
+  useComputedColorScheme,
 } from '@mantine/core';
 import { IconSearch, IconEdit, IconTrash, IconNavigation } from '@tabler/icons-react';
 import { useDebouncedValue } from '@mantine/hooks';
@@ -29,6 +30,8 @@ export function SpotsListPanel({ spots, onLocate, onEdit, onDelete, onClose }: S
   const [query, setQuery] = useState('');
   const [debouncedQuery] = useDebouncedValue(query, 200);
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
+  const colorScheme = useComputedColorScheme('light');
+  const hoverBg = colorScheme === 'dark' ? 'var(--mantine-color-dark-5)' : 'var(--mantine-color-gray-1)';
 
   const filteredSpots = useMemo(() => {
     const queryLower = debouncedQuery.toLowerCase();
@@ -107,7 +110,7 @@ export function SpotsListPanel({ spots, onLocate, onEdit, onDelete, onClose }: S
                   padding: 'var(--mantine-spacing-sm)',
                   transition: 'background-color 150ms ease',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--mantine-color-gray-1)')}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = hoverBg)}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
               >
                 <UnstyledButton
