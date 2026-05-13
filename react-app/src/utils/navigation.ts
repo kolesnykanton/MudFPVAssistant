@@ -31,13 +31,19 @@ async function getUserLocation(): Promise<{ lat: number; lng: number } | null> {
 }
 
 export async function openGoogleMaps(destLat: number, destLng: number): Promise<void> {
+  const newTab = window.open('about:blank', '_blank', 'noopener,noreferrer');
   const origin = await getUserLocation();
   const url = buildGoogleMapsUrl(destLat, destLng, origin?.lat, origin?.lng);
-  window.open(url, '_blank', 'noopener,noreferrer');
+  if (newTab) {
+    newTab.location.href = url;
+  }
 }
 
 export async function openAppleMaps(destLat: number, destLng: number): Promise<void> {
+  const newTab = window.open('about:blank', '_blank', 'noopener,noreferrer');
   const origin = await getUserLocation();
   const url = buildAppleMapsUrl(destLat, destLng, origin?.lat, origin?.lng);
-  window.open(url, '_blank', 'noopener,noreferrer');
+  if (newTab) {
+    newTab.location.href = url;
+  }
 }
