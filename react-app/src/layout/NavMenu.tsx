@@ -40,10 +40,7 @@ function NavItem({ to, label, icon: Icon, isActive, onNavClick }: NavItemProps) 
       leftSection={<Icon size={18} stroke={1.5} />}
       active={isActive}
       onClick={() => onNavClick?.()}
-      styles={{
-        root: { borderRadius: 8, color: 'white' },
-        label: { color: 'white' },
-      }}
+      style={{ borderRadius: 8 }}
     />
   );
 }

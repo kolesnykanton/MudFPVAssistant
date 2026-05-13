@@ -74,6 +74,7 @@ export default function FlightStats({ flights }: FlightStatsProps) {
   const colorScheme = useComputedColorScheme('light');
   const gridStroke = colorScheme === 'dark' ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)';
   const barCursor = { fill: colorScheme === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)' };
+  const labelFill = colorScheme === 'dark' ? 'var(--mantine-color-gray-4)' : 'var(--mantine-color-gray-7)';
 
   // Pass 1: single loop — builds all aggregation maps
   const statsBundle = useMemo(() => {
@@ -432,7 +433,7 @@ export default function FlightStats({ flights }: FlightStatsProps) {
                         <LabelList
                           dataKey="value"
                           position="right"
-                          style={{ fill: 'var(--mantine-color-gray-3)', fontSize: 11 }}
+                          style={{ fill: labelFill, fontSize: 11 }}
                         />
                       </Bar>
                     </BarChart>
@@ -479,7 +480,7 @@ export default function FlightStats({ flights }: FlightStatsProps) {
                       <LabelList
                         dataKey="label"
                         position="top"
-                        style={{ fill: 'var(--mantine-color-gray-3)', fontSize: 10 }}
+                        style={{ fill: labelFill, fontSize: 10 }}
                       />
                     </Bar>
                   </BarChart>
@@ -519,7 +520,7 @@ export default function FlightStats({ flights }: FlightStatsProps) {
                         <LabelList
                           dataKey="pct"
                           position="right"
-                          style={{ fill: 'var(--mantine-color-gray-3)', fontSize: 11 }}
+                          style={{ fill: labelFill, fontSize: 11 }}
                         />
                       </Bar>
                     </BarChart>

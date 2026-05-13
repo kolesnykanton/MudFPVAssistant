@@ -28,7 +28,6 @@ export default function BottomTabBar() {
         alignItems: 'stretch',
         height: '100%',
         width: '100%',
-        background: '#03173d',
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
       }}
     >
@@ -57,7 +56,7 @@ export default function BottomTabBar() {
                 color={
                   isActive
                     ? 'var(--mantine-color-blue-filled)'
-                    : 'rgba(255,255,255,0.7)'
+                    : 'var(--mantine-color-dimmed)'
                 }
               />
               <Text
@@ -65,7 +64,7 @@ export default function BottomTabBar() {
                 style={{
                   color: isActive
                     ? 'var(--mantine-color-blue-filled)'
-                    : 'rgba(255,255,255,0.7)',
+                    : 'var(--mantine-color-dimmed)',
                   lineHeight: 1,
                 }}
               >

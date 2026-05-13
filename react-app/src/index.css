@@ -15,7 +15,7 @@ body {
   top: 0;
   z-index: 10000;
   padding: 8px 12px;
-  background: #03173d;
+  background: var(--mantine-color-dark-9);
   color: #fff;
   text-decoration: none;
   border-radius: 0 0 6px 0;
