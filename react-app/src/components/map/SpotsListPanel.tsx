@@ -11,10 +11,11 @@ import {
   Title,
   ActionIcon,
 } from '@mantine/core';
-import { IconSearch, IconEdit, IconTrash } from '@tabler/icons-react';
+import { IconSearch, IconEdit, IconTrash, IconNavigation } from '@tabler/icons-react';
 import { useDebouncedValue } from '@mantine/hooks';
 import type { FlightSpot, WithId } from '../../types';
 import { SPOT_CATEGORIES, CATEGORY_COLORS } from '../../types';
+import { openGoogleMaps } from '../../utils/navigation';
 
 interface SpotsListPanelProps {
   spots: WithId<FlightSpot>[];
@@ -130,6 +131,16 @@ export function SpotsListPanel({ spots, onLocate, onEdit, onDelete, onClose }: S
                     </Stack>
                   </Group>
                   <Group gap={2} onClick={e => e.stopPropagation()}>
+                    <ActionIcon
+                      size="xs"
+                      variant="subtle"
+                      color="teal"
+                      onClick={() => openGoogleMaps(spot.latitude, spot.longitude)}
+                      aria-label="Navigate to spot"
+                      title="Navigate via Google Maps"
+                    >
+                      <IconNavigation size={14} />
+                    </ActionIcon>
                     <ActionIcon
                       size="xs"
                       variant="subtle"

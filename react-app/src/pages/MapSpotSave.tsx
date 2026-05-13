@@ -10,6 +10,7 @@ import { useData } from '../context/DataContext';
 import type { FlightInfo, FlightSpot, WithId } from '../types';
 import { useSettings } from '../hooks/useSettings';
 import { useAuth } from '../context/AuthContext';
+import { WeatherAnimationProvider } from '../context/WeatherAnimationContext';
 import { FpvMap } from '../components/map/FpvMap';
 import type { ContextMenuState } from '../components/map/FpvMap';
 import { SpotsListPanel } from '../components/map/SpotsListPanel';
@@ -17,6 +18,7 @@ import FlightSpotEditDialog from '../components/FlightSpotEditDialog';
 import ConfirmDialog from '../components/ConfirmDialog';
 import MapContextMenu, { type MapContextMenuItem } from '../components/MapContextMenu';
 import { QuickPinFab } from '../components/map/QuickPinFab';
+import { openGoogleMaps, openAppleMaps } from '../utils/navigation';
 
 const MENU_WIDTH = 170;
 const PANEL_STORAGE_KEY = 'mfa-map-panel-open';
@@ -158,6 +160,18 @@ export default function MapSpotSave() {
     setContextMenu(null);
   };
 
+  const handleNavigateGoogleMaps = () => {
+    if (!contextMenu) return;
+    setContextMenu(null);
+    openGoogleMaps(contextMenu.lat, contextMenu.lng);
+  };
+
+  const handleNavigateAppleMaps = () => {
+    if (!contextMenu) return;
+    setContextMenu(null);
+    openAppleMaps(contextMenu.lat, contextMenu.lng);
+  };
+
   const confirmDeleteSpot = async () => {
     if (!pendingDeleteSpotId) return;
     const id = pendingDeleteSpotId;
@@ -194,11 +208,15 @@ export default function MapSpotSave() {
     if (!contextMenu) return [];
     return contextMenu.isPoint
       ? [
-          { label: 'Edit spot',   onClick: handleEditSpot },
-          { label: 'Delete spot', onClick: handleDeleteSpot, danger: true },
+          { label: 'Edit spot',        onClick: handleEditSpot },
+          { label: 'Delete spot',      onClick: handleDeleteSpot, danger: true },
+          { label: 'Google Maps ↗',   onClick: handleNavigateGoogleMaps },
+          { label: 'Apple Maps ↗',    onClick: handleNavigateAppleMaps },
         ]
       : [
-          { label: 'Add spot', onClick: handleAddSpot },
+          { label: 'Add spot',         onClick: handleAddSpot },
+          { label: 'Google Maps ↗',   onClick: handleNavigateGoogleMaps },
+          { label: 'Apple Maps ↗',    onClick: handleNavigateAppleMaps },
         ];
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contextMenu]);
@@ -243,18 +261,20 @@ export default function MapSpotSave() {
 
       <Box className={classes.mainContent}>
         <Box className={classes.mapWrapper} style={{ position: 'relative' }}>
-          <FpvMap
-            spots={spots}
-            openWeatherApiKey={openWeatherApiKey}
-            onContextMenu={handleContextMenu}
-            flyToTarget={flyToState}
-            panelOpen={isDesktop ? panelOpen : undefined}
-            onTogglePanel={isDesktop ? () => setPanelOpen(!panelOpen) : undefined}
-            flightCountBySpot={flightCountBySpot}
-            recentFlightsBySpot={recentFlightsBySpot}
-          />
+          <WeatherAnimationProvider>
+            <FpvMap
+              spots={spots}
+              openWeatherApiKey={openWeatherApiKey}
+              onContextMenu={handleContextMenu}
+              flyToTarget={flyToState}
+              panelOpen={isDesktop ? panelOpen : undefined}
+              onTogglePanel={isDesktop ? () => setPanelOpen(!panelOpen) : undefined}
+              flightCountBySpot={flightCountBySpot}
+              recentFlightsBySpot={recentFlightsBySpot}
+            />
 
-          <QuickPinFab />
+            <QuickPinFab />
+          </WeatherAnimationProvider>
 
           {contextMenu && (
             <>

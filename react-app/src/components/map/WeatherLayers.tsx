@@ -1,30 +1,24 @@
-import { useEffect, useState } from 'react';
 import { TileLayer, LayersControl } from 'react-leaflet';
+import { useWeatherAnimation } from '../../context/WeatherAnimationContext';
 
 interface WeatherLayersProps {
   openWeatherApiKey?: string;
 }
 
 export function WeatherLayers({ openWeatherApiKey }: WeatherLayersProps) {
-  const [rainTileUrl, setRainTileUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    fetch('https://api.rainviewer.com/public/weather-maps.json', { signal: controller.signal })
-      .then(r => r.json())
-      .then((data: { radar: { past: Array<{ path: string }> } }) => {
-        const last = data.radar.past.at(-1);
-        if (last) setRainTileUrl(`https://tilecache.rainviewer.com${last.path}/256/{z}/{x}/{y}/2/1_1.png`);
-      })
-      .catch(err => { if (err.name !== 'AbortError') console.error(err); });
-    return () => controller.abort();
-  }, []);
+  const { host, currentFrame } = useWeatherAnimation();
 
   return (
     <>
-      {rainTileUrl && (
-        <LayersControl.Overlay name="RainViewer (rain/radar)">
-          <TileLayer url={rainTileUrl} attribution="&copy; RainViewer" opacity={0.6} />
+      {currentFrame && host && (
+        <LayersControl.Overlay name="RainViewer (animated radar)">
+          <TileLayer
+            url={`${host}${currentFrame.path}/512/{z}/{x}/{y}/2/1_1.png`}
+            attribution="&copy; RainViewer"
+            opacity={0.6}
+            maxNativeZoom={7}
+            zIndex={2}
+          />
         </LayersControl.Overlay>
       )}
       {openWeatherApiKey && (

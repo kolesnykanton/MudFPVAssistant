@@ -8,6 +8,7 @@ import { CATEGORY_COLORS } from '../../types';
 import type { ContextMenuState } from './FpvMap';
 import droneIconUrl from '../../assets/drone-icon.svg';
 import markerShadowUrl from 'leaflet/dist/images/marker-shadow.png';
+import { openGoogleMaps, openAppleMaps } from '../../utils/navigation';
 
 const iconCache = new Map<string, L.DivIcon | L.Icon>();
 
@@ -115,7 +116,7 @@ export function SpotMarker({
       icon={icon}
       eventHandlers={eventHandlers}
     >
-      <Popup minWidth={170}>
+      <Popup minWidth={190}>
         <div style={{ fontFamily: 'inherit' }}>
           <div style={{ fontWeight: 600, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
             {spot.name}
@@ -152,6 +153,32 @@ export function SpotMarker({
               </button>
             </>
           )}
+          <div style={{ marginTop: 8, borderTop: '1px solid #eee', paddingTop: 8, display: 'flex', gap: 5 }}>
+            <button
+              onClick={() => openGoogleMaps(spot.latitude, spot.longitude)}
+              title="Open route in Google Maps"
+              style={{
+                flex: 1, fontSize: 10, padding: '4px 6px',
+                background: '#4285F4', color: 'white',
+                border: 'none', borderRadius: 4, cursor: 'pointer',
+                fontWeight: 600, letterSpacing: '0.01em',
+              }}
+            >
+              Google Maps
+            </button>
+            <button
+              onClick={() => openAppleMaps(spot.latitude, spot.longitude)}
+              title="Open route in Apple Maps"
+              style={{
+                flex: 1, fontSize: 10, padding: '4px 6px',
+                background: '#1c1c1e', color: 'white',
+                border: 'none', borderRadius: 4, cursor: 'pointer',
+                fontWeight: 600, letterSpacing: '0.01em',
+              }}
+            >
+              Apple Maps
+            </button>
+          </div>
         </div>
       </Popup>
     </Marker>
