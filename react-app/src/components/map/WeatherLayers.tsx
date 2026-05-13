@@ -1,6 +1,8 @@
 import { TileLayer, LayersControl } from 'react-leaflet';
 import { useWeatherAnimation } from '../../context/WeatherAnimationContext';
 
+export const RAINVIEWER_OVERLAY_NAME = 'RainViewer (animated radar)';
+
 interface WeatherLayersProps {
   openWeatherApiKey?: string;
 }
@@ -11,13 +13,14 @@ export function WeatherLayers({ openWeatherApiKey }: WeatherLayersProps) {
   return (
     <>
       {currentFrame && host && (
-        <LayersControl.Overlay name="RainViewer (animated radar)">
+        <LayersControl.Overlay name={RAINVIEWER_OVERLAY_NAME}>
           <TileLayer
             url={`${host}${currentFrame.path}/512/{z}/{x}/{y}/2/1_1.png`}
             attribution="&copy; RainViewer"
             opacity={0.6}
             maxNativeZoom={7}
             zIndex={2}
+            className="mfa-rainviewer"
           />
         </LayersControl.Overlay>
       )}

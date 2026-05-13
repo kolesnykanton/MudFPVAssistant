@@ -1,19 +1,19 @@
 import 'leaflet/dist/leaflet.css';
-import { useEffect, useRef, memo } from 'react';
+import { useEffect, useRef, memo, useState } from 'react';
 import { useMediaQuery } from '@mantine/hooks';
 import { MapContainer, TileLayer, LayersControl, ZoomControl, useMap } from 'react-leaflet';
 import { useWeatherAnimation } from '../../context/WeatherAnimationContext';
 import L from 'leaflet';
 import type { FlightInfo, FlightSpot, WithId } from '../../types';
 import { MapControls } from './MapControls';
-import { WeatherLayers } from './WeatherLayers';
+import { WeatherLayers, RAINVIEWER_OVERLAY_NAME } from './WeatherLayers';
 import { WeatherAnimationControl } from './WeatherAnimationControl';
 import { WeatherPanel } from './WeatherPanel';
 import { MarkerCluster } from './MarkerCluster';
 import { YouAreHereMarker } from './YouAreHereMarker';
 import { MapInteraction } from './MapInteraction';
 
-function WeatherAnimationControlWrapper() {
+const WeatherAnimationControlWrapper = memo(function WeatherAnimationControlWrapper() {
   const { frames, currentFrameIndex, isPlaying, setCurrentFrameIndex, setIsPlaying } = useWeatherAnimation();
 
   return (
@@ -26,6 +26,29 @@ function WeatherAnimationControlWrapper() {
       onTogglePlay={() => setIsPlaying(!isPlaying)}
     />
   );
+});
+
+function RainViewerVisibility({ children }: { children: React.ReactNode }) {
+  const map = useMap();
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const onAdd = (e: L.LayersControlEvent) => {
+      if (e.name === RAINVIEWER_OVERLAY_NAME) setVisible(true);
+    };
+    const onRemove = (e: L.LayersControlEvent) => {
+      if (e.name === RAINVIEWER_OVERLAY_NAME) setVisible(false);
+    };
+
+    map.on('overlayadd', onAdd);
+    map.on('overlayremove', onRemove);
+    return () => {
+      map.off('overlayadd', onAdd);
+      map.off('overlayremove', onRemove);
+    };
+  }, [map]);
+
+  return <>{visible ? children : null}</>;
 }
 
 interface FlyToTarget {
@@ -207,7 +230,9 @@ export const FpvMap = memo(function FpvMap({
       <YouAreHereMarker />
       <MapControls />
       <WeatherPanel />
-      <WeatherAnimationControlWrapper />
+      <RainViewerVisibility>
+        <WeatherAnimationControlWrapper />
+      </RainViewerVisibility>
       {spots.length > 0 && <FitBoundsButton spots={spots} />}
       {onTogglePanel !== undefined && <PanelToggleButton panelOpen={panelOpen} onToggle={onTogglePanel} />}
       {flyToTarget && <FlyToTarget target={flyToTarget} markerRefs={markerRefsRef} clusterGroupRef={clusterGroupRef} />}
