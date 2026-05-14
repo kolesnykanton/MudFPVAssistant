@@ -366,3 +366,16 @@ riderModule.iml
 /.idea/.idea.MudFPVAssistant/.idea
 /.firebaserc
 /.claude
+react-app/.claude/settings.local.json
+react-app/.firecrawl/leaflet-tile-preload.md
+react-app/.firecrawl/react-windy-leaflet.md
+react-app/.firecrawl/search-rainviewer-animation.json
+react-app/.firecrawl/search-react-leaflet-windy.json
+react-app/.firecrawl/search-windy-api.json
+react-app/.firecrawl/search-windy-github.json
+react-app/.firecrawl/search-windy-pricing.json
+react-app/.firecrawl/search-windy-tiles.json
+react-app/.firecrawl/windy-community-react-leaflet.md
+react-app/.firecrawl/windy-docs.md
+react-app/.firecrawl/windy-github.md
+react-app/.firecrawl/windy-pricing.md
