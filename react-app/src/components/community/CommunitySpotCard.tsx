@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { Paper, Group, Stack, Text, ActionIcon, Avatar, Badge, Button } from '@mantine/core';
-import { IconHeart, IconHeartFilled, IconMapPin } from '@tabler/icons-react';
+import { IconHeart, IconHeartFilled } from '@tabler/icons-react';
 import { CATEGORY_COLORS } from '../../types';
 import type { CommunitySpot, WithId } from '../../types';
 
@@ -7,30 +8,28 @@ interface Props {
   spot: WithId<CommunitySpot>;
   isFavorited: boolean;
   onFavoriteToggle: (spotId: string) => Promise<void>;
-  onNavigate: (spot: WithId<CommunitySpot>) => void;
   onClone: (spot: WithId<CommunitySpot>) => void;
 }
 
 export function CommunitySpotCard({
-  spot, isFavorited, onFavoriteToggle, onNavigate, onClone,
+  spot, isFavorited, onFavoriteToggle, onClone,
 }: Props) {
   const categoryColor = spot.category ? CATEGORY_COLORS[spot.category] : undefined;
+  const [hovered, setHovered] = useState(false);
 
   return (
     <Paper
       p="sm"
       radius="md"
       withBorder
-      style={{ cursor: 'pointer', transition: 'all 150ms ease' }}
-      onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)'; }}
-      onMouseLeave={(e) => { e.currentTarget.style.boxShadow = ''; }}
+      shadow={hovered ? 'sm' : undefined}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       <Stack gap="xs">
         <Group justify="space-between" align="flex-start">
           <div style={{ flex: 1 }}>
-            <Text fw={600} size="sm" onClick={() => onNavigate(spot)}>
-              {spot.name}
-            </Text>
+            <Text fw={600} size="sm">{spot.name}</Text>
             {spot.category && (
               <Badge
                 size="xs"
@@ -61,23 +60,13 @@ export function CommunitySpotCard({
           </div>
         </Group>
 
-        <Group gap="xs">
-          <Button
-            size="xs"
-            variant="light"
-            leftSection={<IconMapPin size={14} />}
-            onClick={() => onNavigate(spot)}
-            style={{ flex: 1 }}
-          >
-            Navigate
-          </Button>
-          <Button
-            size="xs"
-            onClick={() => onClone(spot)}
-          >
-            Save to my spots
-          </Button>
-        </Group>
+        <Button
+          size="xs"
+          fullWidth
+          onClick={() => onClone(spot)}
+        >
+          Save to my spots
+        </Button>
       </Stack>
     </Paper>
   );

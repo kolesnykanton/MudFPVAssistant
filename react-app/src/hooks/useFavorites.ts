@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   collection, onSnapshot, doc, increment, writeBatch,
 } from 'firebase/firestore';
@@ -8,10 +8,12 @@ import { useAuth } from '../context/AuthContext';
 export function useFavorites() {
   const { uid } = useAuth();
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
+  const favoriteIdsRef = useRef<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!uid) {
+      favoriteIdsRef.current = new Set();
       setFavoriteIds(new Set());
       setLoading(false);
       return;
@@ -19,7 +21,9 @@ export function useFavorites() {
 
     setLoading(true);
     const unsub = onSnapshot(collection(db, `users/${uid}/favoritedCommunitySpots`), snap => {
-      setFavoriteIds(new Set(snap.docs.map(d => d.id)));
+      const ids = new Set(snap.docs.map(d => d.id));
+      favoriteIdsRef.current = ids;
+      setFavoriteIds(ids);
       setLoading(false);
     }, err => {
       console.error('[firestore] favorites listener error:', err);
@@ -32,7 +36,7 @@ export function useFavorites() {
   const toggleFavorite = useCallback(async (spotId: string) => {
     if (!uid) throw new Error('Not authenticated');
 
-    const isFavorited = favoriteIds.has(spotId);
+    const isFavorited = favoriteIdsRef.current.has(spotId);
 
     try {
       if (isFavorited) {
@@ -58,7 +62,7 @@ export function useFavorites() {
       console.error('[firestore] toggle favorite error:', err);
       throw err;
     }
-  }, [uid, favoriteIds]);
+  }, [uid]);
 
   return { favoriteIds, loading, toggleFavorite };
 }

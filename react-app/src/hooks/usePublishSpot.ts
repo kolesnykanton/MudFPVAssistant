@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import {
-  doc, setDoc, updateDoc, deleteDoc, collection, addDoc, serverTimestamp, getDoc,
+  doc, collection, addDoc, serverTimestamp, getDoc,
+  writeBatch, deleteField,
 } from 'firebase/firestore';
 import { ref as storageRef, uploadBytes, getDownloadURL, getBytes, deleteObject } from 'firebase/storage';
 import { db, storage } from '../firebase/firebaseConfig';
@@ -21,7 +22,7 @@ export function usePublishSpot() {
       category: spot.category,
       tags: spot.tags,
       photoUrl: spot.photoUrl,
-      storagePath: spot.storagePath ? `communitySpots/${spot.name}-${Date.now()}/${spot.storagePath.split('/').pop()}` : undefined,
+      storagePath: spot.storagePath ? `communitySpots/${spot.name.replace(/[^a-zA-Z0-9_-]/g, '_')}-${Date.now()}/${spot.storagePath.split('/').pop()}` : undefined,
       ownerId: uid,
       ownerName: user.displayName || user.email || 'Anonymous',
       ownerPhotoUrl: user.photoURL || undefined,
@@ -46,18 +47,18 @@ export function usePublishSpot() {
         }
       }
 
-      // Create community spot doc
+      // Atomically create community spot + back-reference on private spot
       const communityDocRef = doc(collection(db, 'communitySpots'));
-      await setDoc(communityDocRef, {
-        ...communitySpot,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      });
-
-      // Update private spot with reference
-      await updateDoc(doc(db, `users/${uid}/FlightSpots/${spot.id}`), {
+      const docData = Object.fromEntries(
+        Object.entries({ ...communitySpot, createdAt: serverTimestamp(), updatedAt: serverTimestamp() })
+          .filter(([, v]) => v !== undefined),
+      );
+      const batch = writeBatch(db);
+      batch.set(communityDocRef, docData);
+      batch.update(doc(db, `users/${uid}/FlightSpots/${spot.id}`), {
         publishedAsId: communityDocRef.id,
       });
+      await batch.commit();
 
       return communityDocRef.id;
     } catch (err) {
@@ -83,13 +84,13 @@ export function usePublishSpot() {
         }
       }
 
-      // Delete community spot
-      await deleteDoc(communityDocRef);
-
-      // Clear reference on private spot
-      await updateDoc(doc(db, `users/${uid}/FlightSpots/${spotId}`), {
-        publishedAsId: undefined,
+      // Atomically delete community spot + clear reference on private spot
+      const unpublishBatch = writeBatch(db);
+      unpublishBatch.delete(communityDocRef);
+      unpublishBatch.update(doc(db, `users/${uid}/FlightSpots/${spotId}`), {
+        publishedAsId: deleteField(),
       });
+      await unpublishBatch.commit();
     } catch (err) {
       console.error('[unpublish] error:', err);
       throw err;

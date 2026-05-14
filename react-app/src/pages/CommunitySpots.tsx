@@ -112,7 +112,6 @@ export default function CommunitySpots() {
                 spot={spot}
                 isFavorited={favoriteIds.has(spot.id!)}
                 onFavoriteToggle={handleFavoriteToggle}
-                onNavigate={() => {}}
                 onClone={handleClone}
               />
             ))

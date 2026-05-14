@@ -10,12 +10,15 @@ export function useCommunitySpots() {
   useEffect(() => {
     setLoading(true);
     const unsub = onSnapshot(collection(db, 'communitySpots'), snap => {
-      setCommunitySpots(snap.docs.map(d => ({
-        id: d.id,
-        ...d.data(),
-        createdAt: d.data().createdAt?.toDate?.() ?? new Date(d.data().createdAt),
-        updatedAt: d.data().updatedAt?.toDate?.() ?? new Date(d.data().updatedAt),
-      } as WithId<CommunitySpot>)));
+      setCommunitySpots(snap.docs.map(d => {
+        const data = d.data();
+        return {
+          id: d.id,
+          ...data,
+          createdAt: data.createdAt?.toDate?.() ?? new Date(data.createdAt),
+          updatedAt: data.updatedAt?.toDate?.() ?? new Date(data.updatedAt),
+        } as WithId<CommunitySpot>;
+      }));
       setLoading(false);
     }, err => {
       console.error('[firestore] community spots listener error:', err);

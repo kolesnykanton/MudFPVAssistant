@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Modal, Stack, Text, Group, Loader } from '@mantine/core';
+import { Button, Modal, Stack, Text, Group } from '@mantine/core';
 import { IconShare2 } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { usePublishSpot } from '../../hooks/usePublishSpot';
@@ -77,11 +77,10 @@ export function PublishSpotButton({ spot }: Props) {
             </Button>
             <Button
               onClick={isPublished ? handleUnpublish : handlePublish}
-              disabled={loading}
               loading={loading}
               color={isPublished ? 'red' : 'blue'}
             >
-              {loading ? <Loader size={16} /> : (isPublished ? 'Remove' : 'Share')}
+              {isPublished ? 'Remove' : 'Share'}
             </Button>
           </Group>
         </Stack>

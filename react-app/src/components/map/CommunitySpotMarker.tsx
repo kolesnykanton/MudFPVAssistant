@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 import { Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import { Avatar, Stack, Text, Group, Button, ActionIcon } from '@mantine/core';
@@ -52,7 +52,6 @@ interface Props {
 export function CommunitySpotMarker({
   spot, isFavorited, onFavoriteToggle, onClone, onContextMenu, longPressActiveRef,
 }: Props) {
-  const markerRef = useRef<L.Marker>(null);
   const icon = useMemo(() => makeIcon(spot.category), [spot.category]);
 
   const eventHandlers = useMemo(() => ({
@@ -74,7 +73,6 @@ export function CommunitySpotMarker({
 
   return (
     <Marker
-      ref={markerRef}
       position={[spot.latitude, spot.longitude]}
       icon={icon}
       eventHandlers={eventHandlers}
