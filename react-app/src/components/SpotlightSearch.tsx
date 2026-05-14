@@ -39,21 +39,29 @@ export default function SpotlightSearch() {
     const spotActions: SpotlightActionData[] = spots.map(s => ({
       id: `spot-${s.id}`,
       label: s.name,
-      description: [s.category, s.tags?.join(', ')].filter(Boolean).join(' · ') || 'Flight spot',
+      description: [
+        s.category,
+        s.tags?.join(', '),
+        `${s.latitude.toFixed(4)}, ${s.longitude.toFixed(4)}`,
+      ].filter(Boolean).join(' · '),
       leftSection: ICON_MAP,
-      onClick: () => navigate('/spots'),
+      onClick: () => navigate(`/spots?highlight=${s.id}`),
     }));
 
+    const spotMap = new Map(spots.map(s => [s.id, s]));
     const flightActions: SpotlightActionData[] = flights.slice(0, 50).map(f => {
       const dateLabel = f.date
         ? new Date(f.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
         : '';
+      const spotName = f.spotId ? spotMap.get(f.spotId)?.name : undefined;
+      const mahLabel = f.usedMah ? `${f.usedMah} mAh` : '';
+      const batLabel = f.batType && f.batType !== 'Unknown' ? `${f.cellCount}S ${f.batType}` : '';
       return {
         id: `flight-${f.id}`,
         label: f.name,
-        description: [dateLabel, f.location].filter(Boolean).join(' · '),
+        description: [dateLabel, spotName || f.location, mahLabel, batLabel].filter(Boolean).join(' · '),
         leftSection: ICON_BATTERY,
-        onClick: () => navigate('/flights'),
+        onClick: () => navigate(`/flights?highlight=${f.id}`),
       };
     });
 

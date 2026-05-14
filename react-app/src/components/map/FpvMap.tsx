@@ -58,21 +58,6 @@ export interface FlyToTarget {
   nonce: number;
 }
 
-const AUTO_CENTER_SESSION_KEY = 'mfa-map-auto-centered';
-
-function MapAutoCenter() {
-  const map = useMap();
-  useEffect(() => {
-    if (sessionStorage.getItem(AUTO_CENTER_SESSION_KEY) === '1') return;
-    sessionStorage.setItem(AUTO_CENTER_SESSION_KEY, '1');
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => map.setView([coords.latitude, coords.longitude], 13, { animate: false }),
-      () => { /* permission denied — keep default */ },
-      { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 },
-    );
-  }, [map]);
-  return null;
-}
 
 function FlyToTarget({ target, markerRefs, clusterGroupRef }: {
   target: FlyToTarget | null;
@@ -185,6 +170,8 @@ export const FpvMap = memo(function FpvMap({
   const longPressActiveRef = useRef(false);
   const markerRefsRef = useRef<Record<string, L.Marker>>({});
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
+  const flyToTargetRef = useRef(flyToTarget ?? null);
+  useEffect(() => { flyToTargetRef.current = flyToTarget ?? null; }, [flyToTarget]);
   // Touch devices use pinch-to-zoom; visible zoom buttons are a desktop affordance only.
   // Default true so zoom never flashes on mobile before the query resolves.
   const isMobile = useMediaQuery('(max-width: 48em)', true);
@@ -226,8 +213,7 @@ export const FpvMap = memo(function FpvMap({
         </LayersControl.BaseLayer>
         <WeatherLayers openWeatherApiKey={openWeatherApiKey} />
       </LayersControl>
-      <MapAutoCenter />
-      <YouAreHereMarker />
+      <YouAreHereMarker flyToTargetRef={flyToTargetRef} />
       <MapControls />
       <WeatherPanel />
       <RainViewerVisibility>

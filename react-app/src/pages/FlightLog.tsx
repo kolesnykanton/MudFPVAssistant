@@ -26,6 +26,7 @@ export default function FlightLog() {
   const { flights, spots, flightsLoading, addFlight, updateFlight, deleteFlight } = useData();
   const [searchParams, setSearchParams] = useSearchParams();
   const spotFilter = searchParams.get('spotId');
+  const highlightId = searchParams.get('highlight');
   const filterSpot = spotFilter ? spots.find(s => s.id === spotFilter) : undefined;
 
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -218,6 +219,7 @@ export default function FlightLog() {
               <FlightTable
                 flights={spotFilteredFlights}
                 selectedDate={selectedDate}
+                highlightId={highlightId}
                 onDelete={handleDeleteConfirmed}
                 onUpdate={handleUpdate}
               />

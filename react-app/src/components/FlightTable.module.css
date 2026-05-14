@@ -1,0 +1,9 @@
+@keyframes row-pulse {
+  0%   { background-color: rgba(34, 139, 230, 0.35); }
+  70%  { background-color: rgba(34, 139, 230, 0.15); }
+  100% { background-color: transparent; }
+}
+
+.highlighted {
+  animation: row-pulse 2.4s ease-out forwards;
+}
