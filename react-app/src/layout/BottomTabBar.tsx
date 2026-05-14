@@ -28,7 +28,6 @@ export default function BottomTabBar() {
         alignItems: 'stretch',
         height: '100%',
         width: '100%',
-        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
       }}
     >
       {tabs.map(({ to, label, icon: Icon, end }) => {

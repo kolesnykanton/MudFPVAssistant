@@ -52,7 +52,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
         }
         footer={
           showNavbar && isMobile
-            ? { height: 'calc(56px + env(safe-area-inset-bottom, 0px))' }
+            ? { height: 56 }
             : undefined
         }
         padding="md"
