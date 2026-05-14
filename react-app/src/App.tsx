@@ -35,11 +35,15 @@ function AppServices() {
   const { online } = useNetworkStatus();
   useOfflineSync(uid);
 
-  if (online) return null;
   return (
-    <Affix position={{ bottom: 70, right: 16 }} zIndex={1500}>
-      <Badge color="orange" variant="filled" size="sm">Offline</Badge>
-    </Affix>
+    <>
+      {uid && <SpotlightSearch />}
+      {!online && (
+        <Affix position={{ bottom: 70, right: 16 }} zIndex={1500}>
+          <Badge color="orange" variant="filled" size="sm">Offline</Badge>
+        </Affix>
+      )}
+    </>
   );
 }
 
@@ -50,7 +54,6 @@ function App() {
         <AuthProvider>
           <DataProvider>
             <Notifications position="top-right" />
-            <SpotlightSearch />
             <MainLayout>
               <Suspense fallback={<PageLoader />}>
                 <Routes>
