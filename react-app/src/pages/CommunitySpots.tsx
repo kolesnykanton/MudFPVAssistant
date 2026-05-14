@@ -1,19 +1,25 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, lazy, Suspense } from 'react';
 import { Text, Drawer, ActionIcon, Group, Title, Stack, Center, Loader, Container, SegmentedControl } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
-import { IconList, IconMapPin } from '@tabler/icons-react';
-
-const VIEW_TOGGLE_DATA = [
-  { label: <Group gap={4} wrap="nowrap"><IconList size={14} /><span>List</span></Group>, value: 'list' },
-  { label: <Group gap={4} wrap="nowrap"><IconMapPin size={14} /><span>Map</span></Group>, value: 'map' },
-];
+import { IconList, IconMapPin, IconUsers } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { useData } from '../context/DataContext';
 import { usePublishSpot } from '../hooks/usePublishSpot';
 import { CommunitySpotCard } from '../components/community/CommunitySpotCard';
 import { CommunitySpotFilters } from '../components/community/CommunitySpotFilters';
-import { CommunityMapView, type CommunityFlyToTarget } from '../components/community/CommunityMapView';
+import type { CommunityFlyToTarget } from '../components/community/CommunityMapView';
 import type { WithId, CommunitySpot } from '../types';
+
+const CommunityMapView = lazy(() =>
+  import('../components/community/CommunityMapView')
+    .then(m => ({ default: m.CommunityMapView }))
+);
+
+const mapLoader = (
+  <Center h={400}>
+    <Loader />
+  </Center>
+);
 
 export default function CommunitySpots() {
   const { communitySpots, communityLoading, favoriteIds, toggleFavorite } = useData();
@@ -82,12 +88,19 @@ export default function CommunitySpots() {
     );
   }
 
+  const mapLabel = filteredSpots.length > 0
+    ? `Map (${filteredSpots.length})`
+    : 'Map';
+
   const viewToggle = (
     <SegmentedControl
       size="xs"
       value={viewMode}
       onChange={v => setViewMode(v as 'list' | 'map')}
-      data={VIEW_TOGGLE_DATA}
+      data={[
+        { label: <Group gap={4} wrap="nowrap"><IconList size={14} /><span>List</span></Group>, value: 'list' },
+        { label: <Group gap={4} wrap="nowrap"><IconMapPin size={14} /><span>{mapLabel}</span></Group>, value: 'map' },
+      ]}
     />
   );
 
@@ -148,17 +161,35 @@ export default function CommunitySpots() {
           {pageHeader}
           {filtersBar}
         </Container>
-        <CommunityMapView
-          spots={filteredSpots}
-          favoriteIds={favoriteIds}
-          onFavoriteToggle={handleFavoriteToggle}
-          onClone={handleClone}
-          flyToTarget={flyToTarget}
-        />
+        <Suspense fallback={mapLoader}>
+          <CommunityMapView
+            spots={filteredSpots}
+            favoriteIds={favoriteIds}
+            onFavoriteToggle={handleFavoriteToggle}
+            onClone={handleClone}
+            flyToTarget={flyToTarget}
+          />
+        </Suspense>
         {mobileFilterDrawer}
       </>
     );
   }
+
+  const emptyState = (
+    <Center py="xl">
+      <Stack align="center" gap="xs">
+        <IconUsers size={48} stroke={1} style={{ opacity: 0.25 }} />
+        <Text size="sm" c="dimmed" fw={500}>
+          {communitySpots.length === 0 ? 'No spots shared yet' : 'No spots match your filters'}
+        </Text>
+        {communitySpots.length === 0 && (
+          <Text size="xs" c="dimmed" ta="center" maw={260}>
+            Publish one of your saved flight spots to share it with the community
+          </Text>
+        )}
+      </Stack>
+    </Center>
+  );
 
   return (
     <Container py="lg">
@@ -168,13 +199,7 @@ export default function CommunitySpots() {
         {filtersBar}
 
         <Stack gap="sm">
-          {filteredSpots.length === 0 ? (
-            <Center py="xl">
-              <Text size="sm" c="dimmed">
-                {communitySpots.length === 0 ? 'No community spots yet' : 'No spots match your filters'}
-              </Text>
-            </Center>
-          ) : (
+          {filteredSpots.length === 0 ? emptyState : (
             filteredSpots.map(spot => (
               <CommunitySpotCard
                 key={spot.id}

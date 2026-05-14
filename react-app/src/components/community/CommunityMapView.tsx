@@ -1,10 +1,10 @@
 import 'leaflet/dist/leaflet.css';
-import { useEffect } from 'react';
+import { useEffect, type RefObject } from 'react';
 import { MapContainer, TileLayer, ZoomControl, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { useMediaQuery } from '@mantine/hooks';
 import { CommunitySpotMarker } from '../map/CommunitySpotMarker';
-import type { ContextMenuState, FlyToTarget } from '../map/FpvMap';
+import type { FlyToTarget } from '../map/FpvMap';
 import type { CommunitySpot, WithId } from '../../types';
 
 export type { FlyToTarget as CommunityFlyToTarget };
@@ -44,9 +44,9 @@ interface Props {
   flyToTarget?: FlyToTarget | null;
 }
 
-const noop = (_: ContextMenuState) => {};
+const noop = () => {};
 const mapStyle = { width: '100%', height: 'calc(100vh - 140px)', minHeight: 400 };
-const longPressInactive = { current: false } as React.RefObject<boolean>;
+const longPressInactive = { current: false } as RefObject<boolean>;
 
 export function CommunityMapView({ spots, favoriteIds, onFavoriteToggle, onClone, flyToTarget }: Props) {
   const isMobile = useMediaQuery('(max-width: 48em)', true);
