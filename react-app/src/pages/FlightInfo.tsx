@@ -7,6 +7,8 @@ import {
   Title,
   Group,
   Loader,
+  Skeleton,
+  Stack,
   Tooltip,
   Button,
   Alert,
@@ -105,9 +107,35 @@ export default function FlightInfo() {
       </Group>
 
       {flightsLoading ? (
-        <Group justify="center" mt="xl">
-          <Loader />
-        </Group>
+        <Grid gap="lg">
+          <Grid.Col span={{ base: 12, md: 5 }}>
+            {/* Add flight form skeleton */}
+            <Stack gap="sm">
+              {Array.from({ length: 6 }, (_, i) => (
+                <Box key={i}>
+                  <Skeleton height={12} width={`${30 + (i % 3) * 12}%`} radius="xl" mb={6} />
+                  <Skeleton height={36} radius="sm" />
+                </Box>
+              ))}
+              <Skeleton height={36} radius="sm" mt="xs" />
+            </Stack>
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, md: 7 }}>
+            {/* Calendar skeleton */}
+            <Skeleton height={260} radius="md" mb="md" />
+            {/* Table skeleton */}
+            <Stack gap="xs">
+              {Array.from({ length: 5 }, (_, i) => (
+                <Group key={i} gap="sm" wrap="nowrap" py={6}
+                  style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}>
+                  {[22, 16, 12, 9].map((w, j) => (
+                    <Skeleton key={j} height={14} width={`${w + (i % 3)}%`} radius="xl" />
+                  ))}
+                </Group>
+              ))}
+            </Stack>
+          </Grid.Col>
+        </Grid>
       ) : (
         <Grid gap="lg">
           {spotFilter && (

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import {
   ActionIcon, Affix, Alert, Box, Button, Collapse, Group,
-  Loader, Modal, Stack, Text, TextInput, Title, Tooltip,
+  Loader, Modal, Skeleton, Stack, Text, TextInput, Title, Tooltip,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { DatePicker } from '@mantine/dates';
@@ -184,7 +184,23 @@ export default function FlightLog() {
       </Group>
 
       {flightsLoading ? (
-        <Group justify="center" mt="xl"><Loader /></Group>
+        <Stack gap="xs">
+          {/* Table header skeleton */}
+          <Group gap="sm" wrap="nowrap" px="xs">
+            {[24, 18, 14, 10, 8].map((w, i) => (
+              <Skeleton key={i} height={12} width={`${w}%`} radius="xl" />
+            ))}
+          </Group>
+          {/* Table row skeletons */}
+          {Array.from({ length: 8 }, (_, i) => (
+            <Group key={i} gap="sm" wrap="nowrap" px="xs" py={6}
+              style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}>
+              {[22, 16, 13, 9, 7].map((w, j) => (
+                <Skeleton key={j} height={14} width={`${w + (i % 3)}%`} radius="xl" />
+              ))}
+            </Group>
+          ))}
+        </Stack>
       ) : (
         <>
           {/* Desktop: collapsible calendar + full table */}

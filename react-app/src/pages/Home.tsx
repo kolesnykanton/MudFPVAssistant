@@ -8,6 +8,7 @@ import {
   Grid,
   Group,
   Loader,
+  Skeleton,
   Stack,
   Text,
   Timeline,
@@ -114,9 +115,52 @@ export default function Home() {
       <Title order={2} mb="lg">Dashboard</Title>
 
       {isLoading ? (
-        <Group justify="center" mt="xl">
-          <Loader />
-        </Group>
+        <Grid gap="lg">
+          {/* KPI tile skeletons */}
+          {[0, 1, 2, 3].map(i => (
+            <Grid.Col key={i} span={{ base: 12, sm: 6, md: 3 }}>
+              <Card withBorder shadow="sm" radius="md" style={{ textAlign: 'center' }} py="lg">
+                <Skeleton circle height={40} mx="auto" />
+                <Skeleton height={12} width={80} mx="auto" mt="xs" radius="xl" />
+                <Skeleton height={24} width={60} mx="auto" mt={6} radius="xl" />
+              </Card>
+            </Grid.Col>
+          ))}
+          {/* Recent flights skeleton */}
+          <Grid.Col span={{ base: 12, md: 8 }}>
+            <Card withBorder shadow="sm" radius="md">
+              <Group justify="space-between" mb="sm">
+                <Skeleton height={16} width={120} radius="xl" />
+                <Skeleton height={12} width={60} radius="xl" />
+              </Group>
+              <Stack gap="md" mt="xs">
+                {[0, 1, 2, 3, 4].map(i => (
+                  <Group key={i} gap="sm" wrap="nowrap">
+                    <Skeleton circle height={26} style={{ flexShrink: 0 }} />
+                    <Box style={{ flex: 1 }}>
+                      <Skeleton height={12} width={`${60 + (i % 3) * 15}%`} radius="xl" />
+                      <Skeleton height={10} width={`${40 + (i % 2) * 20}%`} mt={6} radius="xl" />
+                    </Box>
+                  </Group>
+                ))}
+              </Stack>
+            </Card>
+          </Grid.Col>
+          {/* Weather skeleton */}
+          <Grid.Col span={{ base: 12, md: 4 }}>
+            <Card withBorder shadow="sm" radius="md">
+              <Skeleton height={16} width={80} radius="xl" mb="sm" />
+              <Group gap="md">
+                <Skeleton circle height={64} />
+                <Box style={{ flex: 1 }}>
+                  <Skeleton height={20} width="60%" radius="xl" />
+                  <Skeleton height={14} width="80%" mt={8} radius="xl" />
+                  <Skeleton height={12} width="70%" mt={6} radius="xl" />
+                </Box>
+              </Group>
+            </Card>
+          </Grid.Col>
+        </Grid>
       ) : (
         <Grid gap="lg">
           {/* KPI tiles */}
@@ -218,9 +262,13 @@ export default function Home() {
               <Title order={5} mb="sm">Weather</Title>
               <Box mih={140}>
                 {settingsLoading || weatherLoading ? (
-                  <Group gap="xs">
-                    <Loader size="xs" />
-                    <Text c="dimmed">Loading weather…</Text>
+                  <Group gap="md">
+                    <Skeleton circle height={64} />
+                    <Box style={{ flex: 1 }}>
+                      <Skeleton height={20} width="60%" radius="xl" />
+                      <Skeleton height={14} width="80%" mt={8} radius="xl" />
+                      <Skeleton height={12} width="70%" mt={6} radius="xl" />
+                    </Box>
                   </Group>
                 ) : !apiKey ? (
                   <Stack gap="sm">
