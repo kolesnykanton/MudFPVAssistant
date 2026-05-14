@@ -431,8 +431,7 @@ export default function FlightStats({ flights }: FlightStatsProps) {
                 <VisuallyHidden>
                   Horizontal bar chart of flight count by battery cell count. {cellCountBar.map(d => `${d.name}: ${d.value}`).join(', ')}.
                 </VisuallyHidden>
-                <Box style={{ height: cellBarHeight }}>
-                  <ResponsiveContainer width="100%" height="100%" debounce={100}>
+                <ResponsiveContainer width="100%" height={cellBarHeight} debounce={100}>
                     <BarChart layout="vertical" data={cellCountBar} margin={{ top: 5, right: 50, left: 10, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} horizontal={false} />
                       <XAxis type="number" tick={axisTickStyle} />
@@ -449,8 +448,7 @@ export default function FlightStats({ flights }: FlightStatsProps) {
                         />
                       </Bar>
                     </BarChart>
-                  </ResponsiveContainer>
-                </Box>
+                </ResponsiveContainer>
               </Box>
             )}
           </Paper>
@@ -515,29 +513,27 @@ export default function FlightStats({ flights }: FlightStatsProps) {
                 <VisuallyHidden>
                   Horizontal bar chart of top locations by flight count. {topLocs.map(d => `${d.name}: ${d.value}`).join(', ')}.
                 </VisuallyHidden>
-                <Box style={{ height: locBarHeight }}>
-                  <ResponsiveContainer width="100%" height="100%" debounce={100}>
-                    <BarChart layout="vertical" data={topLocs} margin={{ top: 5, right: 60, left: 10, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} horizontal={false} />
-                      <XAxis type="number" tick={axisTickStyle} />
-                      <YAxis
-                        type="category"
-                        dataKey="name"
-                        width={150}
-                        tick={{ ...axisTickStyle, width: 145 }}
-                        tickFormatter={(v: string) => v.length > 22 ? `${v.slice(0, 21)}…` : v}
+                <ResponsiveContainer width="100%" height={locBarHeight} debounce={100}>
+                  <BarChart layout="vertical" data={topLocs} margin={{ top: 5, right: 60, left: 10, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} horizontal={false} />
+                    <XAxis type="number" tick={axisTickStyle} />
+                    <YAxis
+                      type="category"
+                      dataKey="name"
+                      width={150}
+                      tick={{ ...axisTickStyle, width: 145 }}
+                      tickFormatter={(v: string) => v.length > 22 ? `${v.slice(0, 21)}…` : v}
+                    />
+                    <Tooltip contentStyle={tooltipStyle} cursor={barCursor} formatter={(v: unknown) => [`${v} flights`, 'Count']} />
+                    <Bar dataKey="value" name="Flights" fill="var(--mantine-color-indigo-4)" radius={[0, 4, 4, 0]}>
+                      <LabelList
+                        dataKey="pct"
+                        position="right"
+                        style={{ fill: labelFill, fontSize: 11 }}
                       />
-                      <Tooltip contentStyle={tooltipStyle} cursor={barCursor} formatter={(v: unknown) => [`${v} flights`, 'Count']} />
-                      <Bar dataKey="value" name="Flights" fill="var(--mantine-color-indigo-4)" radius={[0, 4, 4, 0]}>
-                        <LabelList
-                          dataKey="pct"
-                          position="right"
-                          style={{ fill: labelFill, fontSize: 11 }}
-                        />
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </Box>
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
               </Box>
             )}
           </Paper>
