@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Anchor,
@@ -10,10 +10,12 @@ import {
   Loader,
   Stack,
   Text,
+  Timeline,
   Title,
 } from '@mantine/core';
 import {
   IconBattery2,
+  IconClock,
   IconMapPin,
   IconPlane,
   IconPlaneTilt,
@@ -22,7 +24,8 @@ import {
 import { Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { useSettings } from '../hooks/useSettings';
-import FlightCard from '../components/flights/FlightCard';
+import { useCountUp } from '../hooks/useCountUp';
+import { CATEGORY_COLORS } from '../types';
 
 interface WeatherData {
   name: string;
@@ -86,17 +89,23 @@ export default function Home() {
     };
   }, [apiKey, settingsLoading]);
 
-  const totalFlights = flights.length;
-  const totalMah = flights.reduce((sum, f) => sum + (f.usedMah ?? 0), 0);
-  const uniqueDrones = new Set(flights.map(f => f.name)).size;
+  const totalFlightsRaw = flights.length;
+  const totalMahRaw = flights.reduce((sum, f) => sum + (f.usedMah ?? 0), 0);
+  const uniqueDronesRaw = new Set(flights.map(f => f.name)).size;
+
+  const animTotalFlights = useCountUp(totalFlightsRaw);
+  const animTotalMah = useCountUp(totalMahRaw);
+  const animUniqueDrones = useCountUp(uniqueDronesRaw);
+  const animSpots = useCountUp(spots.length);
 
   const statsCards = [
-    { title: 'Total Flights', value: totalFlights, icon: <IconPlaneTilt size={40} color="var(--mantine-color-blue-6)" /> },
-    { title: 'Total mAh', value: totalMah.toLocaleString(), icon: <IconBattery2 size={40} color="var(--mantine-color-green-6)" /> },
-    { title: 'Unique Drones', value: uniqueDrones, icon: <IconPlane size={40} color="var(--mantine-color-yellow-6)" /> },
+    { title: 'Total Flights', value: animTotalFlights, icon: <IconPlaneTilt size={40} color="var(--mantine-color-blue-6)" /> },
+    { title: 'Total mAh', value: animTotalMah.toLocaleString(), icon: <IconBattery2 size={40} color="var(--mantine-color-green-6)" /> },
+    { title: 'Unique Drones', value: animUniqueDrones, icon: <IconPlane size={40} color="var(--mantine-color-yellow-6)" /> },
   ];
 
   const recentFlights = flights.slice(0, 5);
+  const spotById = useMemo(() => new Map(spots.map(s => [s.id, s])), [spots]);
 
   const isLoading = flightsLoading || spotsLoading;
 
@@ -125,7 +134,7 @@ export default function Home() {
             <Card withBorder shadow="sm" radius="md" style={{ textAlign: 'center' }} py="lg">
               <IconMapPin size={40} color="var(--mantine-color-red-6)" />
               <Text size="sm" c="dimmed" mt="xs">Flight Spots</Text>
-              <Title order={3} fw={700}>{spots.length}</Title>
+              <Title order={3} fw={700}>{animSpots}</Title>
               <Button variant="outline" size="xs" mt="xs" onClick={() => navigate('/spots')}>
                 View Map
               </Button>
@@ -149,18 +158,56 @@ export default function Home() {
               {recentFlights.length === 0 ? (
                 <Text c="dimmed" size="sm">No flights logged yet.</Text>
               ) : (
-                <Stack gap="xs">
-                  {recentFlights.map(f => (
-                    <FlightCard
-                      key={f.id}
-                      flight={f}
-                      spot={spots.find(s => s.id === f.spotId)}
-                      onEdit={() => {}}
-                      onDelete={() => {}}
-                      readOnly
-                    />
-                  ))}
-                </Stack>
+                <Timeline
+                  active={recentFlights.length - 1}
+                  bulletSize={26}
+                  lineWidth={2}
+                  mt="xs"
+                >
+                  {recentFlights.map(f => {
+                    const spot = f.spotId ? spotById.get(f.spotId) : undefined;
+                    const categoryColor = spot?.category ? (CATEGORY_COLORS[spot.category] ?? undefined) : undefined;
+                    const batColor =
+                      f.batType === 'LiPo' ? 'var(--mantine-color-orange-5)'
+                      : f.batType === 'LiIon' ? 'var(--mantine-color-blue-5)'
+                      : 'var(--mantine-color-gray-5)';
+                    const dateLabel = f.date
+                      ? new Date(f.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                      : '—';
+                    return (
+                      <Timeline.Item
+                        key={f.id}
+                        bullet={<IconBattery2 size={13} style={{ color: batColor }} />}
+                        title={
+                          <Group gap={6} wrap="nowrap">
+                            <Text fw={600} size="sm" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {f.name}
+                            </Text>
+                            <Text size="xs" c="dimmed" style={{ flexShrink: 0 }}>{dateLabel}</Text>
+                          </Group>
+                        }
+                      >
+                        <Group gap={4} wrap="wrap" mt={2}>
+                          {(spot?.name ?? f.location) && (
+                            <Group gap={3} wrap="nowrap">
+                              <IconMapPin size={11} style={{ color: categoryColor ?? 'var(--mantine-color-dimmed)', flexShrink: 0 }} />
+                              <Text size="xs" c="dimmed">{spot?.name ?? f.location}</Text>
+                            </Group>
+                          )}
+                          {f.flightTime && (
+                            <Group gap={3} wrap="nowrap">
+                              <IconClock size={11} style={{ flexShrink: 0 }} />
+                              <Text size="xs" c="dimmed">{f.flightTime}</Text>
+                            </Group>
+                          )}
+                          {f.usedMah != null && (
+                            <Text size="xs" c="dimmed">{f.usedMah} mAh</Text>
+                          )}
+                        </Group>
+                      </Timeline.Item>
+                    );
+                  })}
+                </Timeline>
               )}
             </Card>
           </Grid.Col>

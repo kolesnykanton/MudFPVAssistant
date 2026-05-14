@@ -3,12 +3,14 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Loader, Center, Affix, Badge } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import '@mantine/notifications/styles.css';
+import '@mantine/spotlight/styles.css';
 import { AuthProvider } from './context/AuthContext';
 import { DataProvider } from './context/DataContext';
 import MainLayout from './layout/MainLayout';
 import Home from './pages/Home';
 import ErrorBoundary from './components/ErrorBoundary';
 import PwaPrompts from './components/PwaPrompts';
+import SpotlightSearch from './components/SpotlightSearch';
 import { useAuth } from './context/AuthContext';
 import { useNetworkStatus } from './hooks/useNetworkStatus';
 import { useOfflineSync } from './hooks/useOfflineSync';
@@ -48,6 +50,7 @@ function App() {
         <AuthProvider>
           <DataProvider>
             <Notifications position="top-right" />
+            <SpotlightSearch />
             <MainLayout>
               <Suspense fallback={<PageLoader />}>
                 <Routes>
