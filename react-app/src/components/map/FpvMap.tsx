@@ -68,7 +68,7 @@ function MapAutoCenter() {
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => map.setView([coords.latitude, coords.longitude], 13, { animate: false }),
       () => { /* permission denied — keep default */ },
-      { timeout: 8000 },
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 },
     );
   }, [map]);
   return null;
