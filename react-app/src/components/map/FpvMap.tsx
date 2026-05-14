@@ -51,7 +51,7 @@ function RainViewerVisibility({ children }: { children: React.ReactNode }) {
   return <>{visible ? children : null}</>;
 }
 
-interface FlyToTarget {
+export interface FlyToTarget {
   lat: number;
   lng: number;
   spotId?: string;

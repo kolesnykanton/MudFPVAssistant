@@ -1,12 +1,18 @@
 import { useState, useMemo, useCallback } from 'react';
-import { Text, Drawer, ActionIcon, Group, Title, Stack, Center, Loader, Container } from '@mantine/core';
+import { Text, Drawer, ActionIcon, Group, Title, Stack, Center, Loader, Container, SegmentedControl } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
-import { IconList } from '@tabler/icons-react';
+import { IconList, IconMapPin } from '@tabler/icons-react';
+
+const VIEW_TOGGLE_DATA = [
+  { label: <Group gap={4} wrap="nowrap"><IconList size={14} /><span>List</span></Group>, value: 'list' },
+  { label: <Group gap={4} wrap="nowrap"><IconMapPin size={14} /><span>Map</span></Group>, value: 'map' },
+];
 import { notifications } from '@mantine/notifications';
 import { useData } from '../context/DataContext';
 import { usePublishSpot } from '../hooks/usePublishSpot';
 import { CommunitySpotCard } from '../components/community/CommunitySpotCard';
 import { CommunitySpotFilters } from '../components/community/CommunitySpotFilters';
+import { CommunityMapView, type CommunityFlyToTarget } from '../components/community/CommunityMapView';
 import type { WithId, CommunitySpot } from '../types';
 
 export default function CommunitySpots() {
@@ -18,6 +24,8 @@ export default function CommunitySpots() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [favoritedOnly, setFavoritedOnly] = useState(false);
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
+  const [flyToTarget, setFlyToTarget] = useState<CommunityFlyToTarget | null>(null);
 
   const filteredSpots = useMemo(() => {
     let result = communitySpots;
@@ -52,6 +60,11 @@ export default function CommunitySpots() {
     }
   }, [cloneToMySpots]);
 
+  const handleLocate = useCallback((spot: WithId<CommunitySpot>) => {
+    setFlyToTarget({ lat: spot.latitude, lng: spot.longitude, spotId: spot.id, nonce: Date.now() });
+    setViewMode('map');
+  }, []);
+
   const handleFavoriteToggle = useCallback(async (spotId: string) => {
     try {
       await toggleFavorite(spotId);
@@ -69,10 +82,19 @@ export default function CommunitySpots() {
     );
   }
 
-  return (
-    <Container py="lg">
-      <Group justify="space-between" mb="lg">
-        <Title order={2}>Community Flight Spots</Title>
+  const viewToggle = (
+    <SegmentedControl
+      size="xs"
+      value={viewMode}
+      onChange={v => setViewMode(v as 'list' | 'map')}
+      data={VIEW_TOGGLE_DATA}
+    />
+  );
+
+  const pageHeader = (
+    <Group justify="space-between" mb={viewMode === 'map' ? 'md' : 'lg'}>
+      <Title order={2}>Community Flight Spots</Title>
+      <Group gap="sm">
         {!isDesktop && (
           <ActionIcon
             variant="light"
@@ -84,19 +106,66 @@ export default function CommunitySpots() {
             <IconList size={20} />
           </ActionIcon>
         )}
+        {viewToggle}
       </Group>
+    </Group>
+  );
+
+  const filtersBar = isDesktop ? (
+    <CommunitySpotFilters
+      searchQuery={searchQuery}
+      onSearchChange={setSearchQuery}
+      selectedCategory={selectedCategory}
+      onCategoryChange={setSelectedCategory}
+      favoritedOnly={favoritedOnly}
+      onFavoritedOnlyChange={setFavoritedOnly}
+    />
+  ) : null;
+
+  const mobileFilterDrawer = !isDesktop ? (
+    <Drawer
+      opened={mobileDrawerOpen}
+      onClose={() => setMobileDrawerOpen(false)}
+      position="bottom"
+      size="75%"
+      title="Filters"
+    >
+      <CommunitySpotFilters
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        selectedCategory={selectedCategory}
+        onCategoryChange={setSelectedCategory}
+        favoritedOnly={favoritedOnly}
+        onFavoritedOnlyChange={setFavoritedOnly}
+      />
+    </Drawer>
+  ) : null;
+
+  if (viewMode === 'map') {
+    return (
+      <>
+        <Container py="md">
+          {pageHeader}
+          {filtersBar}
+        </Container>
+        <CommunityMapView
+          spots={filteredSpots}
+          favoriteIds={favoriteIds}
+          onFavoriteToggle={handleFavoriteToggle}
+          onClone={handleClone}
+          flyToTarget={flyToTarget}
+        />
+        {mobileFilterDrawer}
+      </>
+    );
+  }
+
+  return (
+    <Container py="lg">
+      {pageHeader}
 
       <Stack gap="lg">
-        {isDesktop && (
-          <CommunitySpotFilters
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            selectedCategory={selectedCategory}
-            onCategoryChange={setSelectedCategory}
-            favoritedOnly={favoritedOnly}
-            onFavoritedOnlyChange={setFavoritedOnly}
-          />
-        )}
+        {filtersBar}
 
         <Stack gap="sm">
           {filteredSpots.length === 0 ? (
@@ -113,30 +182,14 @@ export default function CommunitySpots() {
                 isFavorited={favoriteIds.has(spot.id!)}
                 onFavoriteToggle={handleFavoriteToggle}
                 onClone={handleClone}
+                onLocate={handleLocate}
               />
             ))
           )}
         </Stack>
       </Stack>
 
-      {!isDesktop && (
-        <Drawer
-          opened={mobileDrawerOpen}
-          onClose={() => setMobileDrawerOpen(false)}
-          position="bottom"
-          size="75%"
-          title="Filters"
-        >
-          <CommunitySpotFilters
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            selectedCategory={selectedCategory}
-            onCategoryChange={setSelectedCategory}
-            favoritedOnly={favoritedOnly}
-            onFavoritedOnlyChange={setFavoritedOnly}
-          />
-        </Drawer>
-      )}
+      {mobileFilterDrawer}
     </Container>
   );
 }

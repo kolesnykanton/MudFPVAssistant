@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import { Paper, Group, Stack, Text, ActionIcon, Avatar, Badge, Button } from '@mantine/core';
-import { IconHeart, IconHeartFilled } from '@tabler/icons-react';
+import { IconHeart, IconHeartFilled, IconMapPin } from '@tabler/icons-react';
 import { CATEGORY_COLORS } from '../../types';
 import type { CommunitySpot, WithId } from '../../types';
 
@@ -9,22 +8,21 @@ interface Props {
   isFavorited: boolean;
   onFavoriteToggle: (spotId: string) => Promise<void>;
   onClone: (spot: WithId<CommunitySpot>) => void;
+  onLocate?: (spot: WithId<CommunitySpot>) => void;
 }
 
 export function CommunitySpotCard({
-  spot, isFavorited, onFavoriteToggle, onClone,
+  spot, isFavorited, onFavoriteToggle, onClone, onLocate,
 }: Props) {
   const categoryColor = spot.category ? CATEGORY_COLORS[spot.category] : undefined;
-  const [hovered, setHovered] = useState(false);
 
   return (
     <Paper
       p="sm"
       radius="md"
       withBorder
-      shadow={hovered ? 'sm' : undefined}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      style={{ transition: 'box-shadow 120ms' }}
+      styles={{ root: { '&:hover': { boxShadow: 'var(--mantine-shadow-sm)' } } }}
     >
       <Stack gap="xs">
         <Group justify="space-between" align="flex-start">
@@ -40,14 +38,28 @@ export function CommunitySpotCard({
               </Badge>
             )}
           </div>
-          <ActionIcon
-            variant="light"
-            color="red"
-            size="sm"
-            onClick={() => onFavoriteToggle(spot.id!)}
-          >
-            {isFavorited ? <IconHeartFilled size={16} /> : <IconHeart size={16} />}
-          </ActionIcon>
+          <Group gap={4}>
+            {onLocate && (
+              <ActionIcon
+                variant="light"
+                color="blue"
+                size="sm"
+                onClick={() => onLocate(spot)}
+                aria-label="Show on map"
+                title="Show on map"
+              >
+                <IconMapPin size={16} />
+              </ActionIcon>
+            )}
+            <ActionIcon
+              variant="light"
+              color="red"
+              size="sm"
+              onClick={() => onFavoriteToggle(spot.id!)}
+            >
+              {isFavorited ? <IconHeartFilled size={16} /> : <IconHeart size={16} />}
+            </ActionIcon>
+          </Group>
         </Group>
 
         <Group gap={4} align="center">
