@@ -23,7 +23,7 @@ export function WeatherAnimationProvider({ children }: { children: React.ReactNo
   // Reset frame index when frames change
   useEffect(() => {
     setCurrentFrameIndex(0);
-  }, [frames]);
+  }, [frames.length]);
 
   // Animation loop
   useEffect(() => {

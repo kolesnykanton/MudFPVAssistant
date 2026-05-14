@@ -54,7 +54,7 @@ function secsToHhMmSs(sec: number): string {
 }
 
 function getWeekKey(dateStr: string): string {
-  const d = new Date(dateStr + 'T00:00:00');
+  const d = new Date(dateStr.split('T')[0] + 'T00:00:00');
   const start = new Date(d.getFullYear(), 0, 1);
   const dayOfYear = Math.floor((d.getTime() - start.getTime()) / 86400000);
   const week = Math.floor(dayOfYear / 7) + 1;
