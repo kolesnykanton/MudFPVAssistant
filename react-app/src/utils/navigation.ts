@@ -1,53 +1,27 @@
-function buildGoogleMapsUrl(destLat: number, destLng: number, originLat?: number, originLng?: number): string {
+function buildGoogleMapsUrl(destLat: number, destLng: number): string {
   const url = new URL('https://www.google.com/maps/dir/');
   url.searchParams.set('api', '1');
-  if (originLat != null && originLng != null) {
-    url.searchParams.set('origin', `${originLat},${originLng}`);
-  }
   url.searchParams.set('destination', `${destLat},${destLng}`);
   url.searchParams.set('travelmode', 'driving');
   return url.toString();
 }
 
-function buildAppleMapsUrl(destLat: number, destLng: number, originLat?: number, originLng?: number): string {
-  const url = new URL('https://maps.apple.com/');
-  if (originLat != null && originLng != null) {
-    url.searchParams.set('saddr', `${originLat},${originLng}`);
-  }
-  url.searchParams.set('daddr', `${destLat},${destLng}`);
-  url.searchParams.set('dirflg', 'd');
-  return url.toString();
+const isIOS = /iP(hone|ad|od)/i.test(navigator.userAgent);
+
+export function openGoogleMaps(destLat: number, destLng: number): void {
+  window.open(buildGoogleMapsUrl(destLat, destLng), '_blank', 'noopener,noreferrer');
 }
 
-async function getUserLocation(): Promise<{ lat: number; lng: number } | null> {
-  if (!navigator.geolocation) return null;
-  return new Promise(resolve =>
-    navigator.geolocation.getCurrentPosition(
-      pos => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-      () => resolve(null),
-      { timeout: 5000 },
-    )
-  );
-}
-
-export async function openGoogleMaps(destLat: number, destLng: number): Promise<void> {
-  const newTab = window.open('about:blank', '_blank');
-  const origin = await getUserLocation();
-  const url = buildGoogleMapsUrl(destLat, destLng, origin?.lat, origin?.lng);
-  if (newTab) {
-    newTab.location.href = url;
+export function openAppleMaps(destLat: number, destLng: number): void {
+  if (isIOS) {
+    // maps:// scheme triggers the Maps app instantly — no blank page, no redirect delay.
+    // On iOS, window.open() with a custom URL scheme hands off to the registered app
+    // without opening a browser tab, so the PWA/page stays in the foreground.
+    window.open(`maps://?daddr=${destLat},${destLng}&dirflg=d`);
   } else {
-    window.open(url, '_blank', 'noopener,noreferrer');
-  }
-}
-
-export async function openAppleMaps(destLat: number, destLng: number): Promise<void> {
-  const newTab = window.open('about:blank', '_blank');
-  const origin = await getUserLocation();
-  const url = buildAppleMapsUrl(destLat, destLng, origin?.lat, origin?.lng);
-  if (newTab) {
-    newTab.location.href = url;
-  } else {
-    window.open(url, '_blank', 'noopener,noreferrer');
+    const url = new URL('https://maps.apple.com/');
+    url.searchParams.set('daddr', `${destLat},${destLng}`);
+    url.searchParams.set('dirflg', 'd');
+    window.open(url.toString(), '_blank', 'noopener,noreferrer');
   }
 }

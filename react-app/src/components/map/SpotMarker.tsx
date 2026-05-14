@@ -74,8 +74,19 @@ export function SpotMarker({
   const navigate = useNavigate();
 
   useEffect(() => {
-    const el = markerRef.current?.getElement();
-    if (el && spot.id) el.dataset.spotId = spot.id;
+    const marker = markerRef.current;
+    if (!marker || !spot.id) return;
+    const spotId = spot.id;
+    // Re-apply on every 'add' because markercluster calls _removeIcon() when it
+    // takes ownership of the marker, nulling _icon. The next time the marker
+    // becomes visible a fresh DOM element is created and needs the attribute.
+    const applyAttribute = () => {
+      const el = marker.getElement();
+      if (el) el.dataset.spotId = spotId;
+    };
+    applyAttribute();
+    marker.on('add', applyAttribute);
+    return () => { marker.off('add', applyAttribute); };
   }, [spot.id]);
 
   useEffect(() => {
