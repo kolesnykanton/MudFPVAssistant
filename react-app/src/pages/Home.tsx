@@ -7,7 +7,6 @@ import {
   Card,
   Grid,
   Group,
-  Loader,
   Skeleton,
   Stack,
   Text,

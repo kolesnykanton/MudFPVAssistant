@@ -78,17 +78,15 @@ export default function MainLayout({ children }: MainLayoutProps) {
             <Group gap="xs" align="center">
               {user && (
                 <>
-                  <Tooltip label="Search (Ctrl+K)" visibleFrom="sm">
-                    <ActionIcon
-                      onClick={() => spotlight.open()}
-                      variant="subtle"
-                      size="lg"
-                      hiddenFrom="sm"
-                      aria-label="Open search"
-                    >
-                      <IconSearch size={18} />
-                    </ActionIcon>
-                  </Tooltip>
+                  <ActionIcon
+                    onClick={() => spotlight.open()}
+                    variant="subtle"
+                    size="lg"
+                    hiddenFrom="sm"
+                    aria-label="Open search"
+                  >
+                    <IconSearch size={18} />
+                  </ActionIcon>
                   <UnstyledButton
                     onClick={() => spotlight.open()}
                     visibleFrom="sm"

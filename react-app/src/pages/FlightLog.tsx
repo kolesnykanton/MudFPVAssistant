@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import {
   ActionIcon, Affix, Alert, Box, Button, Collapse, Group,
-  Loader, Modal, Skeleton, Stack, Text, TextInput, Title, Tooltip,
+  Modal, Skeleton, Stack, Text, TextInput, Title, Tooltip,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { DatePicker } from '@mantine/dates';
