@@ -142,7 +142,7 @@ export function SpotMarker({
                 </div>
               ))}
               <button
-                onClick={() => navigate(`/flight-info?spotId=${spot.id}`)}
+                onClick={() => navigate(`/flights?spotId=${spot.id}`)}
                 style={{
                   marginTop: 6, fontSize: 11, color: '#1971c2',
                   background: 'none', border: 'none', padding: 0,

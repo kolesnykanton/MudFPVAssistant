@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  Box, Button, Grid, NumberInput, Paper, Select, Textarea, TextInput, Title,
+  Box, Button, Grid, NumberInput, Select, Textarea, TextInput,
 } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { notifications } from '@mantine/notifications';
@@ -65,10 +65,7 @@ export default function AddFlightForm({ onAdd }: AddFlightFormProps) {
   };
 
   return (
-    <Paper withBorder p="lg" radius="md">
-      <Title order={5} mb="md">New Flight</Title>
-
-      <Box component="form" onSubmit={e => { e.preventDefault(); handleSubmit(); }}>
+    <Box component="form" onSubmit={e => { e.preventDefault(); handleSubmit(); }}>
         <Grid gap="sm">
           <Grid.Col span={12}>
             <TextInput
@@ -156,6 +153,5 @@ export default function AddFlightForm({ onAdd }: AddFlightFormProps) {
           </Grid.Col>
         </Grid>
       </Box>
-    </Paper>
   );
 }

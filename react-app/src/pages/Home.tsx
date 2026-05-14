@@ -1,33 +1,28 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
+  Anchor,
   Box,
   Button,
   Card,
   Grid,
-  Text,
-  Title,
   Group,
   Loader,
-  FileButton,
   Stack,
-  Progress,
-  Alert,
+  Text,
+  Title,
 } from '@mantine/core';
 import {
-  IconPlaneTilt,
   IconBattery2,
-  IconPlane,
   IconMapPin,
+  IconPlane,
+  IconPlaneTilt,
   IconSettings,
-  IconUpload,
-  IconCheck,
-  IconAlertCircle,
 } from '@tabler/icons-react';
-import { notifications } from '@mantine/notifications';
+import { Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { useSettings } from '../hooks/useSettings';
-import type { FlightInfo } from '../types';
+import FlightCard from '../components/flights/FlightCard';
 
 interface WeatherData {
   name: string;
@@ -38,85 +33,14 @@ interface WeatherData {
 
 export default function Home() {
   const navigate = useNavigate();
-  const { flights, spots, flightsLoading, spotsLoading, addFlight } = useData();
+  const { flights, spots, flightsLoading, spotsLoading } = useData();
   const { settings, loading: settingsLoading } = useSettings();
-  const fileResetRef = useRef<() => void>(null);
 
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [weatherError, setWeatherError] = useState<string | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(false);
 
-  const [importing, setImporting] = useState(false);
-  const [importProgress, setImportProgress] = useState(0);
-  const [importError, setImportError] = useState<string | null>(null);
-  const [importSuccess, setImportSuccess] = useState<number | null>(null);
-
   const apiKey = settings.apiKeys?.openWeatherApiKey;
-
-  const handleImportFlights = async (file: File | null) => {
-    if (!file) return;
-    setImportError(null);
-    setImportSuccess(null);
-    setImporting(true);
-    setImportProgress(0);
-
-    try {
-      const text = await file.text();
-      const data = JSON.parse(text);
-      const flightsToImport = Array.isArray(data) ? data : [data];
-
-      let successCount = 0;
-      let failureCount = 0;
-      for (let i = 0; i < flightsToImport.length; i += 1) {
-        const flight = flightsToImport[i];
-        try {
-          await addFlight({
-            name: flight.name ?? 'Unnamed',
-            date: flight.date,
-            usedMah: flight.usedMah,
-            flightTime: flight.flightTime,
-            location: flight.location,
-            comment: flight.comment,
-            batType: flight.batType ?? 'LiPo',
-            cellCount: flight.cellCount ?? 1,
-          } as FlightInfo);
-          successCount += 1;
-          setImportProgress(Math.round((i + 1) / flightsToImport.length * 100));
-        } catch (err) {
-          failureCount += 1;
-          console.error(`Failed to import flight ${i}:`, err);
-        }
-      }
-
-      setImportSuccess(successCount);
-      fileResetRef.current?.();
-
-      if (successCount === 0) {
-        const msg = `All ${failureCount} flight(s) failed to save.`;
-        setImportError(msg);
-        notifications.show({ color: 'red', icon: <IconAlertCircle size={16} />, title: 'Import failed', message: msg });
-      } else if (failureCount > 0) {
-        notifications.show({
-          color: 'yellow', icon: <IconAlertCircle size={16} />,
-          title: 'Partial import',
-          message: `Added ${successCount}, failed ${failureCount}.`,
-        });
-      } else {
-        notifications.show({ color: 'green', icon: <IconCheck size={16} />, title: 'Import successful', message: `Added ${successCount} flight(s).` });
-      }
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Invalid file format';
-      setImportError(msg);
-      notifications.show({
-        color: 'red',
-        icon: <IconAlertCircle size={16} />,
-        title: 'Import failed',
-        message: msg,
-      });
-    } finally {
-      setImporting(false);
-    }
-  };
 
   useEffect(() => {
     if (!apiKey || settingsLoading) return;
@@ -167,22 +91,12 @@ export default function Home() {
   const uniqueDrones = new Set(flights.map(f => f.name)).size;
 
   const statsCards = [
-    {
-      title: 'Total Flights',
-      value: totalFlights,
-      icon: <IconPlaneTilt size={40} color="var(--mantine-color-blue-6)" />,
-    },
-    {
-      title: 'Total mAh',
-      value: totalMah.toLocaleString(),
-      icon: <IconBattery2 size={40} color="var(--mantine-color-green-6)" />,
-    },
-    {
-      title: 'Unique Drones',
-      value: uniqueDrones,
-      icon: <IconPlane size={40} color="var(--mantine-color-yellow-6)" />,
-    },
+    { title: 'Total Flights', value: totalFlights, icon: <IconPlaneTilt size={40} color="var(--mantine-color-blue-6)" /> },
+    { title: 'Total mAh', value: totalMah.toLocaleString(), icon: <IconBattery2 size={40} color="var(--mantine-color-green-6)" /> },
+    { title: 'Unique Drones', value: uniqueDrones, icon: <IconPlane size={40} color="var(--mantine-color-yellow-6)" /> },
   ];
+
+  const recentFlights = flights.slice(0, 5);
 
   const isLoading = flightsLoading || spotsLoading;
 
@@ -196,6 +110,7 @@ export default function Home() {
         </Group>
       ) : (
         <Grid gap="lg">
+          {/* KPI tiles */}
           {statsCards.map((card) => (
             <Grid.Col key={card.title} span={{ base: 12, sm: 6, md: 3 }}>
               <Card withBorder shadow="sm" radius="md" style={{ textAlign: 'center' }} py="lg">
@@ -211,58 +126,47 @@ export default function Home() {
               <IconMapPin size={40} color="var(--mantine-color-red-6)" />
               <Text size="sm" c="dimmed" mt="xs">Flight Spots</Text>
               <Title order={3} fw={700}>{spots.length}</Title>
-              <Button
-                variant="outline"
-                size="xs"
-                mt="xs"
-                onClick={() => navigate('/map-spot-save')}
-              >
+              <Button variant="outline" size="xs" mt="xs" onClick={() => navigate('/spots')}>
                 View Map
               </Button>
             </Card>
           </Grid.Col>
 
-          <Grid.Col span={{ base: 12, md: 6 }}>
+          {/* Recent flights */}
+          <Grid.Col span={{ base: 12, md: 8 }}>
             <Card withBorder shadow="sm" radius="md">
-              <Title order={5} mb="sm">Batch Import Flights</Title>
-              <Stack gap="sm">
-                <Text size="sm" c="dimmed">
-                  Upload a JSON file with flight data to add multiple flights at once.
-                </Text>
-                <FileButton
-                  resetRef={fileResetRef}
-                  accept="application/json"
-                  onChange={handleImportFlights}
-                  disabled={importing}
-                >
-                  {(props) => (
-                    <Button
-                      {...props}
-                      variant="light"
-                      size="sm"
-                      leftSection={<IconUpload size={14} />}
-                      loading={importing}
-                    >
-                      {importing ? 'Importing...' : 'Choose JSON file'}
-                    </Button>
-                  )}
-                </FileButton>
-                {importing && <Progress value={importProgress} size="sm" />}
-                {importSuccess !== null && (
-                  <Alert icon={<IconCheck size={14} />} color="green" variant="light">
-                    Successfully imported {importSuccess} flight(s).
-                  </Alert>
-                )}
-                {importError && (
-                  <Alert icon={<IconAlertCircle size={14} />} color="red" variant="light">
-                    {importError}
-                  </Alert>
-                )}
-              </Stack>
+              <Group justify="space-between" mb="sm">
+                <Title order={5}>Recent Flights</Title>
+                <Group gap="xs">
+                  <Anchor component={Link} to="/flights/stats" size="xs" c="dimmed">
+                    View statistics →
+                  </Anchor>
+                  <Anchor component={Link} to="/flights" size="xs">
+                    View all →
+                  </Anchor>
+                </Group>
+              </Group>
+              {recentFlights.length === 0 ? (
+                <Text c="dimmed" size="sm">No flights logged yet.</Text>
+              ) : (
+                <Stack gap="xs">
+                  {recentFlights.map(f => (
+                    <FlightCard
+                      key={f.id}
+                      flight={f}
+                      spot={spots.find(s => s.id === f.spotId)}
+                      onEdit={() => {}}
+                      onDelete={() => {}}
+                      readOnly
+                    />
+                  ))}
+                </Stack>
+              )}
             </Card>
           </Grid.Col>
 
-          <Grid.Col span={{ base: 12, md: 6 }}>
+          {/* Weather */}
+          <Grid.Col span={{ base: 12, md: 4 }}>
             <Card withBorder shadow="sm" radius="md">
               <Title order={5} mb="sm">Weather</Title>
               <Box mih={140}>
@@ -272,23 +176,18 @@ export default function Home() {
                     <Text c="dimmed">Loading weather…</Text>
                   </Group>
                 ) : !apiKey ? (
-                  <Group gap="md">
-                    <Text c="dimmed">
+                  <Stack gap="sm">
+                    <Text c="dimmed" size="sm">
                       Configure OpenWeather API key in Settings to see local weather.
                     </Text>
-                    <Button
-                      variant="outline"
-                      size="xs"
-                      leftSection={<IconSettings size={14} />}
-                      onClick={() => navigate('/settings')}
-                    >
+                    <Button variant="outline" size="xs" leftSection={<IconSettings size={14} />} onClick={() => navigate('/settings')}>
                       Settings
                     </Button>
-                  </Group>
+                  </Stack>
                 ) : weatherError ? (
-                  <Text c="red">{weatherError}</Text>
+                  <Text c="red" size="sm">{weatherError}</Text>
                 ) : weather ? (
-                  <Group gap="lg">
+                  <Group gap="md">
                     {weather.weather[0]?.icon && (
                       <img
                         src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
@@ -300,9 +199,7 @@ export default function Home() {
                       <Title order={4}>{weather.name}</Title>
                       <Text style={{ textTransform: 'capitalize' }}>{weather.weather[0]?.description}</Text>
                       <Text size="sm" c="dimmed">
-                        Temp: {Math.round(weather.main.temp)}°C &nbsp;|&nbsp;
-                        Humidity: {weather.main.humidity}% &nbsp;|&nbsp;
-                        Wind: {weather.wind.speed} m/s
+                        {Math.round(weather.main.temp)}°C · {weather.main.humidity}% · {weather.wind.speed} m/s
                       </Text>
                     </Box>
                   </Group>

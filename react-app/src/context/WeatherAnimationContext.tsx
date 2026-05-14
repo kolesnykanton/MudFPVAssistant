@@ -54,4 +54,8 @@ export function WeatherAnimationProvider({ children }: { children: React.ReactNo
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const useWeatherAnimation = () => useContext(WeatherAnimationContext);
+export const useWeatherAnimation = () => {
+  const ctx = useContext(WeatherAnimationContext);
+  if (!ctx) throw new Error('useWeatherAnimation must be used inside WeatherAnimationProvider');
+  return ctx;
+};

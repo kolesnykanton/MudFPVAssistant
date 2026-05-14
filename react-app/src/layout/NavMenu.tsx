@@ -1,4 +1,4 @@
-import { NavLink, Stack } from '@mantine/core';
+import { Box, NavLink, Stack } from '@mantine/core';
 import {
   IconLayoutDashboard,
   IconPlaneTilt,
@@ -8,10 +8,13 @@ import {
 } from '@tabler/icons-react';
 import { Link, useLocation } from 'react-router-dom';
 
-const links = [
+const primaryLinks = [
   { to: '/', label: 'Dashboard', icon: IconLayoutDashboard, end: true },
-  { to: '/flight-info', label: 'Flights', icon: IconPlaneTilt },
-  { to: '/map-spot-save', label: 'Flight Spots', icon: IconMap },
+  { to: '/flights', label: 'Flights', icon: IconPlaneTilt },
+  { to: '/spots', label: 'Flight Spots', icon: IconMap },
+];
+
+const secondaryLinks = [
   { to: '/utils', label: 'Utilities', icon: IconTool },
   { to: '/settings', label: 'Settings', icon: IconSettings },
 ];
@@ -20,32 +23,58 @@ interface NavMenuProps {
   onNavClick?: () => void;
 }
 
+interface NavItemProps {
+  to: string;
+  label: string;
+  icon: React.ComponentType<{ size?: number; stroke?: number }>;
+  isActive: boolean;
+  onNavClick?: () => void;
+}
+
+function NavItem({ to, label, icon: Icon, isActive, onNavClick }: NavItemProps) {
+  return (
+    <NavLink
+      component={Link}
+      to={to}
+      label={label}
+      leftSection={<Icon size={18} stroke={1.5} />}
+      active={isActive}
+      onClick={() => onNavClick?.()}
+      style={{ borderRadius: 8 }}
+    />
+  );
+}
+
 export default function NavMenu({ onNavClick }: NavMenuProps) {
-  const location = useLocation();
+  const { pathname } = useLocation();
 
   return (
-    <Stack gap={4}>
-      {links.map(({ to, label, icon: Icon, end }) => {
-        const isActive = end
-          ? location.pathname === to
-          : location.pathname.startsWith(to);
-
-        return (
-          <NavLink
+    <Box style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <Stack gap={4}>
+        {primaryLinks.map(({ to, label, icon, end }) => (
+          <NavItem
             key={to}
-            component={Link}
             to={to}
             label={label}
-            leftSection={<Icon size={18} stroke={1.5} />}
-            active={isActive}
-            onClick={() => onNavClick?.()}
-            styles={{
-              root: { borderRadius: 8, color: 'white' },
-              label: { color: 'white' },
-            }}
+            icon={icon}
+            isActive={end ? pathname === to : pathname.startsWith(to)}
+            onNavClick={onNavClick}
           />
-        );
-      })}
-    </Stack>
+        ))}
+      </Stack>
+
+      <Stack gap={4} mt="auto">
+        {secondaryLinks.map(({ to, label, icon }) => (
+          <NavItem
+            key={to}
+            to={to}
+            label={label}
+            icon={icon}
+            isActive={pathname.startsWith(to)}
+            onNavClick={onNavClick}
+          />
+        ))}
+      </Stack>
+    </Box>
   );
 }

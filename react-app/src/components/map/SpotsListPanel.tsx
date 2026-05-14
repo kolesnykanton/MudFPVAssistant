@@ -10,6 +10,7 @@ import {
   Text,
   Title,
   ActionIcon,
+  useComputedColorScheme,
 } from '@mantine/core';
 import { IconSearch, IconEdit, IconTrash, IconNavigation } from '@tabler/icons-react';
 import { useDebouncedValue } from '@mantine/hooks';
@@ -29,6 +30,8 @@ export function SpotsListPanel({ spots, onLocate, onEdit, onDelete, onClose }: S
   const [query, setQuery] = useState('');
   const [debouncedQuery] = useDebouncedValue(query, 200);
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
+  const colorScheme = useComputedColorScheme('light');
+  const hoverBg = colorScheme === 'dark' ? 'var(--mantine-color-dark-5)' : 'var(--mantine-color-gray-1)';
 
   const filteredSpots = useMemo(() => {
     const queryLower = debouncedQuery.toLowerCase();
@@ -97,19 +100,27 @@ export function SpotsListPanel({ spots, onLocate, onEdit, onDelete, onClose }: S
         ) : (
           <Stack gap="xs">
             {filteredSpots.map(spot => (
-              <UnstyledButton
+              <div
                 key={spot.id}
-                onClick={() => onLocate(spot)}
-                p="sm"
                 style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
                   borderRadius: 'var(--mantine-radius-sm)',
-                  cursor: 'pointer',
+                  padding: 'var(--mantine-spacing-sm)',
                   transition: 'background-color 150ms ease',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--mantine-color-gray-1)')}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = hoverBg)}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
               >
-                <Group justify="space-between">
+                <UnstyledButton
+                  onClick={() => onLocate(spot)}
+                  style={{
+                    flex: 1,
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                  }}
+                >
                   <Group gap="xs" flex={1}>
                     <div
                       style={{
@@ -130,38 +141,38 @@ export function SpotsListPanel({ spots, onLocate, onEdit, onDelete, onClose }: S
                       </Text>
                     </Stack>
                   </Group>
-                  <Group gap={2} onClick={e => e.stopPropagation()}>
-                    <ActionIcon
-                      size="xs"
-                      variant="subtle"
-                      color="teal"
-                      onClick={() => openGoogleMaps(spot.latitude, spot.longitude)}
-                      aria-label="Navigate to spot"
-                      title="Navigate via Google Maps"
-                    >
-                      <IconNavigation size={14} />
-                    </ActionIcon>
-                    <ActionIcon
-                      size="xs"
-                      variant="subtle"
-                      color="blue"
-                      onClick={() => onEdit(spot)}
-                      aria-label="Edit spot"
-                    >
-                      <IconEdit size={14} />
-                    </ActionIcon>
-                    <ActionIcon
-                      size="xs"
-                      variant="subtle"
-                      color="red"
-                      onClick={() => onDelete(spot)}
-                      aria-label="Delete spot"
-                    >
-                      <IconTrash size={14} />
-                    </ActionIcon>
-                  </Group>
+                </UnstyledButton>
+                <Group gap={2} style={{ flexShrink: 0 }}>
+                  <ActionIcon
+                    size="xs"
+                    variant="subtle"
+                    color="teal"
+                    onClick={() => openGoogleMaps(spot.latitude, spot.longitude)}
+                    aria-label="Navigate to spot"
+                    title="Navigate via Google Maps"
+                  >
+                    <IconNavigation size={14} />
+                  </ActionIcon>
+                  <ActionIcon
+                    size="xs"
+                    variant="subtle"
+                    color="blue"
+                    onClick={() => onEdit(spot)}
+                    aria-label="Edit spot"
+                  >
+                    <IconEdit size={14} />
+                  </ActionIcon>
+                  <ActionIcon
+                    size="xs"
+                    variant="subtle"
+                    color="red"
+                    onClick={() => onDelete(spot)}
+                    aria-label="Delete spot"
+                  >
+                    <IconTrash size={14} />
+                  </ActionIcon>
                 </Group>
-              </UnstyledButton>
+              </div>
             ))}
           </Stack>
         )}

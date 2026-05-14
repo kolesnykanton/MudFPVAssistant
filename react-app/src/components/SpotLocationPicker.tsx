@@ -137,7 +137,7 @@ export default function SpotLocationPicker({
         c="dimmed"
         mt={4}
         style={{ display: 'block', userSelect: 'none' }}
-        onClick={() => navigate('/map-spot-save')}
+        onClick={() => navigate('/spots')}
       >
         pick on map 🗺
       </Anchor>
