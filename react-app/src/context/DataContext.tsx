@@ -5,19 +5,26 @@ import {
 } from 'firebase/firestore';
 import { db } from '../firebase/firebaseConfig';
 import { useAuth } from './AuthContext';
-import type { FlightInfo, FlightSpot, WithId } from '../types';
+import { useCommunitySpots } from '../hooks/useCommunitySpots';
+import { useFavorites } from '../hooks/useFavorites';
+import type { FlightInfo, FlightSpot, CommunitySpot, WithId } from '../types';
 
 interface DataContextValue {
   flights: WithId<FlightInfo>[];
   spots: WithId<FlightSpot>[];
+  communitySpots: WithId<CommunitySpot>[];
+  favoriteIds: Set<string>;
   flightsLoading: boolean;
   spotsLoading: boolean;
+  communityLoading: boolean;
+  favoritesLoading: boolean;
   addFlight: (f: Omit<FlightInfo, 'id'>) => Promise<string>;
   updateFlight: (id: string, data: Partial<Omit<FlightInfo, 'id'>>) => Promise<void>;
   deleteFlight: (id: string) => Promise<void>;
   addSpot: (s: Omit<FlightSpot, 'id'>) => Promise<string>;
   updateSpot: (id: string, data: Partial<Omit<FlightSpot, 'id'>>) => Promise<void>;
   deleteSpot: (id: string) => Promise<void>;
+  toggleFavorite: (spotId: string) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextValue | null>(null);
@@ -28,6 +35,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [spots, setSpots] = useState<WithId<FlightSpot>[]>([]);
   const [flightsLoading, setFlightsLoading] = useState(true);
   const [spotsLoading, setSpotsLoading] = useState(true);
+
+  const { communitySpots, loading: communityLoading } = useCommunitySpots();
+  const { favoriteIds, loading: favoritesLoading, toggleFavorite } = useFavorites();
 
   useEffect(() => {
     if (!uid) {
@@ -103,10 +113,12 @@ export function DataProvider({ children }: { children: ReactNode }) {
   }, [uid]);
 
   const value = useMemo(() => ({
-    flights, spots, flightsLoading, spotsLoading,
+    flights, spots, communitySpots, favoriteIds,
+    flightsLoading, spotsLoading, communityLoading, favoritesLoading,
     addFlight, updateFlight, deleteFlight,
     addSpot, updateSpot, deleteSpot,
-  }), [flights, spots, flightsLoading, spotsLoading, addFlight, updateFlight, deleteFlight, addSpot, updateSpot, deleteSpot]);
+    toggleFavorite,
+  }), [flights, spots, communitySpots, favoriteIds, flightsLoading, spotsLoading, communityLoading, favoritesLoading, addFlight, updateFlight, deleteFlight, addSpot, updateSpot, deleteSpot, toggleFavorite]);
 
   return (
     <DataContext.Provider value={value}>

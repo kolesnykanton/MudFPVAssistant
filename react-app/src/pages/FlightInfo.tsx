@@ -6,7 +6,6 @@ import {
   Text,
   Title,
   Group,
-  Loader,
   Skeleton,
   Stack,
   Tooltip,

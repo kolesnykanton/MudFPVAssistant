@@ -15,12 +15,13 @@ import { useAuth } from './context/AuthContext';
 import { useNetworkStatus } from './hooks/useNetworkStatus';
 import { useOfflineSync } from './hooks/useOfflineSync';
 
-const FlightInfo     = lazy(() => import('./pages/FlightInfo'));
-const FlightLog      = lazy(() => import('./pages/FlightLog'));
+const FlightInfo      = lazy(() => import('./pages/FlightInfo'));
+const FlightLog       = lazy(() => import('./pages/FlightLog'));
 const FlightStatsPage = lazy(() => import('./pages/FlightStatsPage'));
-const MapSpotSave    = lazy(() => import('./pages/MapSpotSave'));
-const Utilities      = lazy(() => import('./pages/Utilities'));
-const Settings       = lazy(() => import('./pages/Settings'));
+const MapSpotSave     = lazy(() => import('./pages/MapSpotSave'));
+const CommunitySpots  = lazy(() => import('./pages/CommunitySpots'));
+const Utilities       = lazy(() => import('./pages/Utilities'));
+const Settings        = lazy(() => import('./pages/Settings'));
 
 function PageLoader() {
   return (
@@ -63,6 +64,7 @@ function App() {
                   <Route path="/flight-info" element={<FlightInfo />} />
                   <Route path="/spots" element={<MapSpotSave />} />
                   <Route path="/map-spot-save" element={<MapSpotSave />} />
+                  <Route path="/community" element={<CommunitySpots />} />
                   <Route path="/utils" element={<Utilities />} />
                   <Route path="/settings" element={<Settings />} />
                 </Routes>

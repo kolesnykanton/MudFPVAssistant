@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import { useNavigate } from 'react-router-dom';
+import { Badge } from '@mantine/core';
 import type { FlightInfo, FlightSpot, WithId } from '../../types';
 import { CATEGORY_COLORS } from '../../types';
 import type { ContextMenuState } from './FpvMap';
@@ -138,6 +139,9 @@ export function SpotMarker({
               }}>
                 {spot.category}
               </span>
+            )}
+            {spot.publishedAsId && (
+              <Badge size="xs" variant="light">Community</Badge>
             )}
           </div>
           {flightCount === 0 ? (
