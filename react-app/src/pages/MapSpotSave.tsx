@@ -7,6 +7,7 @@ import { notifications } from '@mantine/notifications';
 import { useSearchParams } from 'react-router-dom';
 import classes from './MapSpotSave.module.css';
 import { useData } from '../context/DataContext';
+import { usePublishSpot } from '../hooks/usePublishSpot';
 import type { FlightInfo, FlightSpot, WithId } from '../types';
 import { useSettings } from '../hooks/useSettings';
 import { useAuth } from '../context/AuthContext';
@@ -34,6 +35,7 @@ export default function MapSpotSave() {
   const { uid } = useAuth();
   const { settings } = useSettings();
   const { spots, flights, spotsLoading, addSpot, updateSpot, deleteSpot } = useData();
+  const { unpublishSpot } = usePublishSpot();
   const [searchParams] = useSearchParams();
   const isDesktop = useMediaQuery('(min-width: 48em)');
 
@@ -175,8 +177,12 @@ export default function MapSpotSave() {
   const confirmDeleteSpot = async () => {
     if (!pendingDeleteSpotId) return;
     const id = pendingDeleteSpotId;
+    const spot = pendingDeleteSpot;
     setPendingDeleteSpotId(null);
     try {
+      if (spot?.publishedAsId) {
+        await unpublishSpot(id, spot.publishedAsId);
+      }
       await deleteSpot(id);
       notifications.show({ color: 'green', message: 'Spot deleted.' });
     } catch {
@@ -341,7 +347,9 @@ export default function MapSpotSave() {
         title="Delete spot"
         message={
           pendingDeleteSpot
-            ? `Delete the spot "${pendingDeleteSpot.name}"? This cannot be undone.`
+            ? pendingDeleteSpot.publishedAsId
+              ? `Delete "${pendingDeleteSpot.name}"? It is currently shared with the community and will also be removed from there.`
+              : `Delete "${pendingDeleteSpot.name}"? This cannot be undone.`
             : 'Delete this spot? This cannot be undone.'
         }
         confirmLabel="Delete"

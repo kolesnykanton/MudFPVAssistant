@@ -1,8 +1,9 @@
 import { useState, useMemo, useCallback, lazy, Suspense } from 'react';
 import { Text, Drawer, ActionIcon, Group, Title, Stack, Center, Loader, Container, SegmentedControl } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
-import { IconList, IconMapPin, IconUsers } from '@tabler/icons-react';
+import { IconList, IconMapPin, IconUsers, IconFilter } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
+import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { usePublishSpot } from '../hooks/usePublishSpot';
 import { CommunitySpotCard } from '../components/community/CommunitySpotCard';
@@ -22,6 +23,7 @@ const mapLoader = (
 );
 
 export default function CommunitySpots() {
+  const { uid } = useAuth();
   const { communitySpots, communityLoading, favoriteIds, toggleFavorite } = useData();
   const { cloneToMySpots } = usePublishSpot();
   const isDesktop = useMediaQuery('(min-width: 48em)');
@@ -32,6 +34,7 @@ export default function CommunitySpots() {
   const [favoritedOnly, setFavoritedOnly] = useState(false);
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
   const [flyToTarget, setFlyToTarget] = useState<CommunityFlyToTarget | null>(null);
+  const [cloningId, setCloningId] = useState<string | null>(null);
 
   const filteredSpots = useMemo(() => {
     let result = communitySpots;
@@ -57,14 +60,18 @@ export default function CommunitySpots() {
   }, [communitySpots, searchQuery, selectedCategory, favoritedOnly, favoriteIds]);
 
   const handleClone = useCallback(async (spot: WithId<CommunitySpot>) => {
+    if (cloningId) return;
+    setCloningId(spot.id!);
     try {
       await cloneToMySpots(spot);
       notifications.show({ color: 'green', message: `"${spot.name}" saved to your spots!` });
     } catch (err) {
       console.error(err);
       notifications.show({ color: 'red', message: 'Failed to save spot.' });
+    } finally {
+      setCloningId(null);
     }
-  }, [cloneToMySpots]);
+  }, [cloneToMySpots, cloningId]);
 
   const handleLocate = useCallback((spot: WithId<CommunitySpot>) => {
     setFlyToTarget({ lat: spot.latitude, lng: spot.longitude, spotId: spot.id, nonce: Date.now() });
@@ -76,7 +83,7 @@ export default function CommunitySpots() {
       await toggleFavorite(spotId);
     } catch (err) {
       console.error(err);
-      notifications.show({ color: 'red', message: 'Failed to update favorite.' });
+      notifications.show({ color: 'red', message: 'Failed to update favourite.' });
     }
   }, [toggleFavorite]);
 
@@ -116,7 +123,7 @@ export default function CommunitySpots() {
             onClick={() => setMobileDrawerOpen(true)}
             aria-label="Open filters"
           >
-            <IconList size={20} />
+            <IconFilter size={20} />
           </ActionIcon>
         )}
         {viewToggle}
@@ -165,6 +172,8 @@ export default function CommunitySpots() {
           <CommunityMapView
             spots={filteredSpots}
             favoriteIds={favoriteIds}
+            currentUserId={uid ?? undefined}
+            cloningId={cloningId}
             onFavoriteToggle={handleFavoriteToggle}
             onClone={handleClone}
             flyToTarget={flyToTarget}
@@ -205,6 +214,8 @@ export default function CommunitySpots() {
                 key={spot.id}
                 spot={spot}
                 isFavorited={favoriteIds.has(spot.id!)}
+                isOwnSpot={!!uid && spot.ownerId === uid}
+                isCloning={cloningId === spot.id}
                 onFavoriteToggle={handleFavoriteToggle}
                 onClone={handleClone}
                 onLocate={handleLocate}

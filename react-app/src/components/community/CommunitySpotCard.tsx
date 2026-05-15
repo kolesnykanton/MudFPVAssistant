@@ -6,13 +6,15 @@ import type { CommunitySpot, WithId } from '../../types';
 interface Props {
   spot: WithId<CommunitySpot>;
   isFavorited: boolean;
+  isOwnSpot: boolean;
+  isCloning: boolean;
   onFavoriteToggle: (spotId: string) => Promise<void>;
   onClone: (spot: WithId<CommunitySpot>) => void;
   onLocate?: (spot: WithId<CommunitySpot>) => void;
 }
 
 export function CommunitySpotCard({
-  spot, isFavorited, onFavoriteToggle, onClone, onLocate,
+  spot, isFavorited, isOwnSpot, isCloning, onFavoriteToggle, onClone, onLocate,
 }: Props) {
   const categoryColor = spot.category ? CATEGORY_COLORS[spot.category] : undefined;
 
@@ -43,11 +45,17 @@ export function CommunitySpotCard({
         <Stack gap="xs" style={{ flex: 1, minWidth: 0 }}>
           <Group justify="space-between" align="flex-start">
             <div style={{ flex: 1, minWidth: 0 }}>
-              <Text fw={600} size="sm" truncate>{spot.name}</Text>
+              <Group gap={6} align="center">
+                <Text fw={600} size="sm" truncate>{spot.name}</Text>
+                {isOwnSpot && (
+                  <Badge size="xs" variant="light" color="blue">Your spot</Badge>
+                )}
+              </Group>
               {spot.category && (
                 <Badge
                   size="xs"
-                  style={{ backgroundColor: categoryColor }}
+                  color={categoryColor}
+                  variant="filled"
                   mt={4}
                 >
                   {spot.category}
@@ -72,6 +80,7 @@ export function CommunitySpotCard({
                 color="red"
                 size="sm"
                 onClick={() => onFavoriteToggle(spot.id!)}
+                aria-label={isFavorited ? 'Remove from favourites' : 'Add to favourites'}
               >
                 {isFavorited ? <IconHeartFilled size={16} /> : <IconHeart size={16} />}
               </ActionIcon>
@@ -88,13 +97,16 @@ export function CommunitySpotCard({
             </div>
           </Group>
 
-          <Button
-            size="xs"
-            fullWidth
-            onClick={() => onClone(spot)}
-          >
-            Save to my spots
-          </Button>
+          {!isOwnSpot && (
+            <Button
+              size="xs"
+              fullWidth
+              loading={isCloning}
+              onClick={() => onClone(spot)}
+            >
+              Save to my spots
+            </Button>
+          )}
         </Stack>
       </Group>
     </Paper>

@@ -75,6 +75,8 @@ export function usePublishSpot() {
       const communityDoc = await getDoc(communityDocRef);
       const communityData = communityDoc.data() as CommunitySpot | undefined;
 
+      if (communityData?.ownerId !== uid) throw new Error('Not authorized to unpublish this spot');
+
       // Delete community photo
       if (communityData?.storagePath) {
         try {
@@ -108,7 +110,8 @@ export function usePublishSpot() {
       category: communitySpot.category,
       tags: communitySpot.tags,
       photoUrl: communitySpot.photoUrl,
-      storagePath: communitySpot.storagePath,
+      // storagePath intentionally omitted: clone must not share community storage path,
+      // otherwise photo deletion on the clone would delete the shared community file.
       clonedFromCommunityId: communitySpot.id,
     };
 

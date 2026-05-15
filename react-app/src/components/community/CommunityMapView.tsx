@@ -1,5 +1,5 @@
 import 'leaflet/dist/leaflet.css';
-import { useEffect, type RefObject } from 'react';
+import { useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, ZoomControl, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { useMediaQuery } from '@mantine/hooks';
@@ -11,19 +11,21 @@ export type { FlyToTarget as CommunityFlyToTarget };
 
 function FitBoundsOrGeolocate({ spots }: { spots: WithId<CommunitySpot>[] }) {
   const map = useMap();
+  const geolocatedRef = useRef(false);
+
   useEffect(() => {
     if (spots.length > 0) {
       const bounds = L.latLngBounds(spots.map(s => [s.latitude, s.longitude] as [number, number]));
       map.fitBounds(bounds, { padding: [60, 60], maxZoom: 14 });
-    } else {
+    } else if (!geolocatedRef.current) {
+      geolocatedRef.current = true;
       navigator.geolocation?.getCurrentPosition(
         ({ coords }) => map.setView([coords.latitude, coords.longitude], 11, { animate: false }),
         () => {},
         { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 },
       );
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [map, spots]);
   return null;
 }
 
@@ -39,16 +41,16 @@ function FlyTo({ target }: { target: FlyToTarget | null }) {
 interface Props {
   spots: WithId<CommunitySpot>[];
   favoriteIds: Set<string>;
+  currentUserId?: string;
+  cloningId: string | null;
   onFavoriteToggle: (spotId: string) => Promise<void>;
   onClone: (spot: WithId<CommunitySpot>) => void;
   flyToTarget?: FlyToTarget | null;
 }
 
-const noop = () => {};
 const mapStyle = { width: '100%', height: 'calc(100vh - 140px)', minHeight: 400 };
-const longPressInactive = { current: false } as RefObject<boolean>;
 
-export function CommunityMapView({ spots, favoriteIds, onFavoriteToggle, onClone, flyToTarget }: Props) {
+export function CommunityMapView({ spots, favoriteIds, currentUserId, cloningId, onFavoriteToggle, onClone, flyToTarget }: Props) {
   const isMobile = useMediaQuery('(max-width: 48em)', true);
 
   return (
@@ -70,10 +72,10 @@ export function CommunityMapView({ spots, favoriteIds, onFavoriteToggle, onClone
           key={spot.id}
           spot={spot}
           isFavorited={favoriteIds.has(spot.id!)}
+          isOwnSpot={!!currentUserId && spot.ownerId === currentUserId}
+          isCloning={cloningId === spot.id}
           onFavoriteToggle={onFavoriteToggle}
           onClone={onClone}
-          onContextMenu={noop}
-          longPressActiveRef={longPressInactive}
         />
       ))}
     </MapContainer>

@@ -36,7 +36,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [flightsLoading, setFlightsLoading] = useState(true);
   const [spotsLoading, setSpotsLoading] = useState(true);
 
-  const { communitySpots, loading: communityLoading } = useCommunitySpots();
+  const { communitySpots, loading: communityLoading } = useCommunitySpots(uid);
   const { favoriteIds, loading: favoritesLoading, toggleFavorite } = useFavorites();
 
   useEffect(() => {

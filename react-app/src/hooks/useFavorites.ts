@@ -9,6 +9,7 @@ export function useFavorites() {
   const { uid } = useAuth();
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
   const favoriteIdsRef = useRef<Set<string>>(new Set());
+  const inFlightRef = useRef<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -35,6 +36,8 @@ export function useFavorites() {
 
   const toggleFavorite = useCallback(async (spotId: string) => {
     if (!uid) throw new Error('Not authenticated');
+    if (inFlightRef.current.has(spotId)) return;
+    inFlightRef.current.add(spotId);
 
     const isFavorited = favoriteIdsRef.current.has(spotId);
 
@@ -61,6 +64,8 @@ export function useFavorites() {
     } catch (err) {
       console.error('[firestore] toggle favorite error:', err);
       throw err;
+    } finally {
+      inFlightRef.current.delete(spotId);
     }
   }, [uid]);
 

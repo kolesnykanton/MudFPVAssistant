@@ -1,15 +1,26 @@
 import { useEffect, useState } from 'react';
-import { collection, onSnapshot } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
 import { db } from '../firebase/firebaseConfig';
 import type { CommunitySpot, WithId } from '../types';
 
-export function useCommunitySpots() {
+export function useCommunitySpots(uid: string | null) {
   const [communitySpots, setCommunitySpots] = useState<WithId<CommunitySpot>[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!uid) {
+      setCommunitySpots([]);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
-    const unsub = onSnapshot(collection(db, 'communitySpots'), snap => {
+    const q = query(
+      collection(db, 'communitySpots'),
+      orderBy('createdAt', 'desc'),
+      limit(200),
+    );
+    const unsub = onSnapshot(q, snap => {
       setCommunitySpots(snap.docs.map(d => {
         const data = d.data();
         return {
@@ -26,7 +37,7 @@ export function useCommunitySpots() {
     });
 
     return unsub;
-  }, []);
+  }, [uid]);
 
   return { communitySpots, loading };
 }
