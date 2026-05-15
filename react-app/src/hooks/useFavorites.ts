@@ -41,6 +41,14 @@ export function useFavorites() {
 
     const isFavorited = favoriteIdsRef.current.has(spotId);
 
+    // Optimistically update the ref so any re-read before the Firestore snapshot
+    // arrives (e.g. a second tap right after the write resolves) sees correct state.
+    if (isFavorited) {
+      favoriteIdsRef.current.delete(spotId);
+    } else {
+      favoriteIdsRef.current.add(spotId);
+    }
+
     try {
       if (isFavorited) {
         // Unfavorite
@@ -62,6 +70,12 @@ export function useFavorites() {
         await batch.commit();
       }
     } catch (err) {
+      // Revert the optimistic update so the UI stays consistent with actual DB state.
+      if (isFavorited) {
+        favoriteIdsRef.current.add(spotId);
+      } else {
+        favoriteIdsRef.current.delete(spotId);
+      }
       console.error('[firestore] toggle favorite error:', err);
       throw err;
     } finally {
