@@ -36,6 +36,26 @@ export interface FlightSpot {
   tags: string[];
   photoUrl?: string;
   storagePath?: string;
+  publishedAsId?: string;
+  clonedFromCommunityId?: string;
+}
+
+export interface CommunitySpot {
+  id?: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  comments?: string;
+  category?: string;
+  tags: string[];
+  photoUrl?: string;
+  storagePath?: string;
+  ownerId: string;
+  ownerName: string;
+  ownerPhotoUrl?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  favoriteCount: number;
 }
 
 export interface UserApiKeys {

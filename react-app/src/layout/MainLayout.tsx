@@ -8,10 +8,13 @@ import {
   ActionIcon,
   Text,
   Tooltip,
+  UnstyledButton,
+  Kbd,
   useMantineColorScheme,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
-import { IconMoon, IconSun, IconLogin, IconLogout } from '@tabler/icons-react';
+import { spotlight } from '@mantine/spotlight';
+import { IconMoon, IconSun, IconLogin, IconLogout, IconSearch } from '@tabler/icons-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import NavMenu from './NavMenu';
@@ -73,6 +76,40 @@ export default function MainLayout({ children }: MainLayoutProps) {
             </Group>
 
             <Group gap="xs" align="center">
+              {user && (
+                <>
+                  <ActionIcon
+                    onClick={() => spotlight.open()}
+                    variant="subtle"
+                    size="lg"
+                    hiddenFrom="sm"
+                    aria-label="Open search"
+                  >
+                    <IconSearch size={18} />
+                  </ActionIcon>
+                  <UnstyledButton
+                    onClick={() => spotlight.open()}
+                    visibleFrom="sm"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      padding: '4px 10px',
+                      borderRadius: 'var(--mantine-radius-md)',
+                      border: '1px solid var(--mantine-color-default-border)',
+                      background: 'var(--mantine-color-default)',
+                      color: 'var(--mantine-color-dimmed)',
+                      fontSize: 13,
+                    }}
+                    aria-label="Open search"
+                  >
+                    <IconSearch size={14} />
+                    <Text size="xs" c="dimmed" style={{ userSelect: 'none' }}>Search</Text>
+                    <Kbd size="xs">Ctrl+K</Kbd>
+                  </UnstyledButton>
+                </>
+              )}
+
               <Tooltip label={colorScheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}>
                 <ActionIcon
                   onClick={() => toggleColorScheme()}

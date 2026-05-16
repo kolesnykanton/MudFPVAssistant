@@ -3,6 +3,7 @@ import {
   IconLayoutDashboard,
   IconPlaneTilt,
   IconMap,
+  IconUsers,
   IconTool,
   IconSettings,
 } from '@tabler/icons-react';
@@ -12,6 +13,7 @@ const primaryLinks = [
   { to: '/', label: 'Dashboard', icon: IconLayoutDashboard, end: true },
   { to: '/flights', label: 'Flights', icon: IconPlaneTilt },
   { to: '/spots', label: 'Flight Spots', icon: IconMap },
+  { to: '/community', label: 'Community', icon: IconUsers },
 ];
 
 const secondaryLinks = [

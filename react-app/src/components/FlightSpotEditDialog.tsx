@@ -13,6 +13,7 @@ import {
   FileButton,
   ActionIcon,
   Box,
+  Divider,
 } from '@mantine/core';
 import { IconUpload, IconX, IconWifiOff } from '@tabler/icons-react';
 import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
@@ -21,6 +22,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import { pendingPhotoStore } from '../utils/pendingPhotoStore';
 import { resizeImage } from '../utils/imageUtils';
+import { PublishSpotButton } from './community/PublishSpotButton';
 import type { FlightSpot } from '../types';
 import { SPOT_CATEGORIES } from '../types';
 
@@ -238,6 +240,14 @@ export default function FlightSpotEditDialog({ open, spot, coords, onSave, onClo
         {saveError && (
           <Alert color="red" variant="light">{saveError}</Alert>
         )}
+
+        {spot?.id && (
+          <>
+            <Divider my="md" />
+            <PublishSpotButton spot={spot as FlightSpot & { id: string }} />
+          </>
+        )}
+
         <Group justify="flex-end" mt="md">
           <Button variant="subtle" onClick={onClose} disabled={saving}>Cancel</Button>
           <Button onClick={handleSave} disabled={!name.trim() || saving} loading={saving}>Save</Button>

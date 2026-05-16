@@ -1,8 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { useMap } from 'react-leaflet';
 import L from 'leaflet';
+import type { FlyToTarget } from './FpvMap';
 
-export function YouAreHereMarker() {
+interface Props {
+  flyToTargetRef: React.MutableRefObject<FlyToTarget | null>;
+}
+
+export function YouAreHereMarker({ flyToTargetRef }: Props) {
   const map = useMap();
   const markerRef = useRef<L.Marker | null>(null);
   const [location, setLocation] = useState<[number, number] | null>(null);
@@ -10,22 +15,48 @@ export function YouAreHereMarker() {
   useEffect(() => {
     if (!navigator.geolocation) return;
 
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
-        setLocation([latitude, longitude]);
+    let watchId: number;
+    let done = false;
+    let best: GeolocationCoordinates | null = null;
+
+    const accept = (coords: GeolocationCoordinates) => {
+      done = true;
+      navigator.geolocation.clearWatch(watchId);
+      setLocation([coords.latitude, coords.longitude]);
+      if (!flyToTargetRef.current) {
+        map.setView([coords.latitude, coords.longitude], 13, { animate: false });
+      }
+    };
+
+    // Fallback: after 10 s accept whatever best fix we received
+    const fallbackTimer = setTimeout(() => {
+      if (!done && best) accept(best);
+    }, 10000);
+
+    watchId = navigator.geolocation.watchPosition(
+      ({ coords }) => {
+        if (!best || coords.accuracy < best.accuracy) best = coords;
+        if (!done && coords.accuracy <= 500) {
+          clearTimeout(fallbackTimer);
+          accept(coords);
+        }
       },
       (err) => {
         console.warn('Geolocation error:', err.message);
+        clearTimeout(fallbackTimer);
       },
-      { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 },
     );
-  }, []);
+
+    return () => {
+      navigator.geolocation.clearWatch(watchId);
+      clearTimeout(fallbackTimer);
+    };
+  }, [map]);
 
   useEffect(() => {
     if (!location || !map) return;
 
-    // Create blue dot marker for "You are here"
     const blueIcon = L.divIcon({
       className: 'you-are-here-marker',
       html: `<div style="
@@ -47,8 +78,7 @@ export function YouAreHereMarker() {
       title: 'You are here',
     })
       .addTo(map)
-      .bindPopup('<b>You</b>')
-      .openPopup();
+      .bindPopup('<b>You</b>');
 
     return () => {
       if (markerRef.current) {

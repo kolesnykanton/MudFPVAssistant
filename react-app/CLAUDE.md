@@ -38,6 +38,18 @@ npm run lint       # eslint
 
 Mantine 9 (`@mantine/core`, `@mantine/dates`, `@mantine/hooks`, `@mantine/notifications`). Use `notifications.show(...)` from `@mantine/notifications` for transient feedback.
 
+**Mantine LLM docs**: `docs/mantine-llms-full.txt` — read the relevant section before using any Mantine component, especially for API correctness (props, versions, patterns). Do not rely on training-data knowledge of Mantine alone.
+
+## Skills
+
+Apply these skills automatically based on task type — do not wait for the user to invoke them:
+
+| Skill | When to apply |
+|-------|---------------|
+| `react-best-practices` | Any new component, hook, refactor, or code review |
+| `typescript-advanced-types` | Any new types, generics, or non-trivial TypeScript |
+| `frontend-design:frontend-design` | New UI features, pages, or visual design work |
+
 ## Data model
 
 - `FlightSpot` — GPS spot with name, lat/lng, category, tags, optional photo

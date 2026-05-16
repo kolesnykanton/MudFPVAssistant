@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFloating, offset, flip, shift } from '@floating-ui/react';
-import { Box, Text, Title, Drawer, ActionIcon, Group } from '@mantine/core';
+import { Box, Title, Drawer, ActionIcon, Group } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { IconList, IconLayoutSidebarRight } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { useSearchParams } from 'react-router-dom';
 import classes from './MapSpotSave.module.css';
 import { useData } from '../context/DataContext';
+import { usePublishSpot } from '../hooks/usePublishSpot';
 import type { FlightInfo, FlightSpot, WithId } from '../types';
 import { useSettings } from '../hooks/useSettings';
-import { useAuth } from '../context/AuthContext';
 import { WeatherAnimationProvider } from '../context/WeatherAnimationContext';
 import { FpvMap } from '../components/map/FpvMap';
 import type { ContextMenuState } from '../components/map/FpvMap';
@@ -31,9 +31,9 @@ interface FlyToState {
 }
 
 export default function MapSpotSave() {
-  const { uid } = useAuth();
   const { settings } = useSettings();
   const { spots, flights, spotsLoading, addSpot, updateSpot, deleteSpot } = useData();
+  const { unpublishSpot } = usePublishSpot();
   const [searchParams] = useSearchParams();
   const isDesktop = useMediaQuery('(min-width: 48em)');
 
@@ -175,8 +175,12 @@ export default function MapSpotSave() {
   const confirmDeleteSpot = async () => {
     if (!pendingDeleteSpotId) return;
     const id = pendingDeleteSpotId;
+    const spot = pendingDeleteSpot;
     setPendingDeleteSpotId(null);
     try {
+      if (spot?.publishedAsId) {
+        await unpublishSpot(id, spot.publishedAsId);
+      }
       await deleteSpot(id);
       notifications.show({ color: 'green', message: 'Spot deleted.' });
     } catch {
@@ -220,10 +224,6 @@ export default function MapSpotSave() {
         ];
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contextMenu]);
-
-  if (!uid) {
-    return <Text p="xl">Please sign in to view flight spots.</Text>;
-  }
 
   const openWeatherApiKey = settings.apiKeys?.openWeatherApiKey;
 
@@ -341,7 +341,9 @@ export default function MapSpotSave() {
         title="Delete spot"
         message={
           pendingDeleteSpot
-            ? `Delete the spot "${pendingDeleteSpot.name}"? This cannot be undone.`
+            ? pendingDeleteSpot.publishedAsId
+              ? `Delete "${pendingDeleteSpot.name}"? It is currently shared with the community and will also be removed from there.`
+              : `Delete "${pendingDeleteSpot.name}"? This cannot be undone.`
             : 'Delete this spot? This cannot be undone.'
         }
         confirmLabel="Delete"

@@ -22,7 +22,12 @@ export function MapControls() {
     }
 
     safe('locate', () =>
-      new LocateControl({ position: 'topleft', strings: { title: 'Show me' }, flyTo: true }).addTo(map)
+      new LocateControl({
+        position: 'topleft',
+        strings: { title: 'Show me' },
+        flyTo: true,
+        locateOptions: { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 },
+      }).addTo(map)
     );
 
     safe('fullscreen', () =>

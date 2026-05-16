@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useCountUp } from '../hooks/useCountUp';
 import { Box, Group, Grid, Paper, Text, Title, VisuallyHidden, useComputedColorScheme } from '@mantine/core';
 import {
   AreaChart, Area, BarChart, Bar, LabelList,
@@ -193,6 +194,18 @@ export default function FlightStats({ flights }: FlightStatsProps) {
     return { avgMah, bestDay, longestFlightSecs, streak };
   }, [statsBundle, flights.length]);
 
+  // Animated KPI values — must be called unconditionally before any early return
+  const { totalMah, totalFlightsSecs, locationCounts, droneTimeSums } = statsBundle;
+  const animFlights = useCountUp(flights.length);
+  const animMah = useCountUp(totalMah);
+  const animAirTimeSecs = useCountUp(totalFlightsSecs);
+  const animLocations = useCountUp(Object.keys(locationCounts).length);
+  const animDrones = useCountUp(Object.keys(droneTimeSums).length);
+  const animAvgMah = useCountUp(extendedKpis.avgMah ?? 0);
+  const animLongest = useCountUp(extendedKpis.longestFlightSecs);
+  const animBestDay = useCountUp(extendedKpis.bestDay);
+  const animStreak = useCountUp(extendedKpis.streak);
+
   if (flights.length === 0) {
     return (
       <Paper withBorder p="lg" radius="md">
@@ -201,19 +214,18 @@ export default function FlightStats({ flights }: FlightStatsProps) {
     );
   }
 
-  const { totalMah, totalFlightsSecs, locationCounts, droneTimeSums } = statsBundle;
   const { dailyMah, batteryType, cellCountBar, topLocs, droneAvgTime, heatmapValues, weeklyTrend } = chartData;
 
   const summaryCards: StatCard[] = [
-    { label: 'Total Flights', value: String(flights.length), color: 'var(--mantine-color-blue-4)', icon: IconPlane },
-    { label: 'Total mAh', value: totalMah > 0 ? `${totalMah.toLocaleString()} mAh` : '—', color: 'var(--mantine-color-cyan-4)', icon: IconBolt },
-    { label: 'Air Time', value: totalFlightsSecs > 0 ? secsToHhMmSs(totalFlightsSecs) : '—', color: 'var(--mantine-color-teal-4)', icon: IconClock },
-    { label: 'Locations', value: String(Object.keys(locationCounts).length), color: 'var(--mantine-color-indigo-4)', icon: IconMapPin },
-    { label: 'Drones', value: String(Object.keys(droneTimeSums).length), color: 'var(--mantine-color-violet-4)', icon: IconDrone },
-    { label: 'Avg mAh', value: extendedKpis.avgMah != null ? `${extendedKpis.avgMah} mAh` : '—', color: 'var(--mantine-color-orange-4)', icon: IconBattery2 },
-    { label: 'Longest', value: extendedKpis.longestFlightSecs > 0 ? secsToHhMmSs(extendedKpis.longestFlightSecs) : '—', color: 'var(--mantine-color-yellow-4)', icon: IconTrophy },
-    { label: 'Best Day', value: extendedKpis.bestDay > 0 ? `${extendedKpis.bestDay} flights` : '—', color: 'var(--mantine-color-red-4)', icon: IconFlame },
-    { label: 'Streak', value: extendedKpis.streak > 0 ? `${extendedKpis.streak} days` : '—', color: 'var(--mantine-color-lime-4)', icon: IconActivity },
+    { label: 'Total Flights', value: String(animFlights), color: 'var(--mantine-color-blue-4)', icon: IconPlane },
+    { label: 'Total mAh', value: animMah > 0 ? `${animMah.toLocaleString()} mAh` : '—', color: 'var(--mantine-color-cyan-4)', icon: IconBolt },
+    { label: 'Air Time', value: animAirTimeSecs > 0 ? secsToHhMmSs(animAirTimeSecs) : '—', color: 'var(--mantine-color-teal-4)', icon: IconClock },
+    { label: 'Locations', value: String(animLocations), color: 'var(--mantine-color-indigo-4)', icon: IconMapPin },
+    { label: 'Drones', value: String(animDrones), color: 'var(--mantine-color-violet-4)', icon: IconDrone },
+    { label: 'Avg mAh', value: extendedKpis.avgMah != null ? `${animAvgMah} mAh` : '—', color: 'var(--mantine-color-orange-4)', icon: IconBattery2 },
+    { label: 'Longest', value: animLongest > 0 ? secsToHhMmSs(animLongest) : '—', color: 'var(--mantine-color-yellow-4)', icon: IconTrophy },
+    { label: 'Best Day', value: animBestDay > 0 ? `${animBestDay} flights` : '—', color: 'var(--mantine-color-red-4)', icon: IconFlame },
+    { label: 'Streak', value: animStreak > 0 ? `${animStreak} days` : '—', color: 'var(--mantine-color-lime-4)', icon: IconActivity },
   ];
 
   const locBarHeight = Math.min(520, Math.max(200, topLocs.length * 38));
@@ -419,8 +431,7 @@ export default function FlightStats({ flights }: FlightStatsProps) {
                 <VisuallyHidden>
                   Horizontal bar chart of flight count by battery cell count. {cellCountBar.map(d => `${d.name}: ${d.value}`).join(', ')}.
                 </VisuallyHidden>
-                <Box style={{ height: cellBarHeight }}>
-                  <ResponsiveContainer width="100%" height="100%" debounce={100}>
+                <ResponsiveContainer width="100%" height={cellBarHeight} debounce={100}>
                     <BarChart layout="vertical" data={cellCountBar} margin={{ top: 5, right: 50, left: 10, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} horizontal={false} />
                       <XAxis type="number" tick={axisTickStyle} />
@@ -437,8 +448,7 @@ export default function FlightStats({ flights }: FlightStatsProps) {
                         />
                       </Bar>
                     </BarChart>
-                  </ResponsiveContainer>
-                </Box>
+                </ResponsiveContainer>
               </Box>
             )}
           </Paper>
@@ -503,29 +513,27 @@ export default function FlightStats({ flights }: FlightStatsProps) {
                 <VisuallyHidden>
                   Horizontal bar chart of top locations by flight count. {topLocs.map(d => `${d.name}: ${d.value}`).join(', ')}.
                 </VisuallyHidden>
-                <Box style={{ height: locBarHeight }}>
-                  <ResponsiveContainer width="100%" height="100%" debounce={100}>
-                    <BarChart layout="vertical" data={topLocs} margin={{ top: 5, right: 60, left: 10, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} horizontal={false} />
-                      <XAxis type="number" tick={axisTickStyle} />
-                      <YAxis
-                        type="category"
-                        dataKey="name"
-                        width={150}
-                        tick={{ ...axisTickStyle, width: 145 }}
-                        tickFormatter={(v: string) => v.length > 22 ? `${v.slice(0, 21)}…` : v}
+                <ResponsiveContainer width="100%" height={locBarHeight} debounce={100}>
+                  <BarChart layout="vertical" data={topLocs} margin={{ top: 5, right: 60, left: 10, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} horizontal={false} />
+                    <XAxis type="number" tick={axisTickStyle} />
+                    <YAxis
+                      type="category"
+                      dataKey="name"
+                      width={150}
+                      tick={{ ...axisTickStyle, width: 145 }}
+                      tickFormatter={(v: string) => v.length > 22 ? `${v.slice(0, 21)}…` : v}
+                    />
+                    <Tooltip contentStyle={tooltipStyle} cursor={barCursor} formatter={(v: unknown) => [`${v} flights`, 'Count']} />
+                    <Bar dataKey="value" name="Flights" fill="var(--mantine-color-indigo-4)" radius={[0, 4, 4, 0]}>
+                      <LabelList
+                        dataKey="pct"
+                        position="right"
+                        style={{ fill: labelFill, fontSize: 11 }}
                       />
-                      <Tooltip contentStyle={tooltipStyle} cursor={barCursor} formatter={(v: unknown) => [`${v} flights`, 'Count']} />
-                      <Bar dataKey="value" name="Flights" fill="var(--mantine-color-indigo-4)" radius={[0, 4, 4, 0]}>
-                        <LabelList
-                          dataKey="pct"
-                          position="right"
-                          style={{ fill: labelFill, fontSize: 11 }}
-                        />
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </Box>
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
               </Box>
             )}
           </Paper>

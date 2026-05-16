@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import styles from './FlightTable.module.css';
 import {
   ActionIcon, Anchor, Badge, Group, Pagination, Paper,
   ScrollArea, Stack, Table, Text, TextInput, Title,
@@ -17,11 +18,12 @@ const PAGE_SIZE = 20;
 interface FlightTableProps {
   flights: WithId<FlightInfo>[];
   selectedDate: string | null;
+  highlightId?: string | null;
   onDelete: (id: string) => void;
   onUpdate: (id: string, data: Partial<Omit<FlightInfo, 'id'>>) => Promise<void>;
 }
 
-export default function FlightTable({ flights, selectedDate, onDelete, onUpdate }: FlightTableProps) {
+export default function FlightTable({ flights, selectedDate, highlightId, onDelete, onUpdate }: FlightTableProps) {
   const { spots } = useData();
   const navigate = useNavigate();
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
@@ -29,6 +31,7 @@ export default function FlightTable({ flights, selectedDate, onDelete, onUpdate 
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebouncedValue(search, 200);
   const [page, setPage] = useState(1);
+  const rowRefs = useRef<Map<string, HTMLTableRowElement>>(new Map());
 
   const pendingFlight = pendingDeleteId
     ? flights.find(f => f.id === pendingDeleteId) ?? null
@@ -59,6 +62,17 @@ export default function FlightTable({ flights, selectedDate, onDelete, onUpdate 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
   const pageRows = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => {
+    if (!highlightId) return;
+    const idx = filtered.findIndex(f => f.id === highlightId);
+    if (idx === -1) return;
+    setPage(Math.floor(idx / PAGE_SIZE) + 1);
+    setTimeout(() => {
+      rowRefs.current.get(highlightId)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 0);
+  }, [highlightId, filtered]);
 
   function renderLocation(flight: WithId<FlightInfo>) {
     if (!flight.spotId) {
@@ -131,7 +145,11 @@ export default function FlightTable({ flights, selectedDate, onDelete, onUpdate 
               </Table.Thead>
               <Table.Tbody>
                 {pageRows.map(flight => (
-                  <Table.Tr key={flight.id}>
+                  <Table.Tr
+                    key={flight.id}
+                    ref={el => { if (el) rowRefs.current.set(flight.id, el); else rowRefs.current.delete(flight.id); }}
+                    className={flight.id === highlightId ? styles.highlighted : undefined}
+                  >
                     <Table.Td>{flight.date ?? '—'}</Table.Td>
                     <Table.Td>{flight.name}</Table.Td>
                     <Table.Td>{renderLocation(flight)}</Table.Td>
