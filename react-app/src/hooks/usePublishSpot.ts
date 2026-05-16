@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import {
-  doc, collection, addDoc, serverTimestamp, getDoc,
+  doc, collection, addDoc, updateDoc, serverTimestamp, getDoc,
   writeBatch, deleteField,
 } from 'firebase/firestore';
 import { ref as storageRef, uploadBytes, getDownloadURL, getBytes, deleteObject } from 'firebase/storage';
@@ -69,6 +69,14 @@ export function usePublishSpot() {
       const communityDocRef = doc(db, `communitySpots/${publishedAsId}`);
       const communityDoc = await getDoc(communityDocRef);
       const communityData = communityDoc.data() as CommunitySpot | undefined;
+
+      if (!communityDoc.exists()) {
+        // Community spot already gone — clear the dangling publishedAsId so the user can re-publish
+        await updateDoc(doc(db, `users/${uid}/FlightSpots/${spotId}`), {
+          publishedAsId: deleteField(),
+        });
+        return;
+      }
 
       if (communityData?.ownerId !== uid) throw new Error('Not authorized to unpublish this spot');
 
