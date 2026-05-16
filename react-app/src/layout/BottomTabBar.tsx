@@ -3,7 +3,7 @@ import {
   IconLayoutDashboard,
   IconPlaneTilt,
   IconMap,
-  IconTool,
+  IconUsers,
   IconSettings,
 } from '@tabler/icons-react';
 import { Link, useLocation } from 'react-router-dom';
@@ -11,8 +11,8 @@ import { Link, useLocation } from 'react-router-dom';
 const tabs = [
   { to: '/', label: 'Dashboard', icon: IconLayoutDashboard, end: true },
   { to: '/flights', label: 'Flights', icon: IconPlaneTilt },
-  { to: '/spots', label: 'Flight Spots', icon: IconMap },
-  { to: '/utils', label: 'Utilities', icon: IconTool },
+  { to: '/spots', label: 'Spots', icon: IconMap },
+  { to: '/community', label: 'Community', icon: IconUsers },
   { to: '/settings', label: 'Settings', icon: IconSettings },
 ];
 
