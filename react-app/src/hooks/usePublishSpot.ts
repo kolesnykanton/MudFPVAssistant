@@ -32,19 +32,14 @@ export function usePublishSpot() {
     };
 
     try {
-      // Copy photo if present
+      // Copy photo if present. Failure aborts the whole publish so we never
+      // create a community spot with a broken/missing photo.
       if (spot.photoUrl && spot.storagePath) {
-        try {
-          const originalRef = storageRef(storage, spot.storagePath);
-          const originalBlob = await getBytes(originalRef);
-          const communityRef = storageRef(storage, communitySpot.storagePath!);
-          await uploadBytes(communityRef, originalBlob);
-          communitySpot.photoUrl = await getDownloadURL(communityRef);
-        } catch (err) {
-          console.warn('[publish] photo copy failed, continuing without photo:', err);
-          communitySpot.photoUrl = undefined;
-          communitySpot.storagePath = undefined;
-        }
+        const originalRef = storageRef(storage, spot.storagePath);
+        const originalBlob = await getBytes(originalRef);
+        const communityRef = storageRef(storage, communitySpot.storagePath!);
+        await uploadBytes(communityRef, originalBlob);
+        communitySpot.photoUrl = await getDownloadURL(communityRef);
       }
 
       // Atomically create community spot + back-reference on private spot

@@ -1,9 +1,10 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
-  collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc,
+  collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, getDoc,
   query, orderBy, limit,
 } from 'firebase/firestore';
-import { db } from '../firebase/firebaseConfig';
+import { ref as storageRef, deleteObject } from 'firebase/storage';
+import { db, storage } from '../firebase/firebaseConfig';
 import { useAuth } from './AuthContext';
 import { useCommunitySpots } from '../hooks/useCommunitySpots';
 import { useFavorites } from '../hooks/useFavorites';
@@ -109,6 +110,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   const deleteSpot = useCallback(async (id: string) => {
     if (!uid) throw new Error('Not authenticated');
+    const spotSnap = await getDoc(doc(db, `users/${uid}/FlightSpots/${id}`));
+    const storagePath = spotSnap.data()?.storagePath as string | undefined;
+    if (storagePath) {
+      try { await deleteObject(storageRef(storage, storagePath)); } catch { /* already gone */ }
+    }
     await deleteDoc(doc(db, `users/${uid}/FlightSpots/${id}`));
   }, [uid]);
 

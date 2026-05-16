@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFloating, offset, flip, shift } from '@floating-ui/react';
-import { Box, Text, Title, Drawer, ActionIcon, Group } from '@mantine/core';
+import { Box, Title, Drawer, ActionIcon, Group } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { IconList, IconLayoutSidebarRight } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
@@ -10,7 +10,6 @@ import { useData } from '../context/DataContext';
 import { usePublishSpot } from '../hooks/usePublishSpot';
 import type { FlightInfo, FlightSpot, WithId } from '../types';
 import { useSettings } from '../hooks/useSettings';
-import { useAuth } from '../context/AuthContext';
 import { WeatherAnimationProvider } from '../context/WeatherAnimationContext';
 import { FpvMap } from '../components/map/FpvMap';
 import type { ContextMenuState } from '../components/map/FpvMap';
@@ -32,7 +31,6 @@ interface FlyToState {
 }
 
 export default function MapSpotSave() {
-  const { uid } = useAuth();
   const { settings } = useSettings();
   const { spots, flights, spotsLoading, addSpot, updateSpot, deleteSpot } = useData();
   const { unpublishSpot } = usePublishSpot();
@@ -226,10 +224,6 @@ export default function MapSpotSave() {
         ];
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contextMenu]);
-
-  if (!uid) {
-    return <Text p="xl">Please sign in to view flight spots.</Text>;
-  }
 
   const openWeatherApiKey = settings.apiKeys?.openWeatherApiKey;
 
