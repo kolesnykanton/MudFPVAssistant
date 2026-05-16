@@ -1,1 +1,0 @@
-var e=[`Mountain`,`Beach`,`Building`,`Forest`,`Field`],t={Mountain:`#8d6e63`,Beach:`#29b6f6`,Building:`#7e57c2`,Forest:`#66bb6a`,Field:`#ffb300`};export{e as n,t};
