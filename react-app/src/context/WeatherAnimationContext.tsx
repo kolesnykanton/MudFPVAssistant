@@ -1,37 +1,58 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useWeatherRadar, type RadarFrame } from '../hooks/useWeatherRadar';
+import { useRainViewerFrames, useTomorrowIoFrames, type AnimatedFrame } from '../hooks/useWeatherRadar';
+
+export type RadarSource = 'rainviewer' | 'tomorrowio' | null;
 
 interface WeatherAnimationContextType {
-  host: string;
-  frames: RadarFrame[];
+  // Per-source frame data (consumed by SmoothRadarLayer in each overlay)
+  rvFrames: AnimatedFrame[];
+  tioFrames: AnimatedFrame[];
+  // Which overlay is currently driving the timeline control
+  activeSource: RadarSource;
+  setActiveSource: (s: RadarSource) => void;
+  // Derived from activeSource — what the timeline control displays
+  frames: AnimatedFrame[];
   nowcastStartIndex: number;
-  currentFrame: RadarFrame | undefined;
-  currentFrameIndex: number;
-  isPlaying: boolean;
   loading: boolean;
   error: string | null;
-  setCurrentFrameIndex: (index: number | ((prev: number) => number)) => void;
-  setIsPlaying: (playing: boolean | ((prev: boolean) => boolean)) => void;
+  // Shared animation state
+  currentFrameIndex: number;
+  isPlaying: boolean;
+  setCurrentFrameIndex: (i: number | ((prev: number) => number)) => void;
+  setIsPlaying: (p: boolean | ((prev: boolean) => boolean)) => void;
 }
 
 const WeatherAnimationContext = createContext<WeatherAnimationContextType>(null!);
 
-export function WeatherAnimationProvider({ children }: { children: React.ReactNode }) {
-  const { host, frames, nowcastStartIndex, loading, error } = useWeatherRadar();
+export function WeatherAnimationProvider({
+  children,
+  tomorrowIoApiKey,
+}: {
+  children: React.ReactNode;
+  tomorrowIoApiKey?: string;
+}) {
+  const rv = useRainViewerFrames();
+  const tio = useTomorrowIoFrames(tomorrowIoApiKey);
+
+  const [activeSource, setActiveSource] = useState<RadarSource>(null);
   const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // Start at the frame nearest to current time when frames load
+  // Pick the active frame set for the timeline control
+  const activeData = activeSource === 'tomorrowio' ? tio : rv;
+  const { frames, nowcastStartIndex, loading, error } = activeData;
+
+  // Snap to "now" when source switches or frames first arrive
   useEffect(() => {
     if (frames.length === 0) return;
     const nowTs = Date.now() / 1000;
     const idx = frames.reduce((best, f, i) =>
       Math.abs(f.time - nowTs) < Math.abs(frames[best].time - nowTs) ? i : best, 0);
     setCurrentFrameIndex(idx);
-  }, [frames.length]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSource, frames.length]);
 
-  // Loop through frames while playing. Wrapping with % keeps this a single
-  // effect with a single cleanup — no inter-effect dep cancellation possible.
+  // Animation loop — loops seamlessly with %
   useEffect(() => {
     if (!isPlaying || frames.length === 0) return;
     const id = setInterval(() => {
@@ -40,19 +61,19 @@ export function WeatherAnimationProvider({ children }: { children: React.ReactNo
     return () => clearInterval(id);
   }, [isPlaying, frames.length]);
 
-  const currentFrame = frames[currentFrameIndex];
-
   return (
     <WeatherAnimationContext.Provider
       value={{
-        host,
+        rvFrames: rv.frames,
+        tioFrames: tio.frames,
+        activeSource,
+        setActiveSource,
         frames,
         nowcastStartIndex,
-        currentFrame,
-        currentFrameIndex,
-        isPlaying,
         loading,
         error,
+        currentFrameIndex,
+        isPlaying,
         setCurrentFrameIndex,
         setIsPlaying,
       }}

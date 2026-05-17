@@ -226,6 +226,7 @@ export default function MapSpotSave() {
   }, [contextMenu]);
 
   const openWeatherApiKey = settings.apiKeys?.openWeatherApiKey;
+  const tomorrowIoApiKey = settings.apiKeys?.tomorrowIoApiKey;
 
   const typedSpots = spots as WithId<FlightSpot>[];
 
@@ -261,7 +262,7 @@ export default function MapSpotSave() {
 
       <Box className={classes.mainContent}>
         <Box className={classes.mapWrapper} style={{ position: 'relative' }}>
-          <WeatherAnimationProvider>
+          <WeatherAnimationProvider tomorrowIoApiKey={tomorrowIoApiKey}>
             <FpvMap
               spots={spots}
               openWeatherApiKey={openWeatherApiKey}

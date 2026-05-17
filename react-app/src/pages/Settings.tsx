@@ -7,12 +7,14 @@ export default function Settings() {
   const { settings, loading, updateSettings } = useSettings();
   const [openWeatherKey, setOpenWeatherKey] = useState('');
   const [googleMapsKey, setGoogleMapsKey] = useState('');
+  const [tomorrowIoKey, setTomorrowIoKey] = useState('');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     /* eslint-disable react-hooks/set-state-in-effect */
     setOpenWeatherKey(settings.apiKeys?.openWeatherApiKey || '');
     setGoogleMapsKey(settings.apiKeys?.googleApiKey || '');
+    setTomorrowIoKey(settings.apiKeys?.tomorrowIoApiKey || '');
     /* eslint-enable react-hooks/set-state-in-effect */
   }, [settings]);
 
@@ -23,6 +25,7 @@ export default function Settings() {
         apiKeys: {
           openWeatherApiKey: openWeatherKey.trim(),
           googleApiKey: googleMapsKey.trim(),
+          tomorrowIoApiKey: tomorrowIoKey.trim(),
         },
       });
       notifications.show({ color: 'green', message: 'Settings saved.' });
@@ -54,6 +57,17 @@ export default function Settings() {
           <PasswordInput
             value={googleMapsKey}
             onChange={e => setGoogleMapsKey(e.target.value)}
+            placeholder="API key"
+            size="sm"
+            autoComplete="off"
+          />
+        </Paper>
+        <Paper withBorder p="lg" radius="md">
+          <Text fw={500} mb="sm">Tomorrow.io API Key</Text>
+          <Text size="xs" c="dimmed" mb="xs">Enables the &quot;Forecast 6h&quot; radar overlay (±6 hours of precipitation forecast). Free tier: 500 requests/day.</Text>
+          <PasswordInput
+            value={tomorrowIoKey}
+            onChange={e => setTomorrowIoKey(e.target.value)}
             placeholder="API key"
             size="sm"
             autoComplete="off"

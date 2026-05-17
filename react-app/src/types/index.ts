@@ -61,6 +61,7 @@ export interface CommunitySpot {
 export interface UserApiKeys {
   openWeatherApiKey?: string;
   googleApiKey?: string;
+  tomorrowIoApiKey?: string;
 }
 
 export interface UserSettings {

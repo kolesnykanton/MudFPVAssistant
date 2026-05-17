@@ -6,15 +6,80 @@ import { useWeatherAnimation } from '../../context/WeatherAnimationContext';
 import L from 'leaflet';
 import type { FlightInfo, FlightSpot, WithId } from '../../types';
 import { MapControls } from './MapControls';
-import { WeatherLayers, RAINVIEWER_OVERLAY_NAME } from './WeatherLayers';
+import { WeatherLayers, RAINVIEWER_OVERLAY_NAME, TOMORROWIO_OVERLAY_NAME } from './WeatherLayers';
 import { WeatherAnimationControl } from './WeatherAnimationControl';
 import { WeatherPanel } from './WeatherPanel';
 import { MarkerCluster } from './MarkerCluster';
 import { YouAreHereMarker } from './YouAreHereMarker';
 import { MapInteraction } from './MapInteraction';
+import { SmoothRadarLayer } from './SmoothRadarLayer';
 
-const WeatherAnimationControlWrapper = memo(function WeatherAnimationControlWrapper() {
-  const { frames, nowcastStartIndex, currentFrameIndex, isPlaying, setCurrentFrameIndex, setIsPlaying } = useWeatherAnimation();
+/**
+ * Listens for overlayadd/overlayremove on both radar overlays.
+ * Updates context's activeSource and mounts SmoothRadarLayer only when that overlay is active.
+ * When both are simultaneously active, the most recently activated drives the timeline control.
+ */
+function RadarOverlayManager() {
+  const { rvFrames, tioFrames, currentFrameIndex, setActiveSource } = useWeatherAnimation();
+  const map = useMap();
+  const [rvActive, setRvActive] = useState(false);
+  const [tioActive, setTioActive] = useState(false);
+  const rvActiveRef = useRef(false);
+  const tioActiveRef = useRef(false);
+
+  useEffect(() => {
+    const onAdd = (e: L.LayersControlEvent) => {
+      if (e.name === RAINVIEWER_OVERLAY_NAME) {
+        rvActiveRef.current = true;
+        setRvActive(true);
+        setActiveSource('rainviewer');
+      }
+      if (e.name === TOMORROWIO_OVERLAY_NAME) {
+        tioActiveRef.current = true;
+        setTioActive(true);
+        setActiveSource('tomorrowio');
+      }
+    };
+    const onRemove = (e: L.LayersControlEvent) => {
+      if (e.name === RAINVIEWER_OVERLAY_NAME) {
+        rvActiveRef.current = false;
+        setRvActive(false);
+        setActiveSource(tioActiveRef.current ? 'tomorrowio' : null);
+      }
+      if (e.name === TOMORROWIO_OVERLAY_NAME) {
+        tioActiveRef.current = false;
+        setTioActive(false);
+        setActiveSource(rvActiveRef.current ? 'rainviewer' : null);
+      }
+    };
+
+    map.on('overlayadd', onAdd);
+    map.on('overlayremove', onRemove);
+    return () => {
+      map.off('overlayadd', onAdd);
+      map.off('overlayremove', onRemove);
+    };
+  }, [map, setActiveSource]);
+
+  return (
+    <>
+      {rvActive && (
+        <SmoothRadarLayer frames={rvFrames} currentIndex={currentFrameIndex} maxNativeZoom={7} />
+      )}
+      {tioActive && (
+        <SmoothRadarLayer frames={tioFrames} currentIndex={currentFrameIndex} maxNativeZoom={12} />
+      )}
+    </>
+  );
+}
+
+/** Shows the animation timeline control whenever any radar overlay is active. */
+const RadarAnimationControl = memo(function RadarAnimationControl() {
+  const {
+    activeSource, frames, nowcastStartIndex,
+    currentFrameIndex, isPlaying,
+    setCurrentFrameIndex, setIsPlaying,
+  } = useWeatherAnimation();
   const map = useMap();
 
   const handleTogglePlay = useCallback(() => {
@@ -26,6 +91,8 @@ const WeatherAnimationControlWrapper = memo(function WeatherAnimationControlWrap
 
   const handleMapDragStart = useCallback(() => map.dragging.disable(), [map]);
   const handleMapDragEnd = useCallback(() => map.dragging.enable(), [map]);
+
+  if (!activeSource || frames.length === 0) return null;
 
   return (
     <WeatherAnimationControl
@@ -41,36 +108,12 @@ const WeatherAnimationControlWrapper = memo(function WeatherAnimationControlWrap
   );
 });
 
-function RainViewerVisibility({ children }: { children: React.ReactNode }) {
-  const map = useMap();
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const onAdd = (e: L.LayersControlEvent) => {
-      if (e.name === RAINVIEWER_OVERLAY_NAME) setVisible(true);
-    };
-    const onRemove = (e: L.LayersControlEvent) => {
-      if (e.name === RAINVIEWER_OVERLAY_NAME) setVisible(false);
-    };
-
-    map.on('overlayadd', onAdd);
-    map.on('overlayremove', onRemove);
-    return () => {
-      map.off('overlayadd', onAdd);
-      map.off('overlayremove', onRemove);
-    };
-  }, [map]);
-
-  return <>{visible ? children : null}</>;
-}
-
 export interface FlyToTarget {
   lat: number;
   lng: number;
   spotId?: string;
   nonce: number;
 }
-
 
 function FlyToTarget({ target, markerRefs, clusterGroupRef }: {
   target: FlyToTarget | null;
@@ -97,8 +140,6 @@ function FlyToTarget({ target, markerRefs, clusterGroupRef }: {
 
 function FitBoundsButton({ spots }: { spots: FlightSpot[] }) {
   const map = useMap();
-  // Primitive key so the effect only fires when actual coordinates change,
-  // not on every parent re-render that produces a new array reference.
   const boundsKey = spots.map(s => `${s.latitude},${s.longitude}`).join('|');
   useEffect(() => {
     if (spots.length === 0) return;
@@ -229,9 +270,8 @@ export const FpvMap = memo(function FpvMap({
       <YouAreHereMarker flyToTargetRef={flyToTargetRef} />
       <MapControls />
       <WeatherPanel />
-      <RainViewerVisibility>
-        <WeatherAnimationControlWrapper />
-      </RainViewerVisibility>
+      <RadarOverlayManager />
+      <RadarAnimationControl />
       {spots.length > 0 && <FitBoundsButton spots={spots} />}
       {onTogglePanel !== undefined && <PanelToggleButton panelOpen={panelOpen} onToggle={onTogglePanel} />}
       {flyToTarget && <FlyToTarget target={flyToTarget} markerRefs={markerRefsRef} clusterGroupRef={clusterGroupRef} />}

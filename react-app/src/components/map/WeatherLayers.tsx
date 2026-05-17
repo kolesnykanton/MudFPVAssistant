@@ -1,29 +1,35 @@
-import { TileLayer, LayersControl } from 'react-leaflet';
+import { LayerGroup, LayersControl, TileLayer } from 'react-leaflet';
 import { useWeatherAnimation } from '../../context/WeatherAnimationContext';
 
 export const RAINVIEWER_OVERLAY_NAME = 'RainViewer (animated radar)';
+export const TOMORROWIO_OVERLAY_NAME = 'Forecast 6h (Tomorrow.io)';
 
 interface WeatherLayersProps {
   openWeatherApiKey?: string;
 }
 
+/**
+ * Declares LayersControl entries for all weather overlays.
+ * Radar overlays use an empty LayerGroup as a placeholder — the actual animated tiles
+ * are managed imperatively by SmoothRadarLayer in FpvMap (via RadarOverlayManager),
+ * which mounts only when the overlay is toggled on.
+ */
 export function WeatherLayers({ openWeatherApiKey }: WeatherLayersProps) {
-  const { host, currentFrame } = useWeatherAnimation();
+  const { tioFrames } = useWeatherAnimation();
+  const hasTio = tioFrames.length > 0;
 
   return (
     <>
-      {currentFrame && host && (
-        <LayersControl.Overlay name={RAINVIEWER_OVERLAY_NAME}>
-          <TileLayer
-            url={`${host}${currentFrame.path}/512/{z}/{x}/{y}/2/1_1.png`}
-            attribution="&copy; RainViewer"
-            opacity={0.6}
-            maxNativeZoom={7}
-            zIndex={2}
-            className="mfa-rainviewer"
-          />
+      <LayersControl.Overlay name={RAINVIEWER_OVERLAY_NAME}>
+        <LayerGroup />
+      </LayersControl.Overlay>
+
+      {hasTio && (
+        <LayersControl.Overlay name={TOMORROWIO_OVERLAY_NAME}>
+          <LayerGroup />
         </LayersControl.Overlay>
       )}
+
       {openWeatherApiKey && (
         <>
           <LayersControl.Overlay name="Wind">

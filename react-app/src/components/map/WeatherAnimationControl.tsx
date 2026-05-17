@@ -4,7 +4,7 @@ import type { CSSProperties } from 'react';
 import { ActionIcon, Badge, Group, Stack, Text } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { IconPlayerPlay, IconPlayerPause } from '@tabler/icons-react';
-import type { RadarFrame } from '../../hooks/useWeatherRadar';
+import type { AnimatedFrame } from '../../hooks/useWeatherRadar';
 
 type FrameZone = 'past' | 'now' | 'forecast';
 
@@ -65,7 +65,7 @@ const TickMarks = memo(function TickMarks({ count }: { count: number }) {
 });
 
 interface WeatherAnimationControlProps {
-  frames: RadarFrame[];
+  frames: AnimatedFrame[];
   currentIndex: number;
   nowcastStartIndex: number;
   isPlaying: boolean;
