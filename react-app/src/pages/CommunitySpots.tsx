@@ -35,10 +35,10 @@ export default function CommunitySpots() {
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
   const [flyToTarget, setFlyToTarget] = useState<CommunityFlyToTarget | null>(null);
   const [cloningId, setCloningId] = useState<string | null>(null);
-  const [favoritingId, setFavoritingId] = useState<string | null>(null);
+  const [favoritingIds, setFavoritingIds] = useState<Set<string>>(new Set());
 
   const clonedCommunityIds = useMemo(
-    () => new Set(spots.flatMap(s => s.clonedFromCommunityId ? [s.clonedFromCommunityId] : [])),
+    () => new Set(spots.filter(s => s.clonedFromCommunityId).map(s => s.clonedFromCommunityId!)),
     [spots],
   );
 
@@ -85,17 +85,16 @@ export default function CommunitySpots() {
   }, []);
 
   const handleFavoriteToggle = useCallback(async (spotId: string) => {
-    if (favoritingId) return;
-    setFavoritingId(spotId);
+    setFavoritingIds(prev => new Set(prev).add(spotId));
     try {
       await toggleFavorite(spotId);
     } catch (err) {
       console.error(err);
       notifications.show({ color: 'red', message: 'Failed to update favourite.' });
     } finally {
-      setFavoritingId(null);
+      setFavoritingIds(prev => { const next = new Set(prev); next.delete(spotId); return next; });
     }
-  }, [toggleFavorite, favoritingId]);
+  }, [toggleFavorite]);
 
   if (communityLoading) {
     return (
@@ -184,7 +183,7 @@ export default function CommunitySpots() {
             favoriteIds={favoriteIds}
             currentUserId={uid ?? undefined}
             cloningId={cloningId}
-            favoritingId={favoritingId}
+            favoritingIds={favoritingIds}
             clonedCommunityIds={clonedCommunityIds}
             onFavoriteToggle={handleFavoriteToggle}
             onClone={handleClone}
@@ -228,7 +227,7 @@ export default function CommunitySpots() {
                 isFavorited={favoriteIds.has(spot.id!)}
                 isOwnSpot={!!uid && spot.ownerId === uid}
                 isCloning={cloningId === spot.id}
-                isFavoriting={favoritingId === spot.id}
+                isFavoriting={favoritingIds.has(spot.id!)}
                 isAlreadyCloned={clonedCommunityIds.has(spot.id!)}
                 onFavoriteToggle={handleFavoriteToggle}
                 onClone={handleClone}

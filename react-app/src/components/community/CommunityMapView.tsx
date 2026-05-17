@@ -43,7 +43,7 @@ interface Props {
   favoriteIds: Set<string>;
   currentUserId?: string;
   cloningId: string | null;
-  favoritingId?: string | null;
+  favoritingIds?: Set<string>;
   clonedCommunityIds?: Set<string>;
   onFavoriteToggle: (spotId: string) => Promise<void>;
   onClone: (spot: WithId<CommunitySpot>) => void;
@@ -52,7 +52,7 @@ interface Props {
 
 const mapStyle = { width: '100%', height: 'calc(100vh - 140px)', minHeight: 400 };
 
-export function CommunityMapView({ spots, favoriteIds, currentUserId, cloningId, favoritingId, clonedCommunityIds, onFavoriteToggle, onClone, flyToTarget }: Props) {
+export function CommunityMapView({ spots, favoriteIds, currentUserId, cloningId, favoritingIds, clonedCommunityIds, onFavoriteToggle, onClone, flyToTarget }: Props) {
   const isMobile = useMediaQuery('(max-width: 48em)', true);
 
   return (
@@ -76,7 +76,7 @@ export function CommunityMapView({ spots, favoriteIds, currentUserId, cloningId,
           isFavorited={favoriteIds.has(spot.id!)}
           isOwnSpot={!!currentUserId && spot.ownerId === currentUserId}
           isCloning={cloningId === spot.id}
-          isFavoriting={favoritingId === spot.id}
+          isFavoriting={favoritingIds?.has(spot.id!) ?? false}
           isAlreadyCloned={clonedCommunityIds?.has(spot.id!) ?? false}
           onFavoriteToggle={onFavoriteToggle}
           onClone={onClone}
