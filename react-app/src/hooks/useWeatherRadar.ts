@@ -8,6 +8,7 @@ export interface RadarFrame {
 export interface WeatherRadarData {
   host: string;
   frames: RadarFrame[];
+  nowcastStartIndex: number;
   loading: boolean;
   error: string | null;
 }
@@ -16,6 +17,7 @@ export const useWeatherRadar = (): WeatherRadarData => {
   const [data, setData] = useState<WeatherRadarData>({
     host: '',
     frames: [],
+    nowcastStartIndex: 0,
     loading: true,
     error: null,
   });
@@ -40,9 +42,13 @@ export const useWeatherRadar = (): WeatherRadarData => {
         const pastFrames = json.radar?.past || [];
         const nowcastFrames = json.radar?.nowcast || [];
         const allFrames = [...pastFrames, ...nowcastFrames].sort((a, b) => a.time - b.time);
+        // Structural boundary: past frames always precede nowcast frames by timestamp,
+        // so the count of past frames is a stable index for the NOW divider.
+        const nowcastStartIndex = pastFrames.length;
         setData({
           host: json.host || 'https://tilecache.rainviewer.com',
           frames: allFrames,
+          nowcastStartIndex,
           loading: false,
           error: null,
         });

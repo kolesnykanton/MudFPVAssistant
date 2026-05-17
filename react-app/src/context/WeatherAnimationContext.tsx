@@ -4,6 +4,7 @@ import { useWeatherRadar, type RadarFrame } from '../hooks/useWeatherRadar';
 interface WeatherAnimationContextType {
   host: string;
   frames: RadarFrame[];
+  nowcastStartIndex: number;
   currentFrame: RadarFrame | undefined;
   currentFrameIndex: number;
   isPlaying: boolean;
@@ -16,7 +17,7 @@ interface WeatherAnimationContextType {
 const WeatherAnimationContext = createContext<WeatherAnimationContextType>(null!);
 
 export function WeatherAnimationProvider({ children }: { children: React.ReactNode }) {
-  const { host, frames, loading, error } = useWeatherRadar();
+  const { host, frames, nowcastStartIndex, loading, error } = useWeatherRadar();
   const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -29,10 +30,13 @@ export function WeatherAnimationProvider({ children }: { children: React.ReactNo
     setCurrentFrameIndex(idx);
   }, [frames.length]);
 
-  // Animation loop
+  // Loop through frames while playing. Wrapping with % keeps this a single
+  // effect with a single cleanup — no inter-effect dep cancellation possible.
   useEffect(() => {
     if (!isPlaying || frames.length === 0) return;
-    const id = setInterval(() => setCurrentFrameIndex(i => (i + 1) % frames.length), 600);
+    const id = setInterval(() => {
+      setCurrentFrameIndex(i => (i + 1) % frames.length);
+    }, 600);
     return () => clearInterval(id);
   }, [isPlaying, frames.length]);
 
@@ -43,6 +47,7 @@ export function WeatherAnimationProvider({ children }: { children: React.ReactNo
       value={{
         host,
         frames,
+        nowcastStartIndex,
         currentFrame,
         currentFrameIndex,
         isPlaying,

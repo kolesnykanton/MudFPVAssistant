@@ -1,5 +1,5 @@
 import 'leaflet/dist/leaflet.css';
-import { useEffect, useRef, memo, useState } from 'react';
+import { useCallback, useEffect, useRef, memo, useState } from 'react';
 import { useMediaQuery } from '@mantine/hooks';
 import { MapContainer, TileLayer, LayersControl, ZoomControl, useMap } from 'react-leaflet';
 import { useWeatherAnimation } from '../../context/WeatherAnimationContext';
@@ -14,16 +14,29 @@ import { YouAreHereMarker } from './YouAreHereMarker';
 import { MapInteraction } from './MapInteraction';
 
 const WeatherAnimationControlWrapper = memo(function WeatherAnimationControlWrapper() {
-  const { frames, currentFrameIndex, isPlaying, setCurrentFrameIndex, setIsPlaying } = useWeatherAnimation();
+  const { frames, nowcastStartIndex, currentFrameIndex, isPlaying, setCurrentFrameIndex, setIsPlaying } = useWeatherAnimation();
+  const map = useMap();
+
+  const handleTogglePlay = useCallback(() => {
+    if (!isPlaying && frames.length > 0 && currentFrameIndex >= frames.length - 1) {
+      setCurrentFrameIndex(0);
+    }
+    setIsPlaying(p => !p);
+  }, [isPlaying, currentFrameIndex, frames.length, setCurrentFrameIndex, setIsPlaying]);
+
+  const handleMapDragStart = useCallback(() => map.dragging.disable(), [map]);
+  const handleMapDragEnd = useCallback(() => map.dragging.enable(), [map]);
 
   return (
     <WeatherAnimationControl
       frames={frames}
       currentIndex={currentFrameIndex}
+      nowcastStartIndex={nowcastStartIndex}
       isPlaying={isPlaying}
-      onPrev={() => setCurrentFrameIndex(Math.max(0, currentFrameIndex - 1))}
-      onNext={() => setCurrentFrameIndex(Math.min(frames.length - 1, currentFrameIndex + 1))}
-      onTogglePlay={() => setIsPlaying(!isPlaying)}
+      onSeek={setCurrentFrameIndex}
+      onTogglePlay={handleTogglePlay}
+      onMapDragStart={handleMapDragStart}
+      onMapDragEnd={handleMapDragEnd}
     />
   );
 });
