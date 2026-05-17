@@ -20,9 +20,13 @@ export function WeatherAnimationProvider({ children }: { children: React.ReactNo
   const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // Reset frame index when frames change
+  // Start at the frame nearest to current time when frames load
   useEffect(() => {
-    setCurrentFrameIndex(0);
+    if (frames.length === 0) return;
+    const nowTs = Date.now() / 1000;
+    const idx = frames.reduce((best, f, i) =>
+      Math.abs(f.time - nowTs) < Math.abs(frames[best].time - nowTs) ? i : best, 0);
+    setCurrentFrameIndex(idx);
   }, [frames.length]);
 
   // Animation loop

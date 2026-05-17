@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { useMediaQuery } from '@mantine/hooks';
 import { Card, Stack, Group, Text, Skeleton, ActionIcon, Tooltip, Badge, Collapse, Divider } from '@mantine/core';
 import {
   IconRefresh,
@@ -93,7 +94,8 @@ export const WeatherPanel = () => {
   const [locationError, setLocationError] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [refreshCooldown, setRefreshCooldown] = useState(0);
-  const [collapsed, setCollapsed] = useState(false);
+  const isMobile = useMediaQuery('(max-width: 48em)', true);
+  const [collapsed, setCollapsed] = useState(isMobile);
   const [forecastOpen, setForecastOpen] = useState(false);
 
   const { data, loading, error, refetch } = useLocationForecast(
