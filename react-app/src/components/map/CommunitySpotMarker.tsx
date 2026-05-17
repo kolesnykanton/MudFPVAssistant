@@ -1,43 +1,11 @@
 import { useMemo } from 'react';
 import { Marker, Popup } from 'react-leaflet';
-import L from 'leaflet';
 import { Avatar, Stack, Text, Group, Button, ActionIcon, Anchor } from '@mantine/core';
 import { IconHeart, IconHeartFilled } from '@tabler/icons-react';
 import { CATEGORY_COLORS } from '../../types';
 import type { CommunitySpot, WithId } from '../../types';
-import droneIconUrl from '../../assets/drone-icon.svg';
+import { makeDroneMarkerIcon } from '../../utils/markerIcon';
 import { openGoogleMaps, openAppleMaps } from '../../utils/navigation';
-
-const communityIconCache = new Map<string, L.DivIcon>();
-
-function makeIcon(category: string | undefined): L.DivIcon {
-  const key = `community-${category ?? ''}`;
-  const cached = communityIconCache.get(key);
-  if (cached) return cached;
-
-  const colour = category ? CATEGORY_COLORS[category] : '#888';
-
-  const html = `
-    <div style="position:relative;width:28px;height:28px;overflow:visible;">
-      <div style="
-        width:28px;height:28px;border-radius:50%;
-        background:${colour};border:2px solid #fff;
-        box-shadow:0 1px 4px rgba(0,0,0,0.4);
-        display:flex;align-items:center;justify-content:center;
-        outline: 2px solid ${colour}; outline-offset: 2px;">
-        <img src="${droneIconUrl}" width="16" height="16" style="filter:brightness(0) invert(1);" alt="" />
-      </div>
-    </div>`;
-
-  const icon = L.divIcon({
-    html,
-    className: '',
-    iconSize: [28, 28],
-    iconAnchor: [14, 14],
-  });
-  communityIconCache.set(key, icon);
-  return icon;
-}
 
 interface Props {
   spot: WithId<CommunitySpot>;
@@ -53,7 +21,7 @@ interface Props {
 export function CommunitySpotMarker({
   spot, isFavorited, isOwnSpot, isCloning, isFavoriting, isAlreadyCloned, onFavoriteToggle, onClone,
 }: Props) {
-  const icon = useMemo(() => makeIcon(spot.category), [spot.category]);
+  const icon = useMemo(() => makeDroneMarkerIcon({ category: spot.category, outlined: true }), [spot.category]);
 
   const categoryColor = spot.category ? CATEGORY_COLORS[spot.category] : undefined;
 
