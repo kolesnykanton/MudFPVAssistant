@@ -16,11 +16,13 @@ interface MarkerClusterProps {
   clusterGroupRef: React.MutableRefObject<L.MarkerClusterGroup | null>;
   flightCountBySpot: Record<string, number>;
   recentFlightsBySpot: Record<string, WithId<FlightInfo>[]>;
+  onEditSpot?: (spot: WithId<FlightSpot>) => void;
+  onDeleteSpot?: (spot: WithId<FlightSpot>) => void;
 }
 
 export function MarkerCluster({
   spots, onContextMenu, longPressActiveRef, markerRefs, clusterGroupRef,
-  flightCountBySpot, recentFlightsBySpot,
+  flightCountBySpot, recentFlightsBySpot, onEditSpot, onDeleteSpot,
 }: MarkerClusterProps) {
   const map = useMap();
 
@@ -76,6 +78,8 @@ export function MarkerCluster({
             markerRefs={markerRefs}
             flightCount={flightCountBySpot[spot.id] ?? 0}
             recentFlights={recentFlightsBySpot[spot.id] ?? []}
+            onEdit={onEditSpot}
+            onDelete={onDeleteSpot}
           />
         )
         : null

@@ -187,6 +187,8 @@ interface FpvMapProps {
   onTogglePanel?: () => void;
   flightCountBySpot?: Record<string, number>;
   recentFlightsBySpot?: Record<string, WithId<FlightInfo>[]>;
+  onEditSpot?: (spot: WithId<FlightSpot>) => void;
+  onDeleteSpot?: (spot: WithId<FlightSpot>) => void;
 }
 
 function PanelToggleButton({ panelOpen, onToggle }: { panelOpen?: boolean; onToggle?: () => void }) {
@@ -220,6 +222,7 @@ function PanelToggleButton({ panelOpen, onToggle }: { panelOpen?: boolean; onTog
 export const FpvMap = memo(function FpvMap({
   spots, openWeatherApiKey, onContextMenu, flyToTarget,
   panelOpen, onTogglePanel, flightCountBySpot, recentFlightsBySpot,
+  onEditSpot, onDeleteSpot,
 }: FpvMapProps) {
   const longPressActiveRef = useRef(false);
   const markerRefsRef = useRef<Record<string, L.Marker>>({});
@@ -285,6 +288,8 @@ export const FpvMap = memo(function FpvMap({
           clusterGroupRef={clusterGroupRef}
           flightCountBySpot={flightCountBySpot ?? {}}
           recentFlightsBySpot={recentFlightsBySpot ?? {}}
+          onEditSpot={onEditSpot}
+          onDeleteSpot={onDeleteSpot}
         />
       )}
     </MapContainer>

@@ -1,4 +1,9 @@
-import { forwardRef, useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useFloating, offset, flip, shift,
+  useDismiss, useRole, useListNavigation, useInteractions,
+  FloatingFocusManager, FloatingPortal,
+} from '@floating-ui/react';
 import { Button, Paper, Stack } from '@mantine/core';
 
 export interface MapContextMenuItem {
@@ -8,98 +13,98 @@ export interface MapContextMenuItem {
 }
 
 interface MapContextMenuProps {
-  style: React.CSSProperties;
-  width: number;
+  open: boolean;
+  x: number;
+  y: number;
+  width?: number;
   items: MapContextMenuItem[];
+  onClose: () => void;
 }
 
 /**
- * Right-click / long-press context menu for the map.
+ * Desktop right-click menu for the map.
  *
- * Implements the WAI-ARIA Menu pattern: role="menu" with role="menuitem"
- * children, ArrowUp/Down cycling, Home/End jumping, and auto-focus on open.
- * Escape is handled by the parent (also dismisses the menu).
- * Positioning is delegated to @floating-ui/react (caller passes floatingStyles).
+ * Positions itself at (x, y) via a virtual reference. floating-ui hooks
+ * provide dismissal (Esc + outside-press), focus trap, and arrow-key list
+ * navigation — no manual backdrop, keydown handler, or focus effect needed.
  */
-const MapContextMenu = forwardRef<HTMLDivElement, MapContextMenuProps>(
-  function MapContextMenu({ style, width, items }, ref) {
-  const containerRef = useRef<HTMLDivElement>(null);
+export default function MapContextMenu({
+  open, x, y, width = 170, items, onClose,
+}: MapContextMenuProps) {
+  const [activeIndex, setActiveIndex] = useState<number | null>(0);
+  const listRef = useRef<Array<HTMLButtonElement | null>>([]);
 
+  const middleware = useMemo(() => [offset(4), flip(), shift({ padding: 8 })], []);
+  const { refs, floatingStyles, context } = useFloating({
+    open,
+    onOpenChange: (next) => { if (!next) onClose(); },
+    placement: 'bottom-start',
+    middleware,
+  });
+
+  // Virtual reference at the click point. setPositionReference must run in an
+  // effect (not during render) to satisfy react-hooks/refs.
   useEffect(() => {
-    // Focus the first menu item so keyboard users can navigate immediately.
-    // Empty deps: the menu unmounts/remounts on each open, so this runs once per open.
-    // Using [items] would re-focus on every parent render, disrupting keyboard navigation.
-    const first = containerRef.current?.querySelector<HTMLButtonElement>('[role="menuitem"]');
-    first?.focus();
-  }, []);
+    refs.setPositionReference({
+      getBoundingClientRect: () => ({
+        x, y, top: y, left: x, right: x, bottom: y, width: 0, height: 0,
+        toJSON: () => ({}),
+      }),
+    });
+  }, [x, y, refs]);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    const buttons = Array.from(
-      containerRef.current?.querySelectorAll<HTMLButtonElement>('[role="menuitem"]') ?? []
-    );
-    if (buttons.length === 0) return;
-    const currentIndex = buttons.findIndex(b => b === document.activeElement);
+  const dismiss = useDismiss(context);
+  const role = useRole(context, { role: 'menu' });
+  const listNav = useListNavigation(context, {
+    listRef,
+    activeIndex,
+    onNavigate: setActiveIndex,
+    loop: true,
+    focusItemOnOpen: 'auto',
+  });
+  const { getFloatingProps, getItemProps } = useInteractions([dismiss, role, listNav]);
 
-    switch (e.key) {
-      case 'ArrowDown':
-        e.preventDefault();
-        buttons[(currentIndex + 1 + buttons.length) % buttons.length]?.focus();
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        buttons[(currentIndex - 1 + buttons.length) % buttons.length]?.focus();
-        break;
-      case 'Home':
-        e.preventDefault();
-        buttons[0]?.focus();
-        break;
-      case 'End':
-        e.preventDefault();
-        buttons[buttons.length - 1]?.focus();
-        break;
-    }
-  };
+  if (!open) return null;
 
   return (
-    <Paper
-      ref={(node) => {
-        // Merge the internal ref (for focus/keyboard) with the forwarded floating ref.
-        (containerRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
-        if (typeof ref === 'function') ref(node);
-        else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
-      }}
-      withBorder
-      shadow="md"
-      role="menu"
-      aria-orientation="vertical"
-      onKeyDown={handleKeyDown}
-      style={{
-        ...style,
-        zIndex: 1001,
-        minWidth: width,
-        padding: '4px 0',
-        overflow: 'hidden',
-      }}
-    >
-      <Stack gap={0}>
-        {items.map(item => (
-          <Button
-            key={item.label}
-            role="menuitem"
-            variant="subtle"
-            color={item.danger ? 'red' : undefined}
-            size="sm"
-            justify="start"
-            fullWidth
-            style={{ borderRadius: 0 }}
-            onClick={item.onClick}
-          >
-            {item.label}
-          </Button>
-        ))}
-      </Stack>
-    </Paper>
+    <FloatingPortal>
+      <FloatingFocusManager context={context} modal={false} initialFocus={0}>
+        <Paper
+          // setFloating is a callback ref from useFloating — standard pattern.
+          // eslint-disable-next-line react-hooks/refs
+          ref={refs.setFloating}
+          withBorder
+          shadow="md"
+          style={{
+            ...floatingStyles,
+            zIndex: 1001,
+            minWidth: width,
+            padding: '4px 0',
+            overflow: 'hidden',
+          }}
+          {...getFloatingProps()}
+        >
+          <Stack gap={0}>
+            {items.map((item, i) => (
+              <Button
+                key={item.label}
+                ref={(node) => { listRef.current[i] = node; }}
+                variant="subtle"
+                color={item.danger ? 'red' : undefined}
+                size="sm"
+                justify="start"
+                fullWidth
+                style={{ borderRadius: 0 }}
+                {...getItemProps({
+                  onClick: () => { item.onClick(); onClose(); },
+                })}
+              >
+                {item.label}
+              </Button>
+            ))}
+          </Stack>
+        </Paper>
+      </FloatingFocusManager>
+    </FloatingPortal>
   );
-});
-
-export default MapContextMenu;
+}

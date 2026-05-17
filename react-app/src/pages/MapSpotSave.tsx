@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useFloating, offset, flip, shift } from '@floating-ui/react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Title, Drawer, ActionIcon, Group } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { IconList, IconLayoutSidebarRight } from '@tabler/icons-react';
@@ -17,10 +16,10 @@ import { SpotsListPanel } from '../components/map/SpotsListPanel';
 import FlightSpotEditDialog from '../components/FlightSpotEditDialog';
 import ConfirmDialog from '../components/ConfirmDialog';
 import MapContextMenu, { type MapContextMenuItem } from '../components/MapContextMenu';
+import { MapActionSheet } from '../components/map/MapActionSheet';
 import { QuickPinFab } from '../components/map/QuickPinFab';
 import { openGoogleMaps, openAppleMaps } from '../utils/navigation';
 
-const MENU_WIDTH = 170;
 const PANEL_STORAGE_KEY = 'mfa-map-panel-open';
 
 interface FlyToState {
@@ -38,10 +37,6 @@ export default function MapSpotSave() {
   const isDesktop = useMediaQuery('(min-width: 48em)');
 
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
-  const { refs, floatingStyles, update } = useFloating({
-    placement: 'top-start',
-    middleware: [offset(16), flip(), shift({ padding: 8 })],
-  });
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSpot, setEditingSpot] = useState<FlightSpot | null>(null);
@@ -50,7 +45,6 @@ export default function MapSpotSave() {
   const pendingDeleteSpot = pendingDeleteSpotId
     ? spots.find(s => s.id === pendingDeleteSpotId) ?? null
     : null;
-  const contextMenuOpenedAt = useRef(0);
 
   const [panelOpen, setPanelOpen] = useState(() => {
     if (typeof window === 'undefined') return true;
@@ -94,9 +88,10 @@ export default function MapSpotSave() {
   }, [panelOpen]);
 
   const handleContextMenu = useCallback((state: ContextMenuState) => {
-    contextMenuOpenedAt.current = Date.now();
     setContextMenu(state);
   }, []);
+
+  const closeContextMenu = useCallback(() => setContextMenu(null), []);
 
   const handleLocateFromList = useCallback((spot: WithId<FlightSpot>) => {
     setFlyToState({
@@ -119,23 +114,6 @@ export default function MapSpotSave() {
     setPendingDeleteSpotId(spot.id);
     setMobileDrawerOpen(false);
   }, []);
-
-  useEffect(() => {
-    if (!contextMenu) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setContextMenu(null); };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [contextMenu]);
-
-  useEffect(() => {
-    if (!contextMenu) return;
-    refs.setReference({
-      getBoundingClientRect: () => DOMRect.fromRect({
-        x: contextMenu.x, y: contextMenu.y, width: 0, height: 0,
-      }),
-    });
-    update();
-  }, [contextMenu, refs, update]);
 
   const handleAddSpot = () => {
     if (!contextMenu) return;
@@ -202,12 +180,6 @@ export default function MapSpotSave() {
     }
   };
 
-  const closeContextMenu = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    if (Date.now() - contextMenuOpenedAt.current < 350) return;
-    setContextMenu(null);
-  }, []);
-
   const menuItems = useMemo<MapContextMenuItem[]>(() => {
     if (!contextMenu) return [];
     return contextMenu.isPoint
@@ -224,6 +196,14 @@ export default function MapSpotSave() {
         ];
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contextMenu]);
+
+  const contextMenuTitle = useMemo(() => {
+    if (!contextMenu) return undefined;
+    if (contextMenu.isPoint && contextMenu.spotId) {
+      return spots.find(s => s.id === contextMenu.spotId)?.name ?? 'Spot';
+    }
+    return `${contextMenu.lat.toFixed(5)}, ${contextMenu.lng.toFixed(5)}`;
+  }, [contextMenu, spots]);
 
   const openWeatherApiKey = settings.apiKeys?.openWeatherApiKey;
   const tomorrowIoApiKey = settings.apiKeys?.tomorrowIoApiKey;
@@ -272,27 +252,28 @@ export default function MapSpotSave() {
               onTogglePanel={isDesktop ? () => setPanelOpen(!panelOpen) : undefined}
               flightCountBySpot={flightCountBySpot}
               recentFlightsBySpot={recentFlightsBySpot}
+              onEditSpot={handleEditFromList}
+              onDeleteSpot={handleDeleteFromList}
             />
 
             <QuickPinFab />
           </WeatherAnimationProvider>
 
-          {contextMenu && (
-            <>
-              <div
-                role="presentation"
-                style={{ position: 'fixed', inset: 0, zIndex: 1000 }}
-                onClick={closeContextMenu}
-                onContextMenu={closeContextMenu}
-              />
-              <MapContextMenu
-                // eslint-disable-next-line react-hooks/refs
-                ref={refs.setFloating}
-                style={floatingStyles}
-                width={MENU_WIDTH}
-                items={menuItems}
-              />
-            </>
+          {isDesktop ? (
+            <MapContextMenu
+              open={contextMenu !== null}
+              x={contextMenu?.x ?? 0}
+              y={contextMenu?.y ?? 0}
+              items={menuItems}
+              onClose={closeContextMenu}
+            />
+          ) : (
+            <MapActionSheet
+              opened={contextMenu !== null}
+              title={contextMenuTitle}
+              items={menuItems}
+              onClose={closeContextMenu}
+            />
           )}
         </Box>
 

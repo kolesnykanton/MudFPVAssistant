@@ -17,11 +17,13 @@ interface SpotMarkerProps {
   markerRefs?: React.MutableRefObject<Record<string, L.Marker>>;
   flightCount: number;
   recentFlights: WithId<FlightInfo>[];
+  onEdit?: (spot: WithId<FlightSpot>) => void;
+  onDelete?: (spot: WithId<FlightSpot>) => void;
 }
 
 export function SpotMarker({
   spot, onContextMenu, longPressActiveRef, markerRefs,
-  flightCount, recentFlights,
+  flightCount, recentFlights, onEdit, onDelete,
 }: SpotMarkerProps) {
   const markerRef = useRef<L.Marker>(null);
   const navigate = useNavigate();
@@ -119,6 +121,36 @@ export function SpotMarker({
                 See all flights →
               </button>
             </>
+          )}
+          {(onEdit || onDelete) && spot.id && (
+            <div style={{ marginTop: 8, borderTop: '1px solid #eee', paddingTop: 8, display: 'flex', gap: 5 }}>
+              {onEdit && (
+                <button
+                  onClick={() => onEdit(spot as WithId<FlightSpot>)}
+                  style={{
+                    flex: 1, fontSize: 10, padding: '4px 6px',
+                    background: '#f1f3f5', color: '#1f2937',
+                    border: '1px solid #dee2e6', borderRadius: 4, cursor: 'pointer',
+                    fontWeight: 600, letterSpacing: '0.01em',
+                  }}
+                >
+                  Edit
+                </button>
+              )}
+              {onDelete && (
+                <button
+                  onClick={() => onDelete(spot as WithId<FlightSpot>)}
+                  style={{
+                    flex: 1, fontSize: 10, padding: '4px 6px',
+                    background: '#fff5f5', color: '#c92a2a',
+                    border: '1px solid #ffc9c9', borderRadius: 4, cursor: 'pointer',
+                    fontWeight: 600, letterSpacing: '0.01em',
+                  }}
+                >
+                  Delete
+                </button>
+              )}
+            </div>
           )}
           <div style={{ marginTop: 8, borderTop: '1px solid #eee', paddingTop: 8, display: 'flex', gap: 5 }}>
             <button
