@@ -8,13 +8,15 @@ interface Props {
   isFavorited: boolean;
   isOwnSpot: boolean;
   isCloning: boolean;
+  isFavoriting?: boolean;
+  isAlreadyCloned?: boolean;
   onFavoriteToggle: (spotId: string) => Promise<void>;
   onClone: (spot: WithId<CommunitySpot>) => void;
   onLocate?: (spot: WithId<CommunitySpot>) => void;
 }
 
 export function CommunitySpotCard({
-  spot, isFavorited, isOwnSpot, isCloning, onFavoriteToggle, onClone, onLocate,
+  spot, isFavorited, isOwnSpot, isCloning, isFavoriting, isAlreadyCloned, onFavoriteToggle, onClone, onLocate,
 }: Props) {
   const categoryColor = spot.category ? CATEGORY_COLORS[spot.category] : undefined;
 
@@ -31,6 +33,7 @@ export function CommunitySpotCard({
           <img
             src={spot.photoUrl}
             alt=""
+            onError={(e) => { e.currentTarget.style.display = 'none'; }}
             style={{
               width: 72,
               height: 72,
@@ -79,6 +82,8 @@ export function CommunitySpotCard({
                 variant="light"
                 color="red"
                 size="sm"
+                loading={isFavoriting}
+                disabled={isFavoriting}
                 onClick={() => onFavoriteToggle(spot.id!)}
                 aria-label={isFavorited ? 'Remove from favourites' : 'Add to favourites'}
               >
@@ -102,9 +107,10 @@ export function CommunitySpotCard({
               size="xs"
               fullWidth
               loading={isCloning}
+              disabled={isAlreadyCloned}
               onClick={() => onClone(spot)}
             >
-              Save to my spots
+              {isAlreadyCloned ? 'Already saved' : 'Save to my spots'}
             </Button>
           )}
         </Stack>

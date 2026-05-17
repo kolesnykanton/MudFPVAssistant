@@ -3,7 +3,7 @@ import {
   doc, collection, addDoc, updateDoc, serverTimestamp, getDoc,
   writeBatch, deleteField,
 } from 'firebase/firestore';
-import { ref as storageRef, uploadBytes, getDownloadURL, getBytes, deleteObject } from 'firebase/storage';
+import { ref as storageRef, uploadBytes, getDownloadURL, getBytes, deleteObject, getMetadata } from 'firebase/storage';
 import { db, storage } from '../firebase/firebaseConfig';
 import { useAuth } from '../context/AuthContext';
 import type { FlightSpot, CommunitySpot } from '../types';
@@ -36,9 +36,12 @@ export function usePublishSpot() {
       // create a community spot with a broken/missing photo.
       if (spot.photoUrl && spot.storagePath) {
         const originalRef = storageRef(storage, spot.storagePath);
-        const originalBlob = await getBytes(originalRef);
+        const [originalBlob, originalMeta] = await Promise.all([
+          getBytes(originalRef),
+          getMetadata(originalRef),
+        ]);
         const communityRef = storageRef(storage, communitySpot.storagePath!);
-        await uploadBytes(communityRef, originalBlob);
+        await uploadBytes(communityRef, originalBlob, { contentType: originalMeta.contentType });
         communitySpot.photoUrl = await getDownloadURL(communityRef);
       }
 
@@ -119,7 +122,10 @@ export function usePublishSpot() {
     };
 
     try {
-      const docRef = await addDoc(collection(db, `users/${uid}/FlightSpots`), mySpot);
+      const docData = Object.fromEntries(
+        Object.entries(mySpot).filter(([, v]) => v !== undefined),
+      );
+      const docRef = await addDoc(collection(db, `users/${uid}/FlightSpots`), docData);
       return docRef.id;
     } catch (err) {
       console.error('[clone] error:', err);

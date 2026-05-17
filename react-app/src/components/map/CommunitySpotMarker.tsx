@@ -44,12 +44,14 @@ interface Props {
   isFavorited: boolean;
   isOwnSpot: boolean;
   isCloning: boolean;
+  isFavoriting?: boolean;
+  isAlreadyCloned?: boolean;
   onFavoriteToggle: (spotId: string) => Promise<void>;
   onClone: (spot: WithId<CommunitySpot>) => void;
 }
 
 export function CommunitySpotMarker({
-  spot, isFavorited, isOwnSpot, isCloning, onFavoriteToggle, onClone,
+  spot, isFavorited, isOwnSpot, isCloning, isFavoriting, isAlreadyCloned, onFavoriteToggle, onClone,
 }: Props) {
   const icon = useMemo(() => makeIcon(spot.category), [spot.category]);
 
@@ -87,6 +89,8 @@ export function CommunitySpotMarker({
               size="sm"
               variant="light"
               color="red"
+              loading={isFavoriting}
+              disabled={isFavoriting}
               aria-label={isFavorited ? 'Remove from favourites' : 'Add to favourites'}
               onClick={() => onFavoriteToggle(spot.id!)}
             >
@@ -97,10 +101,11 @@ export function CommunitySpotMarker({
                 size="xs"
                 variant="light"
                 loading={isCloning}
+                disabled={isAlreadyCloned}
                 onClick={() => onClone(spot)}
                 style={{ flex: 1 }}
               >
-                Save to my spots
+                {isAlreadyCloned ? 'Already saved' : 'Save to my spots'}
               </Button>
             )}
           </Group>
