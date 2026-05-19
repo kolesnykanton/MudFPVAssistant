@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "fpv-companion",
+    "staging": "fpv-companion-staging"
+  }
+}
